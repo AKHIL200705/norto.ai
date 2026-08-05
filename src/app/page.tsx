@@ -52,6 +52,9 @@ function Dashboard() {
 
 export default function Home() {
   const view = useAppStore((s) => s.view)
+  const isAuth = useAppStore((s) => s.isAuthenticated)
+  const setView = useAppStore((s) => s.setView)
+  const setSignInOpen = useAppStore((s) => s.setSignInOpen)
   const [LandingPage, setLandingPage] = React.useState<React.ComponentType | null>(null)
 
   React.useEffect(() => {
@@ -62,10 +65,25 @@ export default function Home() {
     }
   }, [view])
 
+  // Auth guard: the dashboard is reachable ONLY when signed in.
+  // A signed-out user who somehow has a persisted `view: 'dashboard'`
+  // (e.g. from an older guest session) is bounced to the landing page and
+  // shown the sign-in dialog.
+  React.useEffect(() => {
+    if (view === 'dashboard' && !isAuth) {
+      setView('landing')
+      setSignInOpen(true)
+    }
+  }, [view, isAuth, setView, setSignInOpen])
+
   // The sign-in dialog is mounted once at the root so it works in every view.
   const dialog = <SignInDialog />
 
-  if (view === 'landing') {
+  // Treat an unauthenticated "dashboard" view as landing until the guard runs.
+  const effectiveView: 'landing' | 'dashboard' =
+    view === 'dashboard' && !isAuth ? 'landing' : view
+
+  if (effectiveView === 'landing') {
     // SSR-safe fallback while the landing chunk loads
     if (!LandingPage) {
       return (

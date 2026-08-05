@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { Compass, Twitter, Github, Linkedin, Mail, ArrowUpRight } from 'lucide-react'
-import { useAppStore } from '@/lib/store'
+import { useLaunchApp } from '@/lib/store'
 
 const COLUMNS = [
   {
@@ -42,7 +42,7 @@ const SOCIALS = [
 ]
 
 export function LandingFooter() {
-  const setView = useAppStore((s) => s.setView)
+  const launchApp = useLaunchApp()
 
   const handleNav = (href: string) => {
     if (href.startsWith('#') && href.length > 1) {
@@ -74,10 +74,10 @@ export function LandingFooter() {
             </p>
 
             <button
-              onClick={() => setView('dashboard')}
+              onClick={launchApp}
               className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-2 text-sm font-medium text-white shadow-md shadow-emerald-500/25 transition-all hover:from-emerald-700 hover:to-teal-700"
             >
-              Launch App
+              Get Started
               <ArrowUpRight className="size-4" />
             </button>
           </div>

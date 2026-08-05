@@ -200,3 +200,35 @@ Stage Summary:
 - Sessions persist across reloads via Zustand persist middleware.
 - Signed-in user is reflected everywhere: landing navbar, dashboard topbar, home greeting, profile section.
 - Production NextAuth template included for swapping in real Google credentials.
+
+---
+Task ID: 8
+Agent: Main (Z.ai Code)
+Task: Remove Launch App button — dashboard reachable ONLY after signing in with Google.
+
+Work Log:
+- Added `useLaunchApp()` hook to `src/lib/store.ts`: returns a callback that goes to the dashboard if authenticated, otherwise opens the sign-in dialog. Imported `React` for `useCallback`.
+- `src/components/landing/landing-navbar.tsx`: removed the desktop "Launch App" button and the mobile-sheet "Launch App" button. The "Sign in" button is now the primary emerald-gradient CTA (visible on all breakpoints), shown only when signed out; a UserBadge shows when signed in. Removed now-unused `launchApp`, `setView`, and `Sparkles` import.
+- `src/components/landing/landing-hero.tsx`: CTA renamed "Launch App" → "Get Started", wired to `useLaunchApp`.
+- `src/components/landing/landing-pricing.tsx`: all 3 tier CTAs ("Start for free", "Get Settler", "Go Nomad") now call `useLaunchApp`.
+- `src/components/landing/landing-footer.tsx`: "Launch App" → "Get Started", wired to `useLaunchApp`.
+- `src/components/landing/landing-faq.tsx`: "Launch the app" → "Get Started", wired to `useLaunchApp`.
+- `src/components/auth/sign-in-dialog.tsx`: removed the "Continue as guest" bypass entirely (button + handler). Replaced with a "New here? Just sign in with Google — it's free." hint. The only ways to complete sign-in are now Google or email.
+- `src/app/page.tsx`: added an auth guard — if `view === 'dashboard'` but `isAuthenticated === false`, the user is bounced to the landing page and the sign-in dialog auto-opens. An `effectiveView` variable also prevents any flash of the dashboard while the guard effect runs.
+- Ran `bun run lint` → 0 errors.
+
+Agent Browser verification (end-to-end):
+1. Fresh load (signed out): navbar shows "Sign in with Google", NO "Launch App" button anywhere on the page (confirmed via body text search). ✓
+2. Hero "Get Started" (signed out) → opens sign-in dialog (NOT dashboard). ✓
+3. Pricing "Start for free" (signed out) → opens sign-in dialog. ✓
+4. Dialog has NO "Continue as guest" option (confirmed via body text search for "guest"). ✓
+5. Google sign-in → pick Priya Sharma → lands on dashboard ("Welcome back, Priya 👋"). ✓
+6. Auth guard: set persisted state to `view:'dashboard'` + signed-out → reload → bounced to landing + sign-in dialog auto-opened. NO dashboard access without sign-in. ✓
+7. Sign out → landing with only "Sign in with Google". ✓
+8. Console errors: none. Dev log: all GET / 200. ✓
+
+Stage Summary:
+- The "Launch App" button is fully removed from the navbar (desktop + mobile) and all landing CTAs.
+- The dashboard is now reachable ONLY by signing in (Google or email). No guest bypass.
+- An auth guard in page.tsx enforces this even against stale persisted state.
+- Signed-in users clicking any CTA go straight to the dashboard; signed-out users get the sign-in dialog.

@@ -1,5 +1,6 @@
 'use client'
 
+import * as React from 'react'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { View, DashboardSection, UserProfile, ChatMessage } from './types'
@@ -119,3 +120,20 @@ export const useChatStore = create<ChatState>((set) => ({
       return { messages: next }
     }),
 }))
+
+/**
+ * Auth-aware launcher for the dashboard.
+ *
+ * Signed-in users go straight to the dashboard. Signed-out users are sent to
+ * the sign-in dialog first — the dashboard is reachable ONLY after signing in
+ * (Google or email). There is no guest bypass.
+ */
+export function useLaunchApp() {
+  const isAuth = useAppStore((s) => s.isAuthenticated)
+  const setView = useAppStore((s) => s.setView)
+  const setSignInOpen = useAppStore((s) => s.setSignInOpen)
+  return React.useCallback(() => {
+    if (isAuth) setView('dashboard')
+    else setSignInOpen(true)
+  }, [isAuth, setView, setSignInOpen])
+}

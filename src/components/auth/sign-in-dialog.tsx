@@ -138,14 +138,6 @@ export function SignInDialog() {
     }, 1100)
   }
 
-  const handleGuest = () => {
-    setOpen(false)
-    setView('dashboard')
-    toast.info('Continuing as guest', {
-      description: 'Sign in anytime to sync your data',
-    })
-  }
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="p-0 overflow-hidden max-w-[420px] gap-0">
@@ -286,12 +278,9 @@ export function SignInDialog() {
                   ))}
                 </ul>
 
-                <button
-                  onClick={handleGuest}
-                  className="mt-4 w-full text-center text-xs text-muted-foreground hover:text-foreground hover:underline"
-                >
-                  Continue as guest →
-                </button>
+                <p className="mt-4 w-full text-center text-[11px] text-muted-foreground">
+                  New here? Just sign in with Google — it&apos;s free.
+                </p>
               </div>
             </motion.div>
           )}

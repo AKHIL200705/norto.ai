@@ -4,7 +4,7 @@ import * as React from 'react'
 import { motion } from 'framer-motion'
 import { Check, Sparkles, ArrowRight, Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { useAppStore } from '@/lib/store'
+import { useLaunchApp } from '@/lib/store'
 import { cn } from '@/lib/utils'
 
 interface Tier {
@@ -72,14 +72,10 @@ const TIERS: Tier[] = [
 ]
 
 export function LandingPricing() {
-  const setView = useAppStore((s) => s.setView)
+  const launchApp = useLaunchApp()
 
-  const handleCta = (tier: Tier) => {
-    if (tier.name === 'Explorer') {
-      setView('dashboard')
-    } else {
-      setView('dashboard')
-    }
+  const handleCta = (_tier: Tier) => {
+    launchApp()
   }
 
   return (

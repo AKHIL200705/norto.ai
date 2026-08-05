@@ -10,7 +10,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
-import { useAppStore } from '@/lib/store'
+import { useLaunchApp } from '@/lib/store'
 
 interface FAQ {
   q: string
@@ -45,7 +45,7 @@ const FAQS: FAQ[] = [
 ]
 
 export function LandingFAQ() {
-  const setView = useAppStore((s) => s.setView)
+  const launchApp = useLaunchApp()
 
   return (
     <section id="faq" className="relative py-20 sm:py-28">
@@ -108,10 +108,10 @@ export function LandingFAQ() {
             Still have questions? Try LifeLens AI free — no card required.
           </p>
           <Button
-            onClick={() => setView('dashboard')}
+            onClick={launchApp}
             className="rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-6 text-white shadow-md shadow-emerald-500/25 hover:from-emerald-700 hover:to-teal-700"
           >
-            Launch the app
+            Get Started
           </Button>
         </motion.div>
       </div>

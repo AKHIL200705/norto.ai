@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { useState, useEffect } from 'react'
-import { Compass, Menu, Moon, Sun, Sparkles } from 'lucide-react'
+import { Compass, Menu, Moon, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -46,7 +46,6 @@ function UserBadge() {
 }
 
 export function LandingNavbar() {
-  const setView = useAppStore((s) => s.setView)
   const setSignInOpen = useAppStore((s) => s.setSignInOpen)
   const isAuth = useAppStore((s) => s.isAuthenticated)
   const user = useAppStore((s) => s.user)
@@ -57,7 +56,6 @@ export function LandingNavbar() {
   const userInitials = user?.name.split(' ').map((p) => p[0]).slice(0, 2).join('').toUpperCase() || 'U'
 
   const openSignIn = () => setSignInOpen(true)
-  const launchApp = () => setView('dashboard')
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12)
@@ -129,22 +127,13 @@ export function LandingNavbar() {
           ) : (
             <Button
               onClick={openSignIn}
-              variant="outline"
-              className="hidden rounded-full border-emerald-500/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-700 dark:hover:text-emerald-400 sm:inline-flex"
+              className="rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-5 text-white shadow-md shadow-emerald-500/25 hover:from-emerald-700 hover:to-teal-700"
             >
               <GoogleIcon className="size-4" />
-              Sign in
+              <span className="hidden sm:inline">Sign in with Google</span>
+              <span className="sm:hidden">Sign in</span>
             </Button>
           )}
-
-          <Button
-            onClick={launchApp}
-            className="rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-5 text-white shadow-md shadow-emerald-500/25 hover:from-emerald-700 hover:to-teal-700"
-          >
-            <Sparkles className="size-4" />
-            <span className="hidden sm:inline">Launch App</span>
-            <span className="sm:hidden">Launch</span>
-          </Button>
 
           {/* Mobile sheet */}
           <Sheet open={open} onOpenChange={setOpen}>
@@ -190,21 +179,13 @@ export function LandingNavbar() {
                     <SheetClose asChild>
                       <Button
                         onClick={openSignIn}
-                        variant="outline"
-                        className="w-full rounded-full border-emerald-500/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/10"
+                        className="w-full rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white"
                       >
                         <GoogleIcon className="size-4" />
                         Sign in with Google
                       </Button>
                     </SheetClose>
                   )}
-                  <Button
-                    onClick={launchApp}
-                    className="w-full rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white"
-                  >
-                    <Sparkles className="size-4" />
-                    Launch App
-                  </Button>
                 </div>
               </div>
             </SheetContent>

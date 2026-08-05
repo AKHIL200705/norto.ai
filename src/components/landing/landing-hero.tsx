@@ -15,7 +15,7 @@ import {
   Bot,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { useAppStore } from '@/lib/store'
+import { useLaunchApp } from '@/lib/store'
 
 const AI_BULLETS = [
   { icon: Home, text: 'PGs in Madhapur & Gachibowli — ₹6,000–₹8,000/mo' },
@@ -27,7 +27,7 @@ const TYPING_TEXT =
   "Got it! For ₹15,000/mo in Hyderabad, here's a smart plan 👇"
 
 export function LandingHero() {
-  const setView = useAppStore((s) => s.setView)
+  const launchApp = useLaunchApp()
   const heroRef = useRef<HTMLElement>(null)
 
   // Mouse parallax
@@ -131,12 +131,12 @@ export function LandingHero() {
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <Button
-              onClick={() => setView('dashboard')}
+              onClick={launchApp}
               size="lg"
               className="rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-7 text-white shadow-lg shadow-emerald-500/25 hover:from-emerald-700 hover:to-teal-700"
             >
               <Sparkles className="size-4" />
-              Launch App
+              Get Started
               <ArrowRight className="size-4" />
             </Button>
             <Button
