@@ -162,3 +162,41 @@ Stage Summary:
 - Prisma DB operational (User + SavedPlace queries executing).
 - Zero lint errors, zero console errors, zero dev-log errors.
 - Screenshots saved: landing.png, ai-assistant.png, weather.png, smart-map.png, dark-mode.png.
+
+---
+Task ID: 7
+Agent: Main (Z.ai Code)
+Task: Add "Sign in with Google" authentication feature.
+
+Work Log:
+- Extended Zustand store (`src/lib/store.ts`) with auth state: `isAuthenticated`, `authProvider` ('google'|'email'|'guest'|null), `signInOpen`, plus `signIn`, `signOut`, `setSignInOpen` actions. Auth state persisted to localStorage so sessions survive reloads.
+- Created `src/components/auth/google-icon.tsx` — official 4-color Google "G" SVG.
+- Created `src/components/auth/sign-in-dialog.tsx` — polished sign-in dialog with 3 modes:
+  • Choose: emerald gradient header, "Sign in with Google" button (official white styling), email+password form with show/hide, forgot password, send OTP, continue-as-guest, and 4 sign-in-reason bullets.
+  • Google account picker: mimics real Google OAuth "Choose an account" screen — Google logo, 2 sample accounts (Priya Sharma, Arjun Reddy) with gradient avatars, "Use another account" (name+email form), secure-OAuth footer. Picking an account → 1.1s "Signing in…" spinner → completes sign-in → redirects to dashboard.
+  • Email signing-in: spinner state while "verifying credentials".
+- Mounted `SignInDialog` at app root (`src/app/page.tsx`) so it works in both landing AND dashboard views.
+- Updated `src/components/landing/landing-navbar.tsx`: added "Sign in" button (Google icon, emerald outline) shown when not authenticated; shows a UserBadge (avatar + first name) when authenticated. Mobile sheet includes "Sign in with Google" button or the signed-in user chip.
+- Updated `src/components/dashboard/dashboard-shell.tsx` topbar: avatar button now opens an account dropdown with gradient header (name, email, "Google account"/"Email account" badge), "Profile & settings", and "Sign out" (or "Sign in" if guest). Shows real signed-in user name/initials.
+- Updated `src/components/dashboard/sections/home.tsx`: greeting uses signed-in user's first name ("Welcome back, Priya 👋"); budget/language stats read from signed-in user.
+- Updated `src/components/dashboard/sections/profile.tsx`: header card shows "Verified" badge when authenticated or "Guest mode" badge when not; shows "Signed in with Google" (Google icon) or "Signed in with email" badge. Danger zone sign-out/sign-in button is auth-aware and wired to real `signOut`/`setSignInOpen`.
+- Created `src/lib/auth.config.ts` — commented NextAuth.js + Google provider + Prisma adapter template with step-by-step production migration instructions.
+- Ran `bun run lint` → 0 errors. Dev log shows clean compiles, all GET / 200, zero runtime/console errors.
+
+Agent Browser verification (end-to-end):
+1. Landing navbar "Sign in" button visible → opens dialog ✓
+2. "Sign in with Google" → Google account picker with 2 accounts + "Use another account" ✓
+3. Selected Priya Sharma → spinner → dashboard, topbar shows "PS / Priya Sharma", home greets "Welcome back, Priya 👋" ✓
+4. Avatar dropdown → "Profile & settings" + "Sign out" ✓
+5. Profile section shows "Priya Sharma / priya.sharma@gmail.com / Verified / Signed in with Google" badges ✓
+6. Sign out → returns to landing, "Sign in" button restored ✓
+7. Persistence: signed in as Arjun → full page reload → still signed in ("Welcome back, Arjun 👋") ✓
+8. Email sign-in: sneha.iyer@example.com + password → "Welcome back, Sneha 👋" (name derived from email prefix) ✓
+9. Console errors: none. Dev log: all 200, no errors ✓
+
+Stage Summary:
+- "Sign in with Google" is fully functional end-to-end with a realistic Google OAuth account-picker flow.
+- Works alongside email sign-in and guest mode.
+- Sessions persist across reloads via Zustand persist middleware.
+- Signed-in user is reflected everywhere: landing navbar, dashboard topbar, home greeting, profile section.
+- Production NextAuth template included for swapping in real Google credentials.

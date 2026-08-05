@@ -14,6 +14,7 @@ import { FoodView } from '@/components/dashboard/sections/food'
 import { OcrScanner } from '@/components/dashboard/sections/ocr'
 import { SavedPlaces } from '@/components/dashboard/sections/saved-places'
 import { Profile } from '@/components/dashboard/sections/profile'
+import { SignInDialog } from '@/components/auth/sign-in-dialog'
 
 function DashboardSection() {
   const section = useAppStore((s) => s.section)
@@ -61,17 +62,31 @@ export default function Home() {
     }
   }, [view])
 
+  // The sign-in dialog is mounted once at the root so it works in every view.
+  const dialog = <SignInDialog />
+
   if (view === 'landing') {
     // SSR-safe fallback while the landing chunk loads
     if (!LandingPage) {
       return (
         <div className="min-h-screen flex items-center justify-center bg-background">
           <div className="size-10 rounded-full border-4 border-emerald-500/20 border-t-emerald-500 animate-spin" />
+          {dialog}
         </div>
       )
     }
-    return <LandingPage />
+    return (
+      <>
+        <LandingPage />
+        {dialog}
+      </>
+    )
   }
 
-  return <Dashboard />
+  return (
+    <>
+      <Dashboard />
+      {dialog}
+    </>
+  )
 }

@@ -5,7 +5,7 @@ import { useTheme } from 'next-themes'
 import {
   Compass, Home, Sparkles, Map, Wallet, CloudSun, Languages,
   Siren, UtensilsCrossed, ScanText, Bookmark, User, Menu,
-  Sun, Moon, Search, Bell, ChevronRight,
+  Sun, Moon, Search, Bell, ChevronRight, LogOut, LogIn, ChevronDown,
 } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
 import type { DashboardSection } from '@/lib/types'
@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
+import { GoogleIcon } from '@/components/auth/google-icon'
 import { Sheet, SheetContent } from '@/components/ui/sheet'
 
 interface NavItem {
@@ -146,9 +147,21 @@ export function DashboardTopbar() {
   const setSection = useAppStore((s) => s.setSection)
   const setSidebarOpen = useAppStore((s) => s.setSidebarOpen)
   const city = useAppStore((s) => s.city)
+  const user = useAppStore((s) => s.user)
+  const isAuth = useAppStore((s) => s.isAuthenticated)
+  const authProvider = useAppStore((s) => s.authProvider)
+  const signOut = useAppStore((s) => s.signOut)
+  const setSignInOpen = useAppStore((s) => s.setSignInOpen)
 
   React.useEffect(() => setMounted(true), [])
 
+  const displayName = isAuth && user ? user.name : 'Explorer'
+  const displayInitials = (isAuth && user
+    ? user.name
+    : 'City Explorer'
+  ).split(' ').map((p) => p[0]).slice(0, 2).join('').toUpperCase()
+
+  const [menuOpen, setMenuOpen] = React.useState(false)
   const [notifOpen, setNotifOpen] = React.useState(false)
   const notifications = [
     { type: 'weather', title: 'Rain alert', message: `Light rain expected in ${city} this evening.`, time: '2m' },
@@ -242,17 +255,77 @@ export function DashboardTopbar() {
           {mounted && theme === 'dark' ? <Sun className="size-5" /> : <Moon className="size-5" />}
         </Button>
 
-        <button
-          onClick={() => setSection('profile')}
-          className="flex items-center gap-2 h-9 pl-1 pr-2 rounded-lg hover:bg-accent transition-colors"
-        >
-          <Avatar className="size-7 ring-2 ring-emerald-500/20">
-            <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white text-xs font-bold">
-              CE
-            </AvatarFallback>
-          </Avatar>
-          <span className="hidden md:inline text-sm font-medium">Explorer</span>
-        </button>
+        <div className="relative">
+          <button
+            onClick={() => setMenuOpen((v) => !v)}
+            className="flex items-center gap-2 h-9 pl-1 pr-2 rounded-lg hover:bg-accent transition-colors"
+            aria-label="Account menu"
+          >
+            <Avatar className="size-7 ring-2 ring-emerald-500/20">
+              <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white text-xs font-bold">
+                {displayInitials}
+              </AvatarFallback>
+            </Avatar>
+            <span className="hidden md:inline text-sm font-medium max-w-[110px] truncate">{displayName}</span>
+            <ChevronDown className="hidden md:inline size-3.5 text-muted-foreground" />
+          </button>
+          {menuOpen && (
+            <>
+              <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
+              <div className="absolute right-0 top-12 z-50 w-72 rounded-xl border bg-popover shadow-xl overflow-hidden">
+                {/* Account header */}
+                <div className="px-4 py-4 bg-gradient-to-br from-emerald-600 to-teal-700 text-white">
+                  <div className="flex items-center gap-3">
+                    <Avatar className="size-10 ring-2 ring-white/30">
+                      <AvatarFallback className="bg-white/15 text-white text-sm font-bold backdrop-blur-sm">
+                        {displayInitials}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold truncate">{displayName}</p>
+                      <p className="text-[11px] text-emerald-50/85 truncate">
+                        {isAuth && user ? user.email : 'Guest mode'}
+                      </p>
+                    </div>
+                  </div>
+                  {isAuth && authProvider && (
+                    <div className="mt-2 inline-flex items-center gap-1 text-[10px] bg-white/15 rounded-full px-2 py-0.5 backdrop-blur-sm">
+                      {authProvider === 'google' && <GoogleIcon className="size-3" />}
+                      {authProvider === 'google' ? 'Google account' : 'Email account'}
+                    </div>
+                  )}
+                </div>
+                {/* Menu items */}
+                <div className="p-1.5">
+                  <button
+                    onClick={() => { setSection('profile'); setMenuOpen(false) }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm hover:bg-accent transition-colors text-left"
+                  >
+                    <User className="size-4 text-muted-foreground" />
+                    Profile & settings
+                  </button>
+                  {isAuth ? (
+                    <button
+                      onClick={() => { setMenuOpen(false); signOut() }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 transition-colors text-left"
+                    >
+                      <LogOut className="size-4" />
+                      Sign out
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => { setMenuOpen(false); setSignInOpen(true) }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/10 transition-colors text-left"
+                    >
+                      <LogIn className="size-4" />
+                      Sign in
+                    </button>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </header>
   )

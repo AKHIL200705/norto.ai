@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 import {
   User, Mail, Briefcase, Languages, Wallet, Utensils, Bus, MapPin,
   Pencil, Save, X, Bell, CloudSun, Wallet as WalletIcon, Calendar,
-  Sparkles, LogOut, Trash2, Check, ShieldCheck, Map as MapIcon,
+  Sparkles, LogOut, LogIn, Trash2, Check, ShieldCheck, Map as MapIcon,
   MessageSquare, Globe, Settings,
 } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
@@ -26,6 +26,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { cn } from '@/lib/utils'
+import { GoogleIcon } from '@/components/auth/google-icon'
 
 const DEFAULT_USER: UserProfile = {
   name: 'City Explorer',
@@ -64,9 +65,12 @@ const item = {
 export function Profile() {
   const user = useAppStore((s) => s.user)
   const updateUser = useAppStore((s) => s.updateUser)
-  const setView = useAppStore((s) => s.setView)
   const setSection = useAppStore((s) => s.setSection)
   const city = useAppStore((s) => s.city)
+  const isAuth = useAppStore((s) => s.isAuthenticated)
+  const authProvider = useAppStore((s) => s.authProvider)
+  const signOut = useAppStore((s) => s.signOut)
+  const setSignInOpen = useAppStore((s) => s.setSignInOpen)
 
   const profile: UserProfile = user || { ...DEFAULT_USER, city }
   const [editing, setEditing] = React.useState(false)
@@ -132,8 +136,14 @@ export function Profile() {
   }
 
   const handleSignOut = () => {
-    setView('landing')
-    toast.info('Signed out')
+    signOut()
+    toast.info('Signed out', {
+      description: 'You can sign back in anytime to sync your data',
+    })
+  }
+
+  const handleSignIn = () => {
+    setSignInOpen(true)
   }
 
   // Stats
@@ -170,13 +180,34 @@ export function Profile() {
                   <span className="inline-flex items-center gap-1"><Briefcase className="size-3.5" />{profile.occupation || '—'}</span>
                   <span className="inline-flex items-center gap-1"><MapPin className="size-3.5" />{profile.city}</span>
                 </div>
-                <div className="flex items-center justify-center sm:justify-start gap-2 mt-3">
+                <div className="flex items-center justify-center sm:justify-start gap-2 mt-3 flex-wrap">
                   <Badge className="bg-white/15 text-white border-0 backdrop-blur-sm">
                     <Sparkles className="size-3 mr-1" />Explorer Tier
                   </Badge>
-                  <Badge className="bg-white/15 text-white border-0 backdrop-blur-sm">
-                    <Check className="size-3 mr-1" />Verified
-                  </Badge>
+                  {isAuth ? (
+                    <Badge className="bg-white/15 text-white border-0 backdrop-blur-sm inline-flex items-center gap-1">
+                      <Check className="size-3 mr-1" />Verified
+                    </Badge>
+                  ) : (
+                    <Badge className="bg-amber-400/25 text-amber-50 border-0 backdrop-blur-sm">
+                      Guest mode
+                    </Badge>
+                  )}
+                  {isAuth && authProvider && (
+                    <Badge className="bg-white/15 text-white border-0 backdrop-blur-sm inline-flex items-center gap-1">
+                      {authProvider === 'google' ? (
+                        <>
+                          <GoogleIcon className="size-3 mr-1" />
+                          Signed in with Google
+                        </>
+                      ) : (
+                        <>
+                          <Mail className="size-3 mr-1" />
+                          Signed in with email
+                        </>
+                      )}
+                    </Badge>
+                  )}
                 </div>
               </div>
               <Button
@@ -409,13 +440,31 @@ export function Profile() {
               </div>
               <div className="flex-1 p-3 rounded-lg border border-border/60 bg-background/50 flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-sm font-medium">Sign out</p>
-                  <p className="text-[11px] text-muted-foreground">Return to the landing page</p>
+                  <p className="text-sm font-medium">
+                    {isAuth ? 'Sign out' : 'Sign in'}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground">
+                    {isAuth
+                      ? 'End your session and return to landing'
+                      : 'Sign in with Google to sync your data'}
+                  </p>
                 </div>
-                <Button variant="outline" size="sm" onClick={handleSignOut}>
-                  <LogOut className="size-4" />
-                  Sign out
-                </Button>
+                {isAuth ? (
+                  <Button variant="outline" size="sm" onClick={handleSignOut}>
+                    <LogOut className="size-4" />
+                    Sign out
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleSignIn}
+                    className="border-emerald-500/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/10"
+                  >
+                    <LogIn className="size-4" />
+                    Sign in
+                  </Button>
+                )}
               </div>
             </div>
           </Card>

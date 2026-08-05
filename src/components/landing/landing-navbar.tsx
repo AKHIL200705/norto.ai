@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import { Compass, Menu, Moon, Sun, Sparkles } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { Button } from '@/components/ui/button'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
   Sheet,
   SheetContent,
@@ -13,6 +14,7 @@ import {
 } from '@/components/ui/sheet'
 import { useAppStore } from '@/lib/store'
 import { cn } from '@/lib/utils'
+import { GoogleIcon } from '@/components/auth/google-icon'
 
 const NAV_LINKS = [
   { label: 'Features', href: '#features' },
@@ -21,11 +23,41 @@ const NAV_LINKS = [
   { label: 'FAQ', href: '#faq' },
 ]
 
+function UserBadge() {
+  const user = useAppStore((s) => s.user)
+  const isAuth = useAppStore((s) => s.isAuthenticated)
+  const setView = useAppStore((s) => s.setView)
+  if (!isAuth || !user) return null
+  const initials = user.name.split(' ').map((p) => p[0]).slice(0, 2).join('').toUpperCase()
+  return (
+    <button
+      onClick={() => setView('dashboard')}
+      className="flex items-center gap-2 h-9 pl-1 pr-3 rounded-full border bg-background/70 hover:bg-accent transition-colors"
+      aria-label={`Signed in as ${user.name}`}
+    >
+      <Avatar className="size-7 ring-2 ring-emerald-500/20">
+        <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white text-xs font-bold">
+          {initials}
+        </AvatarFallback>
+      </Avatar>
+      <span className="hidden sm:inline text-sm font-medium max-w-[120px] truncate">{user.name.split(' ')[0]}</span>
+    </button>
+  )
+}
+
 export function LandingNavbar() {
   const setView = useAppStore((s) => s.setView)
+  const setSignInOpen = useAppStore((s) => s.setSignInOpen)
+  const isAuth = useAppStore((s) => s.isAuthenticated)
+  const user = useAppStore((s) => s.user)
   const { theme, setTheme } = useTheme()
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
+
+  const userInitials = user?.name.split(' ').map((p) => p[0]).slice(0, 2).join('').toUpperCase() || 'U'
+
+  const openSignIn = () => setSignInOpen(true)
+  const launchApp = () => setView('dashboard')
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12)
@@ -92,12 +124,26 @@ export function LandingNavbar() {
             )}
           </Button>
 
+          {isAuth ? (
+            <UserBadge />
+          ) : (
+            <Button
+              onClick={openSignIn}
+              variant="outline"
+              className="hidden rounded-full border-emerald-500/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-700 dark:hover:text-emerald-400 sm:inline-flex"
+            >
+              <GoogleIcon className="size-4" />
+              Sign in
+            </Button>
+          )}
+
           <Button
-            onClick={() => setView('dashboard')}
-            className="hidden rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-5 text-white shadow-md shadow-emerald-500/25 hover:from-emerald-700 hover:to-teal-700 sm:inline-flex"
+            onClick={launchApp}
+            className="rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-5 text-white shadow-md shadow-emerald-500/25 hover:from-emerald-700 hover:to-teal-700"
           >
             <Sparkles className="size-4" />
-            Launch App
+            <span className="hidden sm:inline">Launch App</span>
+            <span className="sm:hidden">Launch</span>
           </Button>
 
           {/* Mobile sheet */}
@@ -130,9 +176,30 @@ export function LandingNavbar() {
                     </button>
                   </SheetClose>
                 ))}
-                <div className="mt-auto px-2 pb-4">
+                <div className="mt-auto px-2 pb-4 space-y-2">
+                  {isAuth ? (
+                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                      <Avatar className="size-7 ring-2 ring-emerald-500/20">
+                        <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white text-xs font-bold">
+                          {userInitials}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="text-sm font-medium truncate">{user?.name}</span>
+                    </div>
+                  ) : (
+                    <SheetClose asChild>
+                      <Button
+                        onClick={openSignIn}
+                        variant="outline"
+                        className="w-full rounded-full border-emerald-500/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/10"
+                      >
+                        <GoogleIcon className="size-4" />
+                        Sign in with Google
+                      </Button>
+                    </SheetClose>
+                  )}
                   <Button
-                    onClick={() => setView('dashboard')}
+                    onClick={launchApp}
                     className="w-full rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white"
                   >
                     <Sparkles className="size-4" />

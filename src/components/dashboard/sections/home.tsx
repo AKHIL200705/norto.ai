@@ -59,12 +59,16 @@ const RECOMMENDED = [
 export function DashboardHome() {
   const city = useAppStore((s) => s.city)
   const setSection = useAppStore((s) => s.setSection)
+  const user = useAppStore((s) => s.user)
+  const isAuth = useAppStore((s) => s.isAuthenticated)
+
+  const firstName = isAuth && user ? (user.name.split(' ')[0] || 'Explorer') : 'Explorer'
 
   const stats = [
     { label: 'Current City', value: city, icon: MapPin, color: 'from-emerald-500 to-teal-600', iconColor: 'text-emerald-600' },
-    { label: 'Monthly Budget', value: '₹25,000', icon: WalletIcon, color: 'from-amber-500 to-orange-600', iconColor: 'text-amber-500' },
+    { label: 'Monthly Budget', value: isAuth && user ? `₹${user.budget.toLocaleString('en-IN')}` : '₹25,000', icon: WalletIcon, color: 'from-amber-500 to-orange-600', iconColor: 'text-amber-500' },
     { label: 'Saved Places', value: '12', icon: Bookmark, color: 'from-teal-500 to-emerald-600', iconColor: 'text-teal-600' },
-    { label: 'Language', value: 'English', icon: LangIcon, color: 'from-rose-500 to-pink-600', iconColor: 'text-rose-500' },
+    { label: 'Language', value: isAuth && user ? user.language : 'English', icon: LangIcon, color: 'from-rose-500 to-pink-600', iconColor: 'text-rose-500' },
   ]
 
   return (
@@ -91,7 +95,7 @@ export function DashboardHome() {
                   <span className="text-xs text-emerald-50/80">{new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
                 </div>
                 <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight">
-                  Welcome back, Explorer 👋
+                  Welcome back, {firstName} 👋
                 </h1>
                 <p className="text-emerald-50/90 text-sm sm:text-base">
                   You&apos;re all set in <span className="font-semibold text-amber-300">{city}</span>. Let&apos;s make your move smoother — explore essentials, plan your budget, and discover the city with AI by your side.
