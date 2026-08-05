@@ -82,14 +82,14 @@ export function LandingNavbar() {
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           className="group flex items-center gap-2.5 outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg"
-          aria-label="LifeLens AI home"
+          aria-label="Norto home"
         >
           <span className="relative grid size-9 place-items-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-500/30 transition-transform group-hover:scale-105">
             <Compass className="size-5" />
             <span className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-amber-400 ring-2 ring-background" />
           </span>
           <span className="text-lg font-semibold tracking-tight text-foreground">
-            LifeLens <span className="text-emerald-600 dark:text-emerald-400">AI</span>
+            Nor<span className="text-emerald-600 dark:text-emerald-400">to</span>
           </span>
         </button>
 
@@ -153,7 +153,7 @@ export function LandingNavbar() {
                   <span className="grid size-9 place-items-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white">
                     <Compass className="size-5" />
                   </span>
-                  <span className="text-lg font-semibold">LifeLens AI</span>
+                  <span className="text-lg font-semibold">Norto</span>
                 </div>
                 {NAV_LINKS.map((l) => (
                   <SheetClose asChild key={l.href}>

@@ -41,7 +41,7 @@ interface SavedPhrase {
   createdAt: string
 }
 
-const STORAGE_KEY = 'lifelens-saved-phrases'
+const STORAGE_KEY = 'norto-saved-phrases'
 
 const container = {
   hidden: { opacity: 0 },

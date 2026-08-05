@@ -18,7 +18,7 @@ import {
 import { GoogleIcon } from './google-icon'
 
 /**
- * Sign-In dialog for LifeLens AI.
+ * Sign-In dialog for Norto.
  *
  * Production note: This dialog drives a polished, fully-working simulated
  * Google OAuth account-picker flow (the "Choose an account" screen) so the
@@ -142,9 +142,9 @@ export function SignInDialog() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="p-0 overflow-hidden max-w-[420px] gap-0">
         {/* Hidden a11y titles */}
-        <DialogTitle className="sr-only">Sign in to LifeLens AI</DialogTitle>
+        <DialogTitle className="sr-only">Sign in to Norto</DialogTitle>
         <DialogDescription className="sr-only">
-          Choose a sign-in method to access your LifeLens AI dashboard.
+          Choose a sign-in method to access your Norto dashboard.
         </DialogDescription>
 
         <AnimatePresence mode="wait">
@@ -173,7 +173,7 @@ export function SignInDialog() {
                     <Compass className="size-5" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold leading-tight">LifeLens AI</p>
+                    <p className="text-sm font-semibold leading-tight">Norto</p>
                     <p className="text-[11px] text-emerald-50/80">AI City Companion</p>
                   </div>
                 </div>
@@ -365,7 +365,7 @@ function GoogleAccountPicker({
           <Loader2 className="size-4 animate-spin" />
           <span className="text-sm font-medium">Signing in…</span>
         </div>
-        <p className="text-[11px] text-slate-400">Redirecting back to LifeLens AI</p>
+        <p className="text-[11px] text-slate-400">Redirecting back to Norto</p>
       </div>
     )
   }
@@ -387,7 +387,7 @@ function GoogleAccountPicker({
         </div>
         <h2 className="text-xl font-semibold text-slate-800">Choose an account</h2>
         <p className="text-xs text-slate-500 mt-1">
-          to continue to <span className="font-medium text-slate-700">LifeLens AI</span>
+          to continue to <span className="font-medium text-slate-700">Norto</span>
         </p>
       </div>
 

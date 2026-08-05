@@ -123,7 +123,7 @@ export function LandingHero() {
           </h1>
 
           <p className="max-w-xl text-pretty text-base text-muted-foreground sm:text-lg">
-            Move, settle, and explore with confidence. LifeLens AI gives you
+            Move, settle, and explore with confidence. Norto gives you
             personalised relocation plans, smart maps, budget tools, food
             recommendations, translations, and 24/7 emergency help — all in one
             place.
@@ -198,7 +198,7 @@ export function LandingHero() {
                   <Bot className="size-5" />
                 </span>
                 <div>
-                  <p className="text-sm font-semibold text-foreground">LifeLens AI</p>
+                  <p className="text-sm font-semibold text-foreground">Norto</p>
                   <p className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
                     <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
                     Online · Ready to help

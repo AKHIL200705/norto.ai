@@ -22,7 +22,7 @@ export async function POST(req: Request) {
 
     const cityName = city && typeof city === 'string' ? city : 'the selected city'
 
-    const systemPrompt = `You are LifeLens AI, an expert relocation & city-settlement assistant. The user is in ${cityName}. Provide practical, well-structured answers using Markdown (headings, bullet lists, bold). Cover accommodation, food, transport, budget, safety, local language tips, and emergency info where relevant. Be concise but thorough.`
+    const systemPrompt = `You are Norto, an expert relocation & city-settlement assistant. The user is in ${cityName}. Provide practical, well-structured answers using Markdown (headings, bullet lists, bold). Cover accommodation, food, transport, budget, safety, local language tips, and emergency info where relevant. Be concise but thorough.`
 
     const messages: HistoryMsg[] = [{ role: 'assistant', content: systemPrompt }]
 

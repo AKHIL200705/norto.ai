@@ -6,8 +6,10 @@ import {
   Sparkles, Map, Wallet, CloudSun, Languages, Siren, UtensilsCrossed,
   MapPin, Wallet as WalletIcon, Bookmark, Languages as LangIcon,
   ArrowRight, TrendingUp, Lightbulb, Clock, ChevronRight,
+  LocateFixed, Loader2, Crosshair, AlertTriangle, Navigation,
 } from 'lucide-react'
-import { useAppStore } from '@/lib/store'
+import { useAppStore, type LiveLocation, type LocationStatus } from '@/lib/store'
+import { toast } from 'sonner'
 import type { DashboardSection } from '@/lib/types'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -61,8 +63,27 @@ export function DashboardHome() {
   const setSection = useAppStore((s) => s.setSection)
   const user = useAppStore((s) => s.user)
   const isAuth = useAppStore((s) => s.isAuthenticated)
+  const detectLocation = useAppStore((s) => s.detectLocation)
+  const liveLocation = useAppStore((s) => s.liveLocation)
+  const locationStatus = useAppStore((s) => s.locationStatus)
+  const locationError = useAppStore((s) => s.locationError)
 
   const firstName = isAuth && user ? (user.name.split(' ')[0] || 'Explorer') : 'Explorer'
+
+  const handleDetect = async () => {
+    await detectLocation()
+    const st = useAppStore.getState().locationStatus
+    if (st === 'success') {
+      const loc = useAppStore.getState().liveLocation
+      toast.success('Location detected', {
+        description: loc ? `You're in ${loc.city}${loc.region ? ', ' + loc.region : ''} · ±${Math.round(loc.accuracy)}m accuracy` : undefined,
+      })
+    } else if (st === 'error') {
+      toast.error('Could not detect location', {
+        description: useAppStore.getState().locationError || undefined,
+      })
+    }
+  }
 
   const stats = [
     { label: 'Current City', value: city, icon: MapPin, color: 'from-emerald-500 to-teal-600', iconColor: 'text-emerald-600' },
@@ -125,6 +146,16 @@ export function DashboardHome() {
               </div>
             </div>
           </Card>
+        </motion.div>
+
+        {/* Live location card */}
+        <motion.div variants={item}>
+          <LiveLocationCard
+            status={locationStatus}
+            live={liveLocation}
+            error={locationError}
+            onDetect={handleDetect}
+          />
         </motion.div>
 
         {/* Quick stats */}
@@ -263,5 +294,155 @@ export function DashboardHome() {
         </motion.div>
       </motion.div>
     </div>
+  )
+}
+
+/**
+ * Live-location card for the dashboard home.
+ * Uses the browser's high-accuracy Geolocation API + server-side reverse
+ * geocoding to show the user's real current city, coordinates, and accuracy.
+ */
+function LiveLocationCard({
+  status,
+  live,
+  error,
+  onDetect,
+}: {
+  status: LocationStatus
+  live: LiveLocation | null
+  error: string | null
+  onDetect: () => void
+}) {
+  if (status === 'loading') {
+    return (
+      <Card className="p-5 sm:p-6 gap-0 border-emerald-500/30 bg-emerald-500/5">
+        <div className="flex items-center gap-4">
+          <div className="size-12 rounded-xl bg-emerald-500/15 grid place-items-center">
+            <Loader2 className="size-6 text-emerald-600 animate-spin" />
+          </div>
+          <div>
+            <p className="font-semibold">Detecting your location…</p>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              Using high-accuracy GPS. This usually takes a few seconds.
+            </p>
+          </div>
+        </div>
+      </Card>
+    )
+  }
+
+  if (status === 'error') {
+    return (
+      <Card className="p-5 sm:p-6 gap-0 border-rose-500/30 bg-rose-500/5">
+        <div className="flex items-center gap-4">
+          <div className="size-12 rounded-xl bg-rose-500/15 grid place-items-center shrink-0">
+            <AlertTriangle className="size-6 text-rose-600" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold">Couldn&apos;t detect your location</p>
+            <p className="text-sm text-muted-foreground mt-0.5 line-clamp-2">{error}</p>
+          </div>
+          <Button onClick={onDetect} variant="outline" size="sm" className="border-rose-500/30 text-rose-600 hover:bg-rose-500/10 shrink-0">
+            <LocateFixed className="size-4" />
+            Retry
+          </Button>
+        </div>
+      </Card>
+    )
+  }
+
+  if (status === 'success' && live) {
+    const accuracyM = Math.round(live.accuracy)
+    const accuracyLabel = accuracyM < 50 ? 'High accuracy' : accuracyM < 200 ? 'Good accuracy' : 'Approximate'
+    const mapsUrl = `https://www.openstreetmap.org/?mlat=${live.lat}&mlon=${live.lng}#map=16/${live.lat}/${live.lng}`
+    return (
+      <Card className="p-0 gap-0 overflow-hidden border-emerald-500/30">
+        <div className="grid sm:grid-cols-[1fr_auto]">
+          {/* Details */}
+          <div className="p-5 sm:p-6">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+                <span className="relative flex size-2">
+                  <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-60 animate-ping" />
+                  <span className="relative inline-flex size-2 rounded-full bg-emerald-600" />
+                </span>
+                Live location
+              </span>
+              <Badge variant="secondary" className="text-[10px] bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-0">
+                {accuracyLabel} · ±{accuracyM}m
+              </Badge>
+            </div>
+            <h3 className="text-xl font-bold tracking-tight flex items-center gap-2">
+              <MapPin className="size-5 text-emerald-600" />
+              {live.city}
+            </h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              {[live.locality, live.region, live.country].filter(Boolean).join(', ')}
+            </p>
+            <div className="grid grid-cols-3 gap-3 mt-4">
+              <div className="rounded-lg bg-muted/50 px-3 py-2">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Latitude</p>
+                <p className="text-sm font-mono font-medium mt-0.5">{live.lat.toFixed(5)}</p>
+              </div>
+              <div className="rounded-lg bg-muted/50 px-3 py-2">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Longitude</p>
+                <p className="text-sm font-mono font-medium mt-0.5">{live.lng.toFixed(5)}</p>
+              </div>
+              <div className="rounded-lg bg-muted/50 px-3 py-2">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Detected</p>
+                <p className="text-sm font-medium mt-0.5">{new Date(live.detectedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2 mt-4">
+              <Button onClick={onDetect} variant="outline" size="sm" className="border-emerald-500/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/10">
+                <LocateFixed className="size-4" />
+                Refresh
+              </Button>
+              <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
+                <Button variant="ghost" size="sm">
+                  <Navigation className="size-4" />
+                  View on map
+                </Button>
+              </a>
+            </div>
+          </div>
+          {/* Mini map preview */}
+          <div className="relative sm:w-56 h-32 sm:h-auto bg-emerald-500/10 mesh-bg overflow-hidden border-t sm:border-t-0 sm:border-l border-emerald-500/20">
+            <div className="absolute inset-0 grid place-items-center">
+              <div className="relative">
+                <span className="absolute inset-0 -m-6 rounded-full bg-emerald-500/20 animate-ping" />
+                <span className="relative grid size-12 place-items-center rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg shadow-emerald-500/40">
+                  <Crosshair className="size-6 text-white" />
+                </span>
+              </div>
+            </div>
+            <div className="absolute bottom-2 left-2 right-2 text-[10px] text-emerald-700 dark:text-emerald-400 font-medium bg-background/70 backdrop-blur-sm rounded px-1.5 py-0.5">
+              {live.lat.toFixed(4)}, {live.lng.toFixed(4)}
+            </div>
+          </div>
+        </div>
+      </Card>
+    )
+  }
+
+  // idle
+  return (
+    <Card className="p-5 sm:p-6 gap-0 border-dashed border-emerald-500/40 bg-emerald-500/[0.03]">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+        <div className="size-12 rounded-xl bg-emerald-500/10 grid place-items-center shrink-0">
+          <Crosshair className="size-6 text-emerald-600" />
+        </div>
+        <div className="flex-1">
+          <h3 className="font-semibold">Detect your live location</h3>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            Get accurate, real-time location to personalise weather, maps, and recommendations for exactly where you are.
+          </p>
+        </div>
+        <Button onClick={onDetect} className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shrink-0">
+          <LocateFixed className="size-4" />
+          Use my location
+        </Button>
+      </div>
+    </Card>
   )
 }

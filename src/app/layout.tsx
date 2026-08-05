@@ -16,11 +16,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "LifeLens AI — Your AI Companion for Every New City",
+  title: "Norto — Your AI Companion for Every New City",
   description:
-    "LifeLens AI is an AI-powered relocation and city assistant. Get personalized recommendations, local info, navigation, budgeting, emergency support, translation, weather, and nearby services — all in one intelligent app.",
+    "Norto is an AI-powered relocation and city assistant. Get personalized recommendations, local info, navigation, budgeting, emergency support, translation, weather, and nearby services — all in one intelligent app.",
   keywords: [
-    "LifeLens AI",
+    "Norto",
     "relocation assistant",
     "city guide",
     "AI companion",
@@ -29,20 +29,20 @@ export const metadata: Metadata = {
     "translator",
     "city explorer",
   ],
-  authors: [{ name: "LifeLens AI" }],
+  authors: [{ name: "Norto" }],
   icons: {
     icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
   },
   openGraph: {
-    title: "LifeLens AI — Your AI Companion for Every New City",
+    title: "Norto — Your AI Companion for Every New City",
     description:
       "AI-powered relocation and city assistant with maps, budgeting, translation, weather, emergency support, and more.",
-    siteName: "LifeLens AI",
+    siteName: "Norto",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "LifeLens AI",
+    title: "Norto",
     description: "Your AI Companion for Every New City",
   },
 };

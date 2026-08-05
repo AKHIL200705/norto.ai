@@ -59,13 +59,13 @@ export function LandingFooter() {
             <button
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
               className="flex items-center gap-2.5 outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg"
-              aria-label="LifeLens AI home"
+              aria-label="Norto home"
             >
               <span className="grid size-9 place-items-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-500/30">
                 <Compass className="size-5" />
               </span>
               <span className="text-lg font-semibold tracking-tight">
-                LifeLens <span className="text-emerald-600 dark:text-emerald-400">AI</span>
+                Nor<span className="text-emerald-600 dark:text-emerald-400">to</span>
               </span>
             </button>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
@@ -105,7 +105,7 @@ export function LandingFooter() {
         {/* Bottom bar */}
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border/60 pt-6 sm:flex-row">
           <p className="text-xs text-muted-foreground">
-            © 2025 LifeLens AI. Crafted with care in India.
+            © 2025 Norto. Crafted with care in India.
           </p>
 
           <div className="flex items-center gap-2">

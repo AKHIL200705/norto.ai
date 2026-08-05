@@ -108,7 +108,7 @@ export async function GET(req: Request) {
     }
 
     // Step 2: LLM synthesizes structured JSON from search results
-    const systemPrompt = `You are LifeLens AI's weather assistant. Using the provided web search results about the weather in ${city}, produce a structured JSON object. ONLY output the JSON, no prose, no markdown fences.
+    const systemPrompt = `You are Norto's weather assistant. Using the provided web search results about the weather in ${city}, produce a structured JSON object. ONLY output the JSON, no prose, no markdown fences.
 
 The JSON MUST have this exact shape:
 {

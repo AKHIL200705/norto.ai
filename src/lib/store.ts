@@ -4,8 +4,25 @@ import * as React from 'react'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { View, DashboardSection, UserProfile, ChatMessage } from './types'
+import {
+  detectLocation as detectLocationUtil,
+  GeoError,
+} from './geolocation'
 
 export type AuthProvider = 'google' | 'email' | 'guest' | null
+
+export type LocationStatus = 'idle' | 'loading' | 'success' | 'error'
+
+export interface LiveLocation {
+  lat: number
+  lng: number
+  accuracy: number // meters
+  city: string
+  locality: string | null
+  region: string | null
+  country: string | null
+  detectedAt: number // epoch ms
+}
 
 interface AppState {
   view: View
@@ -17,6 +34,10 @@ interface AppState {
   isAuthenticated: boolean
   authProvider: AuthProvider
   signInOpen: boolean
+  // live location
+  liveLocation: LiveLocation | null
+  locationStatus: LocationStatus
+  locationError: string | null
 
   setView: (v: View) => void
   setSection: (s: DashboardSection) => void
@@ -27,6 +48,8 @@ interface AppState {
   setSignInOpen: (v: boolean) => void
   signIn: (u: { name: string; email: string; avatar?: string | null; occupation?: string | null }, provider: 'google' | 'email') => void
   signOut: () => void
+  detectLocation: () => Promise<void>
+  clearLocation: () => void
 }
 
 const GUEST_DEFAULTS: Omit<UserProfile, 'name' | 'email' | 'avatar' | 'occupation'> = {
@@ -39,7 +62,7 @@ const GUEST_DEFAULTS: Omit<UserProfile, 'name' | 'email' | 'avatar' | 'occupatio
 
 export const useAppStore = create<AppState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       view: 'landing',
       section: 'home',
       user: null,
@@ -48,6 +71,9 @@ export const useAppStore = create<AppState>()(
       isAuthenticated: false,
       authProvider: null,
       signInOpen: false,
+      liveLocation: null,
+      locationStatus: 'idle',
+      locationError: null,
 
       setView: (v) => set({ view: v }),
       setSection: (s) => set({ section: s, sidebarOpen: false }),
@@ -82,9 +108,44 @@ export const useAppStore = create<AppState>()(
           view: 'landing',
           section: 'home',
         }),
+      detectLocation: async () => {
+        if (get().locationStatus === 'loading') return
+        set({ locationStatus: 'loading', locationError: null })
+        try {
+          const result = await detectLocationUtil()
+          const live: LiveLocation = {
+            lat: result.lat,
+            lng: result.lng,
+            accuracy: result.accuracy,
+            city: result.city,
+            locality: result.locality,
+            region: result.region,
+            country: result.country,
+            detectedAt: Date.now(),
+          }
+          set({
+            liveLocation: live,
+            locationStatus: 'success',
+            locationError: null,
+            // Update the active city so weather / map / AI use the real location
+            city: live.city,
+            user: get().user ? { ...get().user!, city: live.city } : get().user,
+          })
+        } catch (err) {
+          const message =
+            err instanceof GeoError
+              ? err.message
+              : err instanceof Error
+                ? err.message
+                : 'Could not detect your location.'
+          set({ locationStatus: 'error', locationError: message })
+        }
+      },
+      clearLocation: () =>
+        set({ liveLocation: null, locationStatus: 'idle', locationError: null }),
     }),
     {
-      name: 'lifelens-store',
+      name: 'norto-store',
       partialize: (state) => ({
         view: state.view,
         section: state.section,
@@ -92,6 +153,7 @@ export const useAppStore = create<AppState>()(
         city: state.city,
         isAuthenticated: state.isAuthenticated,
         authProvider: state.authProvider,
+        liveLocation: state.liveLocation,
       }),
     }
   )

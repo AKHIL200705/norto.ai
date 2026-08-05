@@ -1,5 +1,5 @@
 /**
- * LifeLens AI — Production NextAuth.js configuration template.
+ * Norto — Production NextAuth.js configuration template.
  *
  * The app ships with a fully-working simulated Google sign-in flow
  * (see src/components/auth/sign-in-dialog.tsx) so the feature is

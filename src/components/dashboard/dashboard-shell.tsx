@@ -6,8 +6,9 @@ import {
   Compass, Home, Sparkles, Map, Wallet, CloudSun, Languages,
   Siren, UtensilsCrossed, ScanText, Bookmark, User, Menu,
   Sun, Moon, Search, Bell, ChevronRight, LogOut, LogIn, ChevronDown,
+  LocateFixed, Loader2, AlertTriangle, Crosshair,
 } from 'lucide-react'
-import { useAppStore } from '@/lib/store'
+import { useAppStore, type LiveLocation, type LocationStatus } from '@/lib/store'
 import type { DashboardSection } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -43,14 +44,14 @@ function SidebarLogo() {
     <button
       onClick={() => setView('landing')}
       className="flex items-center gap-2.5 w-full px-2 group"
-      aria-label="LifeLens AI home"
+      aria-label="Norto home"
     >
       <div className="size-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/25 group-hover:scale-105 transition-transform">
         <Compass className="size-5 text-white" />
       </div>
       <div className="flex flex-col items-start leading-none">
-        <span className="font-bold text-base tracking-tight">LifeLens</span>
-        <span className="text-[10px] text-muted-foreground font-medium">AI City Companion</span>
+        <span className="font-bold text-base tracking-tight">Norto</span>
+        <span className="text-[10px] text-muted-foreground font-medium">Your City Companion</span>
       </div>
     </button>
   )
@@ -141,6 +142,129 @@ export function MobileSidebar() {
   )
 }
 
+/**
+ * Live-location chip shown in the dashboard topbar.
+ * - idle/error: a "Detect" button that triggers high-accuracy geolocation
+ * - loading: spinner with "Locating…"
+ * - success: city + accuracy badge; click to re-detect; hover shows full details
+ */
+function LocationChip({
+  status,
+  live,
+  error,
+  onDetect,
+}: {
+  status: LocationStatus
+  live: LiveLocation | null
+  error: string | null
+  onDetect: () => void
+}) {
+  const [open, setOpen] = React.useState(false)
+
+  const accuracyM = live ? Math.round(live.accuracy) : null
+  // human-friendly accuracy label
+  const accuracyLabel =
+    accuracyM === null ? '' : accuracyM < 50 ? 'High' : accuracyM < 200 ? 'Good' : 'Approx.'
+
+  if (status === 'loading') {
+    return (
+      <span className="inline-flex items-center gap-1.5 h-9 px-2.5 sm:px-3 rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-xs font-medium">
+        <Loader2 className="size-3.5 animate-spin" />
+        <span className="hidden sm:inline">Locating…</span>
+      </span>
+    )
+  }
+
+  if (status === 'error') {
+    return (
+      <button
+        onClick={onDetect}
+        title={error || 'Location error — tap to retry'}
+        className="inline-flex items-center gap-1.5 h-9 px-2.5 sm:px-3 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-medium hover:bg-rose-500/20 transition-colors"
+      >
+        <AlertTriangle className="size-3.5" />
+        <span className="hidden sm:inline">Retry location</span>
+      </button>
+    )
+  }
+
+  if (status === 'success' && live) {
+    const title = `${live.city}${live.region ? ', ' + live.region : ''}${live.country ? ', ' + live.country : ''}\nLat ${live.lat.toFixed(4)}, Lng ${live.lng.toFixed(4)}\nAccuracy ±${accuracyM}m`
+    return (
+      <div className="relative">
+        <button
+          onClick={() => setOpen((v) => !v)}
+          title={title}
+          className="inline-flex items-center gap-1.5 h-9 px-2.5 sm:px-3 rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-xs font-medium hover:bg-emerald-500/20 transition-colors"
+        >
+          <Crosshair className="size-3.5" />
+          <span className="max-w-[90px] sm:max-w-[140px] truncate">{live.city}</span>
+          <span className="hidden sm:inline-flex items-center gap-0.5 text-[10px] text-emerald-600/70 dark:text-emerald-400/70">
+            ±{accuracyM}m
+          </span>
+        </button>
+        {open && (
+          <>
+            <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+            <div className="absolute right-0 top-11 z-50 w-64 rounded-xl border bg-popover shadow-xl overflow-hidden">
+              <div className="px-3 py-2.5 bg-gradient-to-br from-emerald-600 to-teal-700 text-white">
+                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-emerald-50/80">
+                  <Crosshair className="size-3" />
+                  Live location
+                </div>
+                <p className="text-sm font-semibold mt-0.5">{live.city}</p>
+                <p className="text-[11px] text-emerald-50/85">
+                  {[live.locality, live.region, live.country].filter(Boolean).join(', ')}
+                </p>
+              </div>
+              <div className="p-3 space-y-1.5 text-xs">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Latitude</span>
+                  <span className="font-mono">{live.lat.toFixed(5)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Longitude</span>
+                  <span className="font-mono">{live.lng.toFixed(5)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Accuracy</span>
+                  <span className="font-medium text-emerald-600 dark:text-emerald-400">
+                    ±{accuracyM}m · {accuracyLabel}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Detected</span>
+                  <span>{new Date(live.detectedAt).toLocaleTimeString()}</span>
+                </div>
+              </div>
+              <div className="p-2 border-t">
+                <button
+                  onClick={() => { onDetect(); setOpen(false) }}
+                  className="w-full flex items-center justify-center gap-1.5 h-8 rounded-lg text-xs font-medium hover:bg-accent transition-colors"
+                >
+                  <LocateFixed className="size-3.5" />
+                  Refresh location
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    )
+  }
+
+  // idle
+  return (
+    <button
+      onClick={onDetect}
+      className="inline-flex items-center gap-1.5 h-9 px-2.5 sm:px-3 rounded-lg border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 text-xs font-medium hover:bg-emerald-500/10 transition-colors"
+    >
+      <LocateFixed className="size-3.5" />
+      <span className="hidden sm:inline">Detect location</span>
+    </button>
+  )
+}
+
 export function DashboardTopbar() {
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = React.useState(false)
@@ -152,6 +276,10 @@ export function DashboardTopbar() {
   const authProvider = useAppStore((s) => s.authProvider)
   const signOut = useAppStore((s) => s.signOut)
   const setSignInOpen = useAppStore((s) => s.setSignInOpen)
+  const detectLocation = useAppStore((s) => s.detectLocation)
+  const liveLocation = useAppStore((s) => s.liveLocation)
+  const locationStatus = useAppStore((s) => s.locationStatus)
+  const locationError = useAppStore((s) => s.locationError)
 
   React.useEffect(() => setMounted(true), [])
 
@@ -191,6 +319,14 @@ export function DashboardTopbar() {
           />
         </div>
       </div>
+
+      {/* Live location chip */}
+      <LocationChip
+        status={locationStatus}
+        live={liveLocation}
+        error={locationError}
+        onDetect={detectLocation}
+      />
 
       <div className="flex items-center gap-1.5">
         <button

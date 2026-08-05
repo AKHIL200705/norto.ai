@@ -232,3 +232,64 @@ Stage Summary:
 - The dashboard is now reachable ONLY by signing in (Google or email). No guest bypass.
 - An auth guard in page.tsx enforces this even against stale persisted state.
 - Signed-in users clicking any CTA go straight to the dashboard; signed-out users get the sign-in dialog.
+
+---
+Task ID: 9
+Agent: full-stack-developer (Rebrand to Norto)
+Task: Rebrand LifeLens AI → Norto across all files.
+
+Work Log:
+- Audited src/ with grep to enumerate every LifeLens/lifelens occurrence across 21 files.
+- Updated lib files: auth.config.ts (header comment), user.ts (comment + DEMO_EMAIL → explorer@norto.ai), store.ts (persist name → 'norto-store').
+- Updated 4 API route system prompts: ai/food ("Norto's food expert"), ai/relocation ("You are Norto, an expert relocation"), ai/chat ("You are Norto, an expert relocation & city-settlement assistant"), weather ("Norto's weather assistant").
+- Updated layout.tsx metadata: title, description, keywords[0], authors, openGraph.title, openGraph.siteName, twitter.title all → Norto.
+- Updated dashboard sections: translator STORAGE_KEY → 'norto-saved-phrases'; ocr STORAGE_KEY → 'norto-recent-scans'; profile DEFAULT_USER email + three localStorage.removeItem calls → norto-*; ai-assistant greeting string "**Norto** assistant 🌿".
+- Updated dashboard-shell SidebarLogo: aria-label="Norto home", brand span → "Norto", subtitle span → "Your City Companion".
+- Updated sign-in-dialog.tsx: doc comment, sr-only DialogTitle/Description, header <p>, redirect line, and "to continue to" span — all → Norto.
+- Updated landing components: landing-how-itworks ("Norto crafts a personalised plan"); landing-navbar (aria-label, two-tone `Nor<span…>to</span>` logo, mobile sheet span); landing-footer (aria-label, two-tone logo, copyright); landing-hero (intro paragraph + chat preview header); landing-faq (5 question/answer occurrences + tagline + CTA line); landing-ai-preview ("See Norto in", "how Norto responds", "Norto Assistant", "Ask Norto anything…"); landing-testimonials (Hyderabad quote → "Norto built me a full week-one plan").
+- Verified: `grep -rIn "LifeLens\|lifelens\|Life Lens" src/ --include="*.tsx" --include="*.ts"` returns ZERO matches (exit code 1).
+- Ran `bun run lint` → exit 0, clean.
+
+Stage Summary:
+- Artifacts: 21 source files edited in place; no files renamed, no logic/styles/imports touched.
+- Key decisions:
+  • Two-tone logo markup switched from `LifeLens <span>AI</span>` to `Nor<span>to</span>` in landing-navbar.tsx and landing-footer.tsx (keeps emerald accent on the trailing letters).
+  • Sidebar logo subtitle changed from "AI City Companion" → "Your City Companion" per spec.
+  • localStorage keys norto-store / norto-saved-phrases / norto-recent-scans: existing lifelens-* entries are intentionally orphaned (fresh start on next load — acceptable per task spec).
+  • Email domain explorer@norto.ai in both user.ts (DEMO_EMAIL) and profile.tsx (DEFAULT_USER).
+- Brand consistency verified end-to-end across landing, dashboard, auth, API prompts, and metadata. Lint clean; dev server compiling successfully.
+
+---
+Task ID: 10
+Agent: Main (Z.ai Code)
+Task: Rebrand LifeLens AI → Norto + add accurate live location.
+
+Work Log:
+REBRAND (delegated to subagent Task 9):
+- Replaced all "LifeLens AI" / "LifeLens" / "lifelens" → "Norto" across 21 source files (brand text, taglines, API system prompts, metadata).
+- Two-tone logo → `Nor<span emerald>to</span>`. Sidebar subtitle → "Your City Companion".
+- localStorage keys: `norto-store`, `norto-saved-phrases`, `norto-recent-scans`. Email domain → `explorer@norto.ai`.
+- Verified: `grep -rIn "LifeLens\|lifelens" src/` → zero matches.
+
+LIVE LOCATION (built by main agent):
+- Created `src/app/api/geocode/route.ts` — server-side reverse geocoding via OpenStreetMap Nominatim API (free, no key, works server-side with proper User-Agent). Initially tried BigDataCloud's client endpoint but it 402-blocks server-side IPs; switched to Nominatim. Returns { city, locality, region, country }.
+- Created `src/lib/geolocation.ts` — client util wrapping `navigator.geolocation.getCurrentPosition` with `enableHighAccuracy: true` (15s timeout, no cache) + `reverseGeocode()` calling `/api/geocode` (relative path) + `detectLocation()` combining both. Custom `GeoError` with codes for permission-denied / position-unavailable / timeout / geocode-failed / unsupported.
+- Extended Zustand store (`src/lib/store.ts`): added `liveLocation` ({lat,lng,accuracy,city,locality,region,country,detectedAt}), `locationStatus` ('idle'|'loading'|'success'|'error'), `locationError`, `detectLocation()` action (calls util, updates store + sets `city` to detected city so weather/map/AI auto-update), `clearLocation()`. `liveLocation` persisted to localStorage.
+- Added `LocationChip` to dashboard topbar (`dashboard-shell.tsx`): idle="Detect location" button, loading=spinner, success=city+±Xm badge with detail popover (lat/lng/accuracy/detected time/refresh), error=retry button. Visible on all breakpoints.
+- Added `LiveLocationCard` to dashboard home (`home.tsx`): full-width card with idle/loading/error/success states. Success state shows pulsing live dot, city, locality/region/country, lat/lng/detected grid, accuracy badge, Refresh + "View on map" (OpenStreetMap link), and a mini map preview panel.
+- Wired into weather section (`weather.tsx`): "My location" button in header + "Live · ±Xm" badge next to city. Weather auto-refetches via existing `[city]` effect when detected city changes.
+
+Agent Browser verification (end-to-end):
+1. Rebrand: page title "Norto — Your AI Companion for Every New City", sidebar "Norto / Your City Companion", zero "LifeLens" in rendered DOM, sign-in dialog says "continue to Norto". ✓
+2. Live location (Hyderabad 17.385,78.4867 mocked at 25m accuracy): clicked "Use my location" → card shows "LIVE LOCATION · High accuracy · ±25m · Hyderabad · Sultan Bazar, Telangana, India" + lat/lng/detected time. ✓
+3. Topbar chip shows "Hyderabad ±25m"; popover shows full details + Refresh. ✓
+4. Weather loads "Now in Hyderabad, 31°C" with "Live · ±25m" badge. ✓
+5. Changed location to Bengaluru (12.9716,77.5946, 18m): clicked "My location" in weather → detected "Bengaluru" (official name), weather auto-updated to "Now in Bengaluru, 23°C" with "Live · ±18m" badge. Proves live + accurate for any city. ✓
+6. Geocode API: `GET /api/geocode?lat=17.385&lng=78.4867` → 200 `{city:"Hyderabad",locality:"Sultan Bazar",region:"Telangana",country:"India"}`. Bengaluru coords → `{city:"Bengaluru",region:"Karnataka"}`. ✓
+7. Console errors: none. Dev log: all 200. Lint: 0 errors. ✓
+
+Stage Summary:
+- App fully rebranded to "Norto" (zero LifeLens traces).
+- Accurate live location: browser high-accuracy GPS → server-side Nominatim reverse geocoding → real city/locality/region/country + accuracy in meters.
+- Surfaced in 3 places: topbar chip (with detail popover), home live-location card (with mini map + OpenStreetMap link), weather section (with live badge + My location button).
+- Detected city automatically flows into weather, map, AI assistant, and profile via the shared store `city` field.

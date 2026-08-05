@@ -77,7 +77,7 @@ export async function POST(req: Request) {
     const budgetLabel =
       budget && typeof budget === 'string' ? budget : 'any budget'
 
-    const systemPrompt = `You are LifeLens AI's food expert. Recommend food items available in the specified city. Return EXACTLY a JSON array of 6 food items — no prose, no markdown fences, no explanation. ONLY the JSON array.
+    const systemPrompt = `You are Norto's food expert. Recommend food items available in the specified city. Return EXACTLY a JSON array of 6 food items — no prose, no markdown fences, no explanation. ONLY the JSON array.
 
 Each food item MUST be an object with these exact keys:
 {

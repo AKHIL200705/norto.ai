@@ -125,13 +125,13 @@ export function LandingAIPreview() {
             Try it now
           </span>
           <h2 className="mt-4 text-balance text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
-            See LifeLens AI in{' '}
+            See Norto in{' '}
             <span className="bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent">
               action
             </span>
           </h2>
           <p className="mt-4 text-pretty text-base text-muted-foreground sm:text-lg">
-            Tap a prompt below to see how LifeLens AI responds — no signup
+            Tap a prompt below to see how Norto responds — no signup
             required.
           </p>
         </motion.div>
@@ -152,7 +152,7 @@ export function LandingAIPreview() {
                 </span>
                 <div>
                   <p className="text-sm font-semibold text-foreground">
-                    LifeLens Assistant
+                    Norto Assistant
                   </p>
                   <p className="flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400">
                     <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -268,7 +268,7 @@ export function LandingAIPreview() {
               <div className="mt-3 flex items-center gap-2 rounded-xl border border-border bg-background/60 px-3 py-2">
                 <input
                   readOnly
-                  placeholder="Ask LifeLens anything… (try a prompt above)"
+                  placeholder="Ask Norto anything… (try a prompt above)"
                   className="flex-1 bg-transparent text-sm text-muted-foreground outline-none"
                 />
                 <span className="grid size-8 place-items-center rounded-lg bg-gradient-to-br from-emerald-600 to-teal-600 text-white">

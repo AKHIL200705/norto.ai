@@ -15,7 +15,7 @@ const STEPS = [
     icon: Wand2,
     step: '02',
     title: 'AI builds your relocation plan',
-    desc: 'LifeLens AI crafts a personalised plan — best areas to live, estimated expenses, local tips, and a 7-day checklist.',
+    desc: 'Norto crafts a personalised plan — best areas to live, estimated expenses, local tips, and a 7-day checklist.',
   },
   {
     icon: Compass,

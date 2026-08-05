@@ -19,12 +19,12 @@ interface FAQ {
 
 const FAQS: FAQ[] = [
   {
-    q: 'How does LifeLens AI work?',
-    a: "LifeLens AI combines large-language-model reasoning with city-specific data sources — local listings, weather APIs, transport maps, and curated phrasebooks. Tell us your city, budget, and preferences, and the AI builds a personalised relocation plan, answers questions, and surfaces nearby services in real time.",
+    q: 'How does Norto work?',
+    a: "Norto combines large-language-model reasoning with city-specific data sources — local listings, weather APIs, transport maps, and curated phrasebooks. Tell us your city, budget, and preferences, and the AI builds a personalised relocation plan, answers questions, and surfaces nearby services in real time.",
   },
   {
     q: 'Which cities are supported?',
-    a: 'LifeLens AI is live in 12 Indian cities including Hyderabad, Bangalore, Pune, Chennai, Mumbai, Delhi NCR, Kolkata, Ahmedabad, Jaipur, Kochi, Indore, and Chandigarh. Five more cities are launching soon. You can still use the AI assistant for any city — listings and live map data are richest in supported metros.',
+    a: 'Norto is live in 12 Indian cities including Hyderabad, Bangalore, Pune, Chennai, Mumbai, Delhi NCR, Kolkata, Ahmedabad, Jaipur, Kochi, Indore, and Chandigarh. Five more cities are launching soon. You can still use the AI assistant for any city — listings and live map data are richest in supported metros.',
   },
   {
     q: 'Is my data safe?',
@@ -40,7 +40,7 @@ const FAQS: FAQ[] = [
   },
   {
     q: 'How accurate are the AI recommendations?',
-    a: "LifeLens AI blends live web search, curated local data, and LLM reasoning. Prices, ratings, and distances refresh frequently. We always show sources and encourage you to verify before committing to large expenses (like rent). For emergencies, we route you to official numbers whenever possible.",
+    a: "Norto blends live web search, curated local data, and LLM reasoning. Prices, ratings, and distances refresh frequently. We always show sources and encourage you to verify before committing to large expenses (like rent). For emergencies, we route you to official numbers whenever possible.",
   },
 ]
 
@@ -68,7 +68,7 @@ export function LandingFAQ() {
             </span>
           </h2>
           <p className="mt-4 text-pretty text-base text-muted-foreground sm:text-lg">
-            Everything you need to know before moving with LifeLens AI.
+            Everything you need to know before moving with Norto.
           </p>
         </motion.div>
 
@@ -105,7 +105,7 @@ export function LandingFAQ() {
           className="mt-10 flex flex-col items-center justify-center gap-3 text-center"
         >
           <p className="text-sm text-muted-foreground">
-            Still have questions? Try LifeLens AI free — no card required.
+            Still have questions? Try Norto free — no card required.
           </p>
           <Button
             onClick={launchApp}

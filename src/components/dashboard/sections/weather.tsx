@@ -7,6 +7,7 @@ import {
   Sun, Cloud, CloudRain, CloudLightning, Snowflake, CloudFog,
   Droplets, Wind, Sun as SunIcon, RefreshCw, Loader2, MapPin,
   Shirt, Plane, AlertTriangle, Sparkles, ChevronRight, CloudSun,
+  LocateFixed, Crosshair,
 } from 'lucide-react'
 import {
   LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer,
@@ -120,10 +121,31 @@ const item = {
 
 export function WeatherView() {
   const city = useAppStore((s) => s.city)
+  const detectLocation = useAppStore((s) => s.detectLocation)
+  const locationStatus = useAppStore((s) => s.locationStatus)
+  const liveLocation = useAppStore((s) => s.liveLocation)
   const [data, setData] = React.useState<WeatherPayload | null>(null)
   const [raw, setRaw] = React.useState<string | null>(null)
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState<string | null>(null)
+
+  const locating = locationStatus === 'loading'
+
+  const handleLocate = async () => {
+    await detectLocation()
+    const st = useAppStore.getState().locationStatus
+    if (st === 'success') {
+      const loc = useAppStore.getState().liveLocation
+      toast.success('Using your live location', {
+        description: loc ? `${loc.city} · ±${Math.round(loc.accuracy)}m` : undefined,
+      })
+      // weather auto-refetches via the [city] effect when city changes
+    } else if (st === 'error') {
+      toast.error('Could not detect location', {
+        description: useAppStore.getState().locationError || undefined,
+      })
+    }
+  }
 
   const load = React.useCallback(async () => {
     setLoading(true)
@@ -170,18 +192,36 @@ export function WeatherView() {
         {/* Header */}
         <motion.div variants={item} className="flex items-center justify-between gap-3">
           <div>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground flex-wrap">
               <MapPin className="size-3.5 text-emerald-600" />
               <span>{city}</span>
+              {liveLocation && (
+                <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 rounded-full px-1.5 py-0.5">
+                  <Crosshair className="size-2.5" />
+                  Live · ±{Math.round(liveLocation.accuracy)}m
+                </span>
+              )}
               <span className="text-muted-foreground/40">•</span>
               <span>{new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mt-1">Weather Forecast</h1>
           </div>
-          <Button variant="outline" size="sm" onClick={load} disabled={loading}>
-            <RefreshCw className={cn('size-4', loading && 'animate-spin')} />
-            <span className="hidden sm:inline">Refresh</span>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleLocate}
+              disabled={locating}
+              className="border-emerald-500/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/10"
+            >
+              {locating ? <Loader2 className="size-4 animate-spin" /> : <LocateFixed className="size-4" />}
+              <span className="hidden sm:inline">{locating ? 'Locating…' : 'My location'}</span>
+            </Button>
+            <Button variant="outline" size="sm" onClick={load} disabled={loading}>
+              <RefreshCw className={cn('size-4', loading && 'animate-spin')} />
+              <span className="hidden sm:inline">Refresh</span>
+            </Button>
+          </div>
         </motion.div>
 
         {loading && <WeatherSkeleton />}

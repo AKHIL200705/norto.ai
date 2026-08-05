@@ -23,7 +23,7 @@ export async function POST(req: Request) {
         ? preferences.trim()
         : 'No specific preferences stated.'
 
-    const systemPrompt = `You are LifeLens AI, an expert relocation planner. Generate a complete relocation guide for the user's destination city. Output well-structured Markdown with the following sections:
+    const systemPrompt = `You are Norto, an expert relocation planner. Generate a complete relocation guide for the user's destination city. Output well-structured Markdown with the following sections:
 
 1. **Best Areas to Live** — within the user's stated budget (₹{budget}/month). Mention 3-5 neighborhoods with rough rent ranges, pros, and cons.
 2. **Estimated Monthly Expenses** — itemized table/breakdown (rent, food, transport, utilities, internet, misc) with realistic ₹ figures for the city.

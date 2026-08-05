@@ -135,7 +135,7 @@ export function AiAssistant() {
       addMessage(SECTION, {
         id: uuid(),
         role: 'assistant',
-        content: `Hi! I'm your **LifeLens AI** assistant 🌿\n\nI can help you settle into ${city} with ease — ask me about **accommodation**, **food**, **transport**, **budget**, **safety**, or **local language phrases**.\n\nWhat would you like to explore first?`,
+        content: `Hi! I'm your **Norto** assistant 🌿\n\nI can help you settle into ${city} with ease — ask me about **accommodation**, **food**, **transport**, **budget**, **safety**, or **local language phrases**.\n\nWhat would you like to explore first?`,
         createdAt: new Date().toISOString(),
       })
     }

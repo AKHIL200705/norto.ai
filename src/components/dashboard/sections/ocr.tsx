@@ -33,7 +33,7 @@ interface RecentScan {
   createdAt: string
 }
 
-const STORAGE_KEY = 'lifelens-recent-scans'
+const STORAGE_KEY = 'norto-recent-scans'
 
 const USE_CASES = [
   { id: 'rent', title: 'Rent Agreement', desc: 'Extract terms, dates, and amounts', icon: FileText, tint: 'from-emerald-500 to-teal-600' },

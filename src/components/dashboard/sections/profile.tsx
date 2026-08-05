@@ -30,7 +30,7 @@ import { GoogleIcon } from '@/components/auth/google-icon'
 
 const DEFAULT_USER: UserProfile = {
   name: 'City Explorer',
-  email: 'explorer@lifelens.ai',
+  email: 'explorer@norto.ai',
   occupation: 'Software Engineer',
   language: 'English',
   budget: 25000,
@@ -125,9 +125,9 @@ export function Profile() {
 
   const handleReset = () => {
     try {
-      localStorage.removeItem('lifelens-store')
-      localStorage.removeItem('lifelens-saved-phrases')
-      localStorage.removeItem('lifelens-recent-scans')
+      localStorage.removeItem('norto-store')
+      localStorage.removeItem('norto-saved-phrases')
+      localStorage.removeItem('norto-recent-scans')
     } catch {
       // ignore
     }

@@ -21,7 +21,7 @@ const TESTIMONIALS: Testimonial[] = [
     avatar: 'PS',
     gradient: 'from-emerald-500 to-teal-500',
     quote:
-      "I moved to Hyderabad for work with zero local knowledge. LifeLens AI built me a full week-one plan — found my PG, sorted my metro route, and even taught me basic Telugu. Felt like home in days, not months.",
+      "I moved to Hyderabad for work with zero local knowledge. Norto built me a full week-one plan — found my PG, sorted my metro route, and even taught me basic Telugu. Felt like home in days, not months.",
   },
   {
     name: 'Arjun Mehta',
