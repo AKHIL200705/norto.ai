@@ -293,3 +293,37 @@ Stage Summary:
 - Accurate live location: browser high-accuracy GPS → server-side Nominatim reverse geocoding → real city/locality/region/country + accuracy in meters.
 - Surfaced in 3 places: topbar chip (with detail popover), home live-location card (with mini map + OpenStreetMap link), weather section (with live badge + My location button).
 - Detected city automatically flows into weather, map, AI assistant, and profile via the shared store `city` field.
+
+---
+Task ID: 11
+Agent: Main (Z.ai Code)
+Task: Add 5-second branded intro animation using the Norto brand.
+
+Work Log:
+- Created `src/components/intro/intro-screen.tsx` — a full-screen, 5-second branded intro overlay using framer-motion.
+  Animation timeline:
+  • 0.0s: Deep emerald gradient background + mesh fades in; three floating brand orbs (emerald, amber, teal) begin drifting with infinite loop.
+  • 0.4s: Compass badge (gradient emerald→teal, matching the Norto logo) scales + rotates in; three pulsing rings expand outward; a glow halo sits behind.
+  • 1.1s: "Norto" wordmark reveals letter-by-letter (y:110%→0, staggered 0.1s), two-tone: "Nor" white + "to" emerald-400 (matching the landing logo).
+  • 1.9s: Tagline "Your AI Companion for Every New City" fades up.
+  • 2.4s: Five feature pills (Relocation, Maps, Budget, Translator, Weather) pop in with stagger.
+  • 2.2s: Progress bar begins filling (0→100% over 5s via requestAnimationFrame), with "Loading your city companion" label + live percentage.
+  • 2.8s: "Skip intro →" button appears top-right.
+  • 5.0s: `finish()` called → sessionStorage flag set → exit animation (650ms fade) → `onComplete()` unmounts intro.
+- Session persistence: intro plays ONCE per browser session (sessionStorage `norto-intro-played`). Reloads in the same tab do NOT replay it — standard professional UX. `shouldPlayIntro()` helper checks the flag.
+- Skip: users can click "Skip intro →" to end immediately at any point; flag is still set so it won't replay.
+- Wired into `src/app/page.tsx`: `showIntro` state ( initialised via `shouldPlayIntro()` in useEffect), intro overlay mounted on top of both landing and dashboard views; `onComplete` sets `showIntro=false`.
+
+Agent Browser verification:
+1. Fresh session (flag cleared): intro plays — "Loading your city companion" + "Norto" visible at 2s ✓
+2. Intro auto-dismisses at 5s → exit fade → app visible at ~5.65s ✓
+3. Reload (flag set): "NO REPLAY (GOOD)" — sessionStorage prevents replay ✓
+4. Skip button: clicked at 3.2s → "SKIPPED (GOOD)" — intro ends immediately, flag set ✓
+5. After intro: landing page visible ("Your AI Companion for Every New City" + "Get Started") ✓
+6. Console errors: none. Dev log: all GET / 200. Lint: 0 errors ✓
+7. Screenshots captured: intro-1.png (mid-animation), intro-2.png, after-intro.png.
+
+Stage Summary:
+- 5-second branded intro animation added, using the Norto brand (compass, two-tone "Norto" wordmark, emerald/amber palette, floating orbs, feature pills, progress bar).
+- Plays once per session (sessionStorage); skippable; auto-transitions to the app.
+- Works on both landing and dashboard entry; zero console/lint errors.

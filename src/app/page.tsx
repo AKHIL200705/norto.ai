@@ -15,6 +15,7 @@ import { OcrScanner } from '@/components/dashboard/sections/ocr'
 import { SavedPlaces } from '@/components/dashboard/sections/saved-places'
 import { Profile } from '@/components/dashboard/sections/profile'
 import { SignInDialog } from '@/components/auth/sign-in-dialog'
+import { IntroScreen, shouldPlayIntro } from '@/components/intro/intro-screen'
 
 function DashboardSection() {
   const section = useAppStore((s) => s.section)
@@ -57,6 +58,12 @@ export default function Home() {
   const setSignInOpen = useAppStore((s) => s.setSignInOpen)
   const [LandingPage, setLandingPage] = React.useState<React.ComponentType | null>(null)
 
+  // Branded intro — plays once per browser session (sessionStorage).
+  const [showIntro, setShowIntro] = React.useState(false)
+  React.useEffect(() => {
+    setShowIntro(shouldPlayIntro())
+  }, [])
+
   React.useEffect(() => {
     if (view === 'landing') {
       import('@/components/landing/landing-page').then((mod) => {
@@ -79,6 +86,11 @@ export default function Home() {
   // The sign-in dialog is mounted once at the root so it works in every view.
   const dialog = <SignInDialog />
 
+  // Branded intro overlay (plays once per session, then unmounts).
+  const intro = showIntro ? (
+    <IntroScreen onComplete={() => setShowIntro(false)} />
+  ) : null
+
   // Treat an unauthenticated "dashboard" view as landing until the guard runs.
   const effectiveView: 'landing' | 'dashboard' =
     view === 'dashboard' && !isAuth ? 'landing' : view
@@ -90,6 +102,7 @@ export default function Home() {
         <div className="min-h-screen flex items-center justify-center bg-background">
           <div className="size-10 rounded-full border-4 border-emerald-500/20 border-t-emerald-500 animate-spin" />
           {dialog}
+          {intro}
         </div>
       )
     }
@@ -97,6 +110,7 @@ export default function Home() {
       <>
         <LandingPage />
         {dialog}
+        {intro}
       </>
     )
   }
@@ -105,6 +119,7 @@ export default function Home() {
     <>
       <Dashboard />
       {dialog}
+      {intro}
     </>
   )
 }
