@@ -82,7 +82,6 @@ interface MapPlace extends RealPlace {
   distance: string
 }
 
-type BudgetFilter = 'all' | 'budget' | 'premium'
 type RatingFilter = 'all' | '4+' | '4.5+'
 type SortBy = 'distance' | 'name' | 'category'
 
@@ -281,6 +280,8 @@ export function SmartMap() {
   const [savedIds, setSavedIds] = React.useState<Set<string>>(new Set())
   const [hoveredId, setHoveredId] = React.useState<string | null>(null)
   const [savingId, setSavingId] = React.useState<string | null>(null)
+  // Collapsible filter panel — hidden by default; click "Filters" to expand.
+  const [showFilters, setShowFilters] = React.useState(false)
 
   // The coordinates we query around: live location if available, else city centre.
   const queryLat = liveLocation?.lat ?? null
@@ -450,114 +451,177 @@ export function SmartMap() {
         </div>
       </div>
 
-      {/* ===== Side-by-side control panel: Categories (left) + Sort (right) ===== */}
-      <Card className="p-3 mb-4 gap-0">
-        <div className="grid lg:grid-cols-[1fr_auto] gap-3 lg:gap-4 items-start">
-          {/* LEFT: Category chips */}
-          <div>
-            <div className="flex items-center gap-1.5 mb-2">
-              <Filter className="size-3.5 text-muted-foreground" />
-              <span className="text-xs font-semibold text-muted-foreground">Categories — click to load real places</span>
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              {PLACE_CATEGORIES.map((c) => {
-                const Icon = ICONS[c.icon] || MapPin
-                const active = selectedCats.includes(c.id)
-                const col = colorFor(c.id)
-                return (
-                  <button
-                    key={c.id}
-                    onClick={() => toggleCat(c.id)}
-                    className={cn(
-                      'inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-medium border transition-all',
-                      active
-                        ? cn('border-transparent text-white shadow-sm', col.pin)
-                        : 'bg-background hover:bg-accent text-muted-foreground hover:text-foreground'
-                    )}
-                  >
-                    <Icon className="size-3.5" />
-                    {c.label}
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-
-          {/* Divider (desktop only) */}
-          <div className="hidden lg:block h-full w-px bg-border self-stretch" />
-
-          {/* RIGHT: Sort & filter options — side by side with categories */}
-          <div className="lg:w-auto">
-            <div className="flex items-center gap-1.5 mb-2">
-              <ArrowUpDown className="size-3.5 text-muted-foreground" />
-              <span className="text-xs font-semibold text-muted-foreground">Sort &amp; filter</span>
-            </div>
-            <div className="flex flex-wrap items-center gap-2 lg:gap-3">
-              {/* Sort by */}
-              <div className="flex items-center gap-1">
-                {(['distance', 'name', 'category'] as SortBy[]).map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => setSortBy(s)}
-                    className={cn(
-                      'text-[11px] px-2 py-1 rounded-md font-medium capitalize transition-colors',
-                      sortBy === s
-                        ? 'bg-emerald-600 text-white'
-                        : 'bg-muted/50 text-muted-foreground hover:bg-muted'
-                    )}
-                  >
-                    {s === 'distance' ? 'Nearest' : s}
-                  </button>
-                ))}
-              </div>
-
-              <div className="h-4 w-px bg-border" />
-
-              {/* Rating filter */}
-              <div className="flex items-center gap-1">
-                {(['all', '4+', '4.5+'] as RatingFilter[]).map((r) => (
-                  <button
-                    key={r}
-                    onClick={() => setRatingFilter(r)}
-                    className={cn(
-                      'text-[11px] px-2 py-1 rounded-md font-medium transition-colors',
-                      ratingFilter === r
-                        ? 'bg-amber-500 text-white'
-                        : 'bg-muted/50 text-muted-foreground hover:bg-muted'
-                    )}
-                  >
-                    {r === 'all' ? 'All' : `${r}★`}
-                  </button>
-                ))}
-              </div>
-
-              <div className="h-4 w-px bg-border" />
-
-              {/* Open now toggle */}
-              <label className="flex items-center gap-1 cursor-pointer">
-                <span className="text-[11px] text-muted-foreground">Open</span>
-                <Switch checked={openOnly} onCheckedChange={setOpenOnly} className="scale-90" />
-              </label>
-
-              {/* Favorites toggle */}
-              <label className="flex items-center gap-1 cursor-pointer">
-                <Heart className={cn('size-3.5', favoritesOnly ? 'fill-rose-500 text-rose-500' : 'text-muted-foreground')} />
-                <Switch checked={favoritesOnly} onCheckedChange={setFavoritesOnly} className="scale-90" />
-              </label>
+      {/* ===== Collapsible control panel: Categories (left) + Sort & filter (right) ===== */}
+      <Card className="mb-4 gap-0 overflow-hidden">
+        {/* Toggle bar — always visible. Click to show/hide the filters. */}
+        <button
+          onClick={() => setShowFilters((v) => !v)}
+          className="w-full flex items-center justify-between gap-2 px-3 py-2.5 hover:bg-accent/40 transition-colors"
+          aria-expanded={showFilters}
+          aria-controls="map-filters-panel"
+        >
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="grid size-7 place-items-center rounded-lg bg-emerald-500/10 text-emerald-600 shrink-0">
+              <Filter className="size-3.5" />
+            </span>
+            <span className="text-sm font-semibold">Categories &amp; Filters</span>
+            {/* Active-filter summary chips */}
+            <div className="hidden sm:flex items-center gap-1 ml-1 min-w-0">
+              {selectedCats.length > 0 && (
+                <Badge variant="secondary" className="text-[10px] bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-0">
+                  {selectedCats.length} categor{selectedCats.length === 1 ? 'y' : 'ies'}
+                </Badge>
+              )}
+              {sortBy !== 'distance' && (
+                <Badge variant="secondary" className="text-[10px] bg-muted text-muted-foreground border-0 capitalize">
+                  {sortBy}
+                </Badge>
+              )}
+              {ratingFilter !== 'all' && (
+                <Badge variant="secondary" className="text-[10px] bg-amber-500/10 text-amber-600 border-0">
+                  {ratingFilter}★
+                </Badge>
+              )}
+              {openOnly && (
+                <Badge variant="secondary" className="text-[10px] bg-emerald-500/10 text-emerald-700 border-0">
+                  Open
+                </Badge>
+              )}
+              {favoritesOnly && (
+                <Badge variant="secondary" className="text-[10px] bg-rose-500/10 text-rose-500 border-0">
+                  <Heart className="size-2.5 fill-current mr-0.5" />Fav
+                </Badge>
+              )}
             </div>
           </div>
-        </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-[11px] text-muted-foreground">
+              {loading ? 'loading…' : `${filtered.length} places`}
+            </span>
+            <ChevronRight className={cn('size-4 text-muted-foreground transition-transform', showFilters && 'rotate-90')} />
+          </div>
+        </button>
 
-        {/* Count badge */}
-        <div className="mt-2 pt-2 border-t flex items-center justify-between text-[11px] text-muted-foreground">
-          <span>
-            {selectedCats.length} categor{selectedCats.length === 1 ? 'y' : 'ies'} selected ·
-            {' '}{loading ? 'loading…' : `${filtered.length} of ${places.length} real places`}
-          </span>
-          {liveLocation && (
-            <span className="font-mono">{liveLocation.lat.toFixed(4)}, {liveLocation.lng.toFixed(4)}</span>
+        {/* Collapsible panel — slides out when the toggle bar is clicked */}
+        <AnimatePresence initial={false}>
+          {showFilters && (
+            <motion.div
+              id="map-filters-panel"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.25, ease: 'easeInOut' }}
+              className="overflow-hidden"
+            >
+              <div className="px-3 pb-3 pt-1 grid lg:grid-cols-[1fr_auto] gap-3 lg:gap-4 items-start border-t">
+                {/* LEFT: Category chips */}
+                <div>
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <Filter className="size-3.5 text-muted-foreground" />
+                    <span className="text-xs font-semibold text-muted-foreground">Categories — click to load real places</span>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {PLACE_CATEGORIES.map((c) => {
+                      const Icon = ICONS[c.icon] || MapPin
+                      const active = selectedCats.includes(c.id)
+                      const col = colorFor(c.id)
+                      return (
+                        <button
+                          key={c.id}
+                          onClick={() => toggleCat(c.id)}
+                          className={cn(
+                            'inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-medium border transition-all',
+                            active
+                              ? cn('border-transparent text-white shadow-sm', col.pin)
+                              : 'bg-background hover:bg-accent text-muted-foreground hover:text-foreground'
+                          )}
+                        >
+                          <Icon className="size-3.5" />
+                          {c.label}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* Divider (desktop only) */}
+                <div className="hidden lg:block h-full w-px bg-border self-stretch" />
+
+                {/* RIGHT: Sort & filter options — side by side with categories */}
+                <div className="lg:w-auto">
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <ArrowUpDown className="size-3.5 text-muted-foreground" />
+                    <span className="text-xs font-semibold text-muted-foreground">Sort &amp; filter</span>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 lg:gap-3">
+                    {/* Sort by */}
+                    <div className="flex items-center gap-1">
+                      {(['distance', 'name', 'category'] as SortBy[]).map((s) => (
+                        <button
+                          key={s}
+                          onClick={() => setSortBy(s)}
+                          className={cn(
+                            'text-[11px] px-2 py-1 rounded-md font-medium capitalize transition-colors',
+                            sortBy === s
+                              ? 'bg-emerald-600 text-white'
+                              : 'bg-muted/50 text-muted-foreground hover:bg-muted'
+                          )}
+                        >
+                          {s === 'distance' ? 'Nearest' : s}
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="h-4 w-px bg-border" />
+
+                    {/* Rating filter */}
+                    <div className="flex items-center gap-1">
+                      {(['all', '4+', '4.5+'] as RatingFilter[]).map((r) => (
+                        <button
+                          key={r}
+                          onClick={() => setRatingFilter(r)}
+                          className={cn(
+                            'text-[11px] px-2 py-1 rounded-md font-medium transition-colors',
+                            ratingFilter === r
+                              ? 'bg-amber-500 text-white'
+                              : 'bg-muted/50 text-muted-foreground hover:bg-muted'
+                          )}
+                        >
+                          {r === 'all' ? 'All' : `${r}★`}
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="h-4 w-px bg-border" />
+
+                    {/* Open now toggle */}
+                    <label className="flex items-center gap-1 cursor-pointer">
+                      <span className="text-[11px] text-muted-foreground">Open</span>
+                      <Switch checked={openOnly} onCheckedChange={setOpenOnly} className="scale-90" />
+                    </label>
+
+                    {/* Favorites toggle */}
+                    <label className="flex items-center gap-1 cursor-pointer">
+                      <Heart className={cn('size-3.5', favoritesOnly ? 'fill-rose-500 text-rose-500' : 'text-muted-foreground')} />
+                      <Switch checked={favoritesOnly} onCheckedChange={setFavoritesOnly} className="scale-90" />
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              {/* Count footer */}
+              <div className="px-3 pb-3 pt-2 border-t flex items-center justify-between text-[11px] text-muted-foreground">
+                <span>
+                  {selectedCats.length} categor{selectedCats.length === 1 ? 'y' : 'ies'} selected ·
+                  {' '}{loading ? 'loading…' : `${filtered.length} of ${places.length} real places`}
+                </span>
+                {liveLocation && (
+                  <span className="font-mono">{liveLocation.lat.toFixed(4)}, {liveLocation.lng.toFixed(4)}</span>
+                )}
+              </div>
+            </motion.div>
           )}
-        </div>
+        </AnimatePresence>
       </Card>
 
       <div className="grid lg:grid-cols-[1fr_340px] gap-4">

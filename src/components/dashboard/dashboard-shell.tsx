@@ -16,6 +16,13 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { GoogleIcon } from '@/components/auth/google-icon'
 import { Sheet, SheetContent } from '@/components/ui/sheet'
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from '@/components/ui/drawer'
+import { useIsMobile } from '@/hooks/use-mobile'
 
 interface NavItem {
   id: DashboardSection
@@ -265,6 +272,31 @@ function LocationChip({
   )
 }
 
+/** A single notification row — shared by the desktop dropdown and mobile drawer */
+function NotificationItem({ n }: { n: { type: string; title: string; message: string; time: string } }) {
+  return (
+    <div className="px-4 py-3 border-b last:border-0 hover:bg-accent/50 transition-colors">
+      <div className="flex items-start gap-2">
+        <div className={cn(
+          'size-7 rounded-lg flex items-center justify-center shrink-0',
+          n.type === 'weather' && 'bg-sky-500/10 text-sky-500',
+          n.type === 'budget' && 'bg-emerald-500/10 text-emerald-600',
+          n.type === 'festival' && 'bg-amber-500/10 text-amber-500',
+          n.type === 'emergency' && 'bg-rose-500/10 text-rose-500',
+          n.type === 'traffic' && 'bg-orange-500/10 text-orange-500',
+        )}>
+          {n.type === 'weather' ? <CloudSun className="size-3.5" /> : n.type === 'budget' ? <Wallet className="size-3.5" /> : n.type === 'emergency' ? <Siren className="size-3.5" /> : n.type === 'traffic' ? <Wallet className="size-3.5" /> : <Sparkles className="size-3.5" />}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium leading-tight">{n.title}</p>
+          <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{n.message}</p>
+          <p className="text-[10px] text-muted-foreground/70 mt-1">{n.time} ago</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function DashboardTopbar() {
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = React.useState(false)
@@ -291,6 +323,7 @@ export function DashboardTopbar() {
 
   const [menuOpen, setMenuOpen] = React.useState(false)
   const [notifOpen, setNotifOpen] = React.useState(false)
+  const isMobile = useIsMobile()
   const notifications = [
     { type: 'weather', title: 'Rain alert', message: `Light rain expected in ${city} this evening.`, time: '2m' },
     { type: 'budget', title: 'Budget tip', message: 'You spent 12% less on food this week. Nice!', time: '1h' },
@@ -337,6 +370,7 @@ export function DashboardTopbar() {
           SOS
         </button>
 
+        {/* Notifications — responsive: bottom Drawer on mobile, dropdown on desktop */}
         <div className="relative">
           <Button
             variant="ghost"
@@ -348,7 +382,8 @@ export function DashboardTopbar() {
             <Bell className="size-5" />
             <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-rose-500 ring-2 ring-background" />
           </Button>
-          {notifOpen && (
+          {/* Desktop dropdown */}
+          {notifOpen && !isMobile && (
             <>
               <div className="fixed inset-0 z-40" onClick={() => setNotifOpen(false)} />
               <div className="absolute right-0 top-12 z-50 w-80 rounded-xl border bg-popover shadow-xl overflow-hidden">
@@ -358,27 +393,42 @@ export function DashboardTopbar() {
                 </div>
                 <div className="max-h-80 overflow-y-auto">
                   {notifications.map((n, i) => (
-                    <div key={i} className="px-4 py-3 border-b last:border-0 hover:bg-accent/50 transition-colors">
-                      <div className="flex items-start gap-2">
-                        <div className={cn(
-                          'size-7 rounded-lg flex items-center justify-center shrink-0',
-                          n.type === 'weather' && 'bg-sky-500/10 text-sky-500',
-                          n.type === 'budget' && 'bg-emerald-500/10 text-emerald-600',
-                          n.type === 'festival' && 'bg-amber-500/10 text-amber-500',
-                        )}>
-                          {n.type === 'weather' ? <CloudSun className="size-3.5" /> : n.type === 'budget' ? <Wallet className="size-3.5" /> : <Sparkles className="size-3.5" />}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium leading-tight">{n.title}</p>
-                          <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{n.message}</p>
-                          <p className="text-[10px] text-muted-foreground/70 mt-1">{n.time} ago</p>
-                        </div>
-                      </div>
-                    </div>
+                    <NotificationItem key={i} n={n} />
                   ))}
                 </div>
+                <button
+                  onClick={() => setNotifOpen(false)}
+                  className="w-full px-4 py-2.5 text-xs font-medium text-emerald-700 dark:text-emerald-400 hover:bg-accent border-t transition-colors"
+                >
+                  Mark all as read
+                </button>
               </div>
             </>
+          )}
+          {/* Mobile bottom Drawer */}
+          {isMobile && (
+            <Drawer open={notifOpen} onOpenChange={setNotifOpen}>
+              <DrawerContent>
+                <DrawerHeader className="text-center">
+                  <DrawerTitle className="flex items-center justify-center gap-2">
+                    <Bell className="size-4 text-emerald-600" />
+                    Notifications
+                    <Badge variant="secondary" className="text-[10px]">{notifications.length} new</Badge>
+                  </DrawerTitle>
+                </DrawerHeader>
+                <div className="px-4 pb-6 max-h-[60vh] overflow-y-auto">
+                  {notifications.map((n, i) => (
+                    <NotificationItem key={i} n={n} />
+                  ))}
+                  <button
+                    onClick={() => setNotifOpen(false)}
+                    className="w-full mt-3 px-4 py-2.5 text-xs font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 rounded-lg transition-colors"
+                  >
+                    Mark all as read
+                  </button>
+                </div>
+              </DrawerContent>
+            </Drawer>
           )}
         </div>
 

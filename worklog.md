@@ -372,3 +372,48 @@ Stage Summary:
 - Clicking any category chip triggers a fresh fetch of real places of that type.
 - Places show accurate names, distances (Haversine), coordinates, and addresses.
 - Robust error handling (25s timeout, mirror fallback, retry button) for Overpass API reliability.
+
+---
+Task ID: 13
+Agent: Main (Z.ai Code)
+Task: Responsive UI (notifications on mobile), accurate AI for all question types, remove budget/premium, collapsible categories+sort panel.
+
+Work Log:
+1. NOTIFICATIONS RESPONSIVE (dashboard-shell.tsx):
+   - Extracted a shared `NotificationItem` component.
+   - Imported `useIsMobile` hook (768px breakpoint) + vaul `Drawer`.
+   - Desktop (≥768px): absolute dropdown (w-80) with click-away overlay.
+   - Mobile (<768px): bottom `Drawer` with header + scrollable list + "Mark all as read" button. Native mobile UX — fully visible, no cutoff.
+   - Gated by `isMobile` so only one renders at a time (no overlay conflicts).
+2. AI ASSISTANT ACCURACY (api/ai/chat/route.ts):
+   - Added real-time web search grounding: each query runs `zai.functions.invoke('web_search', {query: "<msg> <city> India", num: 6})` and injects results into the system prompt so answers reflect real, current info.
+   - Rewrote system prompt to handle ALL question types: relocation, food, transport, budget, safety, language, weather, jobs, shopping, weekend, healthcare, documents, AND general knowledge (tech help, study tips, etc.). Explicitly instructs: "if the user asks something unrelated to the city, still help them."
+   - Added city-specificity, Markdown formatting, emergency-first guidance.
+   - Broadened SUGGESTED_PROMPTS in ai-assistant.tsx from 6 → 10 (added metro route, student budget, weekend places, SIM card).
+3. REMOVED BUDGET/PREMIUM (smart-map.tsx):
+   - Deleted the unused `BudgetFilter` type ('all'|'budget'|'premium'). No UI referenced it (already removed in prior rewrite) — just cleaned up the dead type.
+4. COLLAPSIBLE CATEGORIES + SORT/FILTER PANEL (smart-map.tsx):
+   - Added `showFilters` state (collapsed by default).
+   - Replaced the always-open Card with a toggle bar: "Categories & Filters" + active-filter summary badges (category count, sort mode, rating, Open, Fav) + place count + chevron. Click → expands/collapses.
+   - Collapsible body uses framer-motion `AnimatePresence` height animation (0 ↔ auto) for smooth slide-out. Inside: categories (left) + sort & filter (right) side by side, as before.
+   - `aria-expanded`/`aria-controls` for accessibility.
+
+Agent Browser verification:
+MOBILE (390×844, iPhone 14):
+1. Notification bell click → bottom Drawer opens with "Notifications 3 new" + Rain alert/Budget tip/Local festival + Mark all as read. Fully visible (no cutoff). ✓
+2. Smart Map: "Categories & Filters" bar shows collapsed (expanded=false). ✓
+3. Click bar → expands (expanded=true), shows category chips + sort/filter. ✓
+4. Click again → collapses (expanded=false), chips hidden. ✓
+DESKTOP (1280×800):
+5. Notification bell click → dropdown shows (Rain alert/Budget tip/Local festival/Mark all as read). ✓
+6. Smart Map collapsible panel works same as mobile. ✓
+AI ACCURACY:
+7. Diverse non-relocation question "How do I enable dark mode in VS Code?" → accurate steps (Ctrl+K Ctrl+T, Settings path). ✓
+8. City-specific "latest metro fare from Hitech City to LB Nagar" → ₹75, Red Line, smart card 10% discount. Web-search-grounded. ✓
+9. Console errors: none. Dev log: POST /api/ai/chat 200. Lint: 0 errors. ✓
+
+Stage Summary:
+- Notifications now fully visible on mobile (bottom Drawer) and desktop (dropdown).
+- AI assistant accurately answers ALL question types (relocation + general), grounded with real-time web search for accuracy.
+- Budget/premium options removed from Smart Map.
+- Categories & Sort/filter panel is collapsible — hidden by default, slides out on click, with active-filter summary badges on the toggle bar.

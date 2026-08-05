@@ -25,6 +25,10 @@ const SUGGESTED_PROMPTS = [
   "How safe is the city at night?",
   "Show nearby hospitals",
   "Local Telugu phrases I should know",
+  "Best metro route from Madhapur to LB Nagar",
+  "Monthly budget for a student here?",
+  "Weekend places to visit",
+  "How to get a local SIM card?",
 ]
 
 async function api(path: string, opts: { method?: string; body?: any } = {}) {
