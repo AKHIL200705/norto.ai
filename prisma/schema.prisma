@@ -1,0 +1,86 @@
+// LifeLens AI - Database Schema
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  avatar    String?
+  occupation String?
+  language  String   @default("English")
+  budget    Float    @default(15000)
+  foodPref  String   @default("Vegetarian")
+  transport String   @default("Public")
+  city      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  savedPlaces  SavedPlace[]
+  chatHistory  ChatHistory[]
+  budgets      Budget[]
+  notifications Notification[]
+}
+
+model SavedPlace {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  category  String   // restaurant, hotel, hospital, etc.
+  address   String?
+  rating    Float?
+  price     String?
+  distance  String?
+  notes     String?
+  visited   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ChatHistory {
+  id        String   @id @default(cuid())
+  userId    String
+  role      String   // user / assistant
+  content   String
+  section   String   @default("assistant") // assistant, food, relocation, etc.
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Budget {
+  id        String   @id @default(cuid())
+  userId    String
+  month     String   // YYYY-MM
+  salary    Float
+  rent      Float
+  food      Float
+  transport Float
+  utilities Float
+  entertainment Float
+  shopping  Float
+  savings   Float?
+  score     Int?
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String   // weather, traffic, festival, emergency, budget
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
