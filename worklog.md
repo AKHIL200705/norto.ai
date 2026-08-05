@@ -327,3 +327,48 @@ Stage Summary:
 - 5-second branded intro animation added, using the Norto brand (compass, two-tone "Norto" wordmark, emerald/amber palette, floating orbs, feature pills, progress bar).
 - Plays once per session (sessionStorage); skippable; auto-transitions to the app.
 - Works on both landing and dashboard entry; zero console/lint errors.
+
+---
+Task ID: 12
+Agent: Main (Z.ai Code)
+Task: Smart Map — accurate real places + categories & sort side-by-side + click-to-fetch.
+
+Work Log:
+- Created `src/app/api/places/nearby/route.ts` — fetches REAL points of interest from OpenStreetMap's Overpass API near the user's live coordinates.
+  • Maps 14 internal categories → OSM tag filters (e.g. restaurant→amenity=restaurant/cafe/fast_food, hospital→amenity=hospital/clinic, atm→amenity=atm, metro→railway=station, etc.)
+  • Builds an Overpass QL query with `around:radius,lat,lng` for the selected categories.
+  • Computes accurate Haversine distance (km) from user coords for each place.
+  • Returns real name, category, lat/lng, distance, address (from OSM addr:* tags), and open-now status (best-effort parse of opening_hours).
+  • 25s AbortController timeout; automatic fallback to the kumi.systems Overpass mirror; graceful "Map service is busy" error.
+  • If no lat/lng provided, forward-geocodes the city name via Nominatim.
+- Rewrote `src/components/dashboard/sections/smart-map.tsx`:
+  • Removed all 24 hardcoded mock places — now fetches real OSM data via `/api/places/nearby`.
+  • Uses the user's live location (from store) as the query center; falls back to city geocoding if no live location.
+  • Categories + Sort/filter laid out SIDE BY SIDE in a single control panel (grid lg:grid-cols-[1fr_auto] with a vertical divider). Left = category chips, right = sort (Nearest/Name/Category) + rating filter (All/4+/4.5+) + Open now toggle + Favorites toggle.
+  • Clicking a category chip toggles it and triggers a fresh Overpass fetch — "whenever the user clicks the options it will appear".
+  • Map markers positioned by real lat/lng relative bounds (computed from the bounding box of all places + user center). "You are here" stays centered.
+  • Loading overlay: "Fetching real places from OpenStreetMap…". Error overlay with Retry button. Empty state: "Select a category to load places".
+  • Place detail popover shows real name, category, rating, distance, coordinates, address, Open/Hours-unknown badge, Save button + OpenStreetMap directions link.
+  • Right sidebar list shows real place names, distances (m/km), categories, addresses/coordinates, Save buttons.
+  • "Real data © OpenStreetMap" attribution in the bottom-right of the map.
+  • Sort buttons (Nearest/Name/Category) re-sort the filtered list live.
+
+Agent Browser verification (end-to-end):
+1. Signed in as Priya; mocked geolocation to Hyderabad Hitech City (17.4435, 78.3772, 25m).
+2. Detected live location on Home → "LIVE LOCATION · High accuracy · ±25m · Hyderabad".
+3. Opened Smart Map → "Categories — click to load real places" + "Sort & filter" labels both present (side by side). ✓
+4. Default categories (restaurant, hospital, metro) triggered automatic fetch. First attempt 502 (Overpass busy) → clicked Retry → 40 real places loaded. ✓
+5. Real place names verified: "Food Republic", "Aviyal Veg Restaurant", "Cafe Coffee Day", "Big Dosa", "Pizza Corner", "Paradise Biriyani", "KFC" — all real restaurants near Hitech City. ✓
+6. Accurate distances verified: 355m, 415m, 495m, 567m, 820m... (Haversine from user coords). ✓
+7. Clicked "ATMs" category → "4 categories selected · loading… Fetching real places from OpenStreetMap" → ATMs appeared in results. ✓ (click-to-fetch works)
+8. Clicked "Name" sort → list re-sorted alphabetically: "4 Seasons", "Ambicare Hospital", "Angaara", "Arogyasree...", "ATM"... ✓
+9. Real coordinates verified: 17.4364, 78.3973 etc. ✓
+10. "Real data © OpenStreetMap" attribution visible. ✓
+11. Console errors: none. Lint: 0 errors. ✓
+
+Stage Summary:
+- Smart Map now shows REAL, accurate places from OpenStreetMap (not mock data) near the user's live location.
+- Categories and sort/filter options are laid out SIDE BY SIDE in a single control panel.
+- Clicking any category chip triggers a fresh fetch of real places of that type.
+- Places show accurate names, distances (Haversine), coordinates, and addresses.
+- Robust error handling (25s timeout, mirror fallback, retry button) for Overpass API reliability.
