@@ -447,6 +447,15 @@ export function SavedPlaces() {
                           {new Date(p.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
                         </span>
                         <div className="flex items-center gap-1">
+                          <a
+                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.name + ', ' + (p.address || ''))}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 h-7 px-2 text-xs rounded-md border border-slate-200 dark:border-slate-800 bg-background hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors"
+                          >
+                            <MapPin className="size-3 text-emerald-600" />
+                            Google Maps
+                          </a>
                           <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => toggleVisited(p.id)}>
                             {visited ? <><Circle className="size-3 mr-1" />Undo</> : <><CheckCircle2 className="size-3 mr-1" />Visited</>}
                           </Button>

@@ -862,7 +862,16 @@ export function SmartMap() {
                             </p>
                           </div>
                         </div>
-                        <div className="mt-2 flex justify-end" onClick={(e) => e.stopPropagation()}>
+                        <div className="mt-2 flex justify-end items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+                          <a
+                            href={`https://www.google.com/maps/search/?api=1&query=${p.lat},${p.lng}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 h-7 text-xs px-2.5 rounded-md border border-slate-200 dark:border-slate-800 bg-background hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors"
+                          >
+                            <Navigation className="size-3 text-emerald-600" />
+                            Google Maps
+                          </a>
                           <Button
                             size="sm"
                             variant="outline"

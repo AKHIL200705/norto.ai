@@ -3,8 +3,61 @@ import { NextRequest } from 'next/server'
 export const dynamic = 'force-dynamic'
 
 /**
- * Multi-provider reverse geocoding via BigDataCloud client API
- * High precision for Indian towns, villages, mandals, and sub-localities.
+ * High-precision Google Maps Reverse Geocoding API (when GOOGLE_MAPS_API_KEY is configured)
+ */
+async function reverseGeocodeGoogle(lat: number, lng: number, apiKey: string) {
+  try {
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`
+    const res = await fetch(url, { cache: 'no-store' })
+    if (!res.ok) return null
+    const data = await res.json()
+    if (data.status === 'OK' && Array.isArray(data.results) && data.results.length > 0) {
+      const result = data.results[0]
+      const components = result.address_components || []
+
+      let locality = ''
+      let mainCity = ''
+      let state = ''
+      let country = ''
+
+      for (const comp of components) {
+        const types = comp.types || []
+        if (types.includes('sublocality') || types.includes('neighborhood') || types.includes('sublocality_level_1')) {
+          locality = comp.long_name
+        } else if (types.includes('locality') || types.includes('administrative_area_level_2')) {
+          mainCity = comp.long_name
+        } else if (types.includes('administrative_area_level_1')) {
+          state = comp.long_name
+        } else if (types.includes('country')) {
+          country = comp.long_name
+        }
+      }
+
+      const city = locality && mainCity && locality !== mainCity ? `${locality}, ${mainCity}` : mainCity || locality || 'Local Area'
+      const exactAddress = result.formatted_address || city
+
+      return {
+        city,
+        mainCity: mainCity || city,
+        locality: locality || null,
+        exactAddress,
+        region: state || null,
+        country: country || 'India',
+        displayName: exactAddress,
+        googleMapsUrl: `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`,
+        latitude: lat,
+        longitude: lng,
+        source: 'google_maps',
+      }
+    }
+    return null
+  } catch {
+    return null
+  }
+}
+
+/**
+ * BigDataCloud client API reverse geocoding fallback
  */
 async function reverseGeocodeBigDataCloud(lat: number, lng: number) {
   try {
@@ -28,8 +81,10 @@ async function reverseGeocodeBigDataCloud(lat: number, lng: number) {
         region,
         country,
         displayName: exactAddress,
+        googleMapsUrl: `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`,
         latitude: lat,
         longitude: lng,
+        source: 'bigdatacloud',
       }
     }
     return null
@@ -39,11 +94,11 @@ async function reverseGeocodeBigDataCloud(lat: number, lng: number) {
 }
 
 /**
- * Reverse geocoding via OpenStreetMap Nominatim (Zoom 14 for optimal town/subdistrict balance)
+ * OpenStreetMap Nominatim reverse geocoding fallback
  */
 async function reverseGeocodeNominatim(lat: number, lng: number) {
   try {
-    const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1&zoom=14&accept-language=en`
+    const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1&zoom=16&accept-language=en`
     const res = await fetch(url, {
       headers: {
         Accept: 'application/json',
@@ -62,7 +117,6 @@ async function reverseGeocodeNominatim(lat: number, lng: number) {
       addr.village ||
       addr.hamlet ||
       addr.subdistrict ||
-      addr.quarter ||
       null
 
     const mainCity =
@@ -97,8 +151,10 @@ async function reverseGeocodeNominatim(lat: number, lng: number) {
       region: addr.state || null,
       country: addr.country || null,
       displayName: data.display_name || exactAddress,
+      googleMapsUrl: `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`,
       latitude: lat,
       longitude: lng,
+      source: 'openstreetmap',
     }
   } catch {
     return null
@@ -111,11 +167,39 @@ export async function GET(req: NextRequest) {
   const lat = searchParams.get('lat')
   const lng = searchParams.get('lng')
 
-  // 1. SEARCH QUERY MODE (?q=CityName)
+  // 1. SEARCH QUERY MODE (?q=LocationName)
   if (q && q.trim()) {
     const query = q.trim()
     try {
-      // Nominatim search
+      // Check Google Maps Geocoding API if key exists
+      const googleApiKey = process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+      if (googleApiKey) {
+        const gUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(query)}&key=${googleApiKey}`
+        const gRes = await fetch(gUrl, { cache: 'no-store' })
+        if (gRes.ok) {
+          const gData = await gRes.json()
+          if (gData.status === 'OK' && gData.results?.[0]) {
+            const item = gData.results[0]
+            const latitude = item.geometry.location.lat
+            const longitude = item.geometry.location.lng
+            return Response.json({
+              city: query,
+              mainCity: query,
+              locality: null,
+              exactAddress: item.formatted_address || query,
+              region: null,
+              country: 'India',
+              displayName: item.formatted_address || query,
+              googleMapsUrl: `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`,
+              latitude,
+              longitude,
+              source: 'google_maps',
+            })
+          }
+        }
+      }
+
+      // Nominatim search fallback
       const nomUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=1&accept-language=en`
       const nomRes = await fetch(nomUrl, {
         headers: { 'User-Agent': 'Norto/1.0 (city-assistant app)' },
@@ -140,29 +224,10 @@ export async function GET(req: NextRequest) {
             region: addr.state || null,
             country: addr.country || 'India',
             displayName: item.display_name || query,
+            googleMapsUrl: `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`,
             latitude,
             longitude,
-          })
-        }
-      }
-
-      // Open-Meteo search fallback
-      const meteoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=1&language=en&format=json`
-      const meteoRes = await fetch(meteoUrl, { cache: 'no-store' })
-      if (meteoRes.ok) {
-        const meteoData = await meteoRes.json()
-        if (meteoData.results && meteoData.results.length > 0) {
-          const item = meteoData.results[0]
-          return Response.json({
-            city: item.name || query,
-            mainCity: item.name || query,
-            locality: null,
-            exactAddress: [item.name, item.admin1, item.country].filter(Boolean).join(', '),
-            region: item.admin1 || null,
-            country: item.country || 'India',
-            displayName: [item.name, item.admin1, item.country].filter(Boolean).join(', '),
-            latitude: item.latitude,
-            longitude: item.longitude,
+            source: 'openstreetmap',
           })
         }
       }
@@ -178,6 +243,7 @@ export async function GET(req: NextRequest) {
       region: null,
       country: 'India',
       displayName: `${query}, India`,
+      googleMapsUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`,
       latitude: 17.385,
       longitude: 78.4867,
     })
@@ -194,19 +260,26 @@ export async function GET(req: NextRequest) {
     return Response.json({ error: 'lat and lng must be valid numbers' }, { status: 400 })
   }
 
-  // Try Provider 1: BigDataCloud (Precise Indian Mandals, Suburbs & Villages)
+  // Option A: Google Maps Geocoding API if key configured
+  const googleApiKey = process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+  if (googleApiKey) {
+    const gResult = await reverseGeocodeGoogle(latitude, longitude, googleApiKey)
+    if (gResult) return Response.json(gResult)
+  }
+
+  // Option B: BigDataCloud (Precise Indian Suburbs & Villages)
   const bigDataResult = await reverseGeocodeBigDataCloud(latitude, longitude)
   if (bigDataResult && bigDataResult.city && bigDataResult.city !== 'Local Area') {
     return Response.json(bigDataResult)
   }
 
-  // Try Provider 2: OpenStreetMap Nominatim
+  // Option C: OpenStreetMap Nominatim
   const nomResult = await reverseGeocodeNominatim(latitude, longitude)
   if (nomResult) {
     return Response.json(nomResult)
   }
 
-  // Final fallback with exact lat/lng display
+  // Final fallback
   return Response.json({
     city: `Location (${latitude.toFixed(3)}, ${longitude.toFixed(3)})`,
     mainCity: 'Local Area',
@@ -215,6 +288,7 @@ export async function GET(req: NextRequest) {
     region: null,
     country: 'India',
     displayName: `Coordinates: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`,
+    googleMapsUrl: `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`,
     latitude,
     longitude,
   })
