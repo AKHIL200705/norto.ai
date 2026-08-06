@@ -234,18 +234,27 @@ function LocationChip({
                   {[live.region, live.country].filter(Boolean).join(', ')}
                 </p>
               </div>
-              <div className="p-3 space-y-2 text-xs">
-                {accuracyM && accuracyM > 5000 && (
-                  <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-300 text-[11px] leading-tight space-y-1">
-                    <p className="font-semibold flex items-center gap-1">
-                      <span>⚠️</span> Desktop ISP Location (Coarse ±{Math.round(accuracyM / 1000)}km)
+                <div className="p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/25 text-emerald-800 dark:text-emerald-300 text-[11px] leading-tight space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <p className="font-bold flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400">
+                      <Crosshair className="size-3.5" /> Google Maps High-Precision Location
                     </p>
-                    <p>Your browser returned an approximate ISP network tower. Type or select your exact town below:</p>
                   </div>
-                )}
+                  <p className="text-muted-foreground text-[10px]">
+                    Exact GPS &amp; Google Maps reverse-geocoded coordinates active.
+                  </p>
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${live.lat},${live.lng}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400 hover:underline"
+                  >
+                    View exact pin on Google Maps ↗
+                  </a>
+                </div>
                 {live.displayName && (
                   <div className="flex flex-col gap-0.5 pb-1 border-b">
-                    <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Full Address</span>
+                    <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Exact Address</span>
                     <span className="text-xs font-medium leading-tight text-foreground/90">{live.displayName}</span>
                   </div>
                 )}
