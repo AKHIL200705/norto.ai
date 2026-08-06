@@ -48,16 +48,67 @@ const item = {
   show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] as const } },
 }
 
+const INITIAL_FOODS: FoodItem[] = [
+  {
+    name: 'Sri Venkateswara Tiffin Center (Pedakakani)',
+    type: 'Quick Bite',
+    rating: 4.6,
+    distance: '0.6 km',
+    description: 'Hot ghee masala dosa, fluffy idlis, vada, and authentic filter coffee.',
+    veg: true,
+  },
+  {
+    name: 'Annapurna Mess & Meals (Pedakakani)',
+    type: 'Restaurant',
+    rating: 4.5,
+    distance: '1.1 km',
+    description: 'Traditional South Indian thali served with fresh curries, sambar, rasam, and curd.',
+    veg: true,
+  },
+  {
+    name: 'Bawarchi Family Restaurant (Pedakakani)',
+    type: 'Restaurant',
+    rating: 4.4,
+    distance: '1.4 km',
+    description: 'Famous aromatic Biryani, tandoori chicken, and kebabs.',
+    veg: false,
+  },
+  {
+    name: 'Balaji Sweets & Snacks (Pedakakani)',
+    type: 'Street Food',
+    rating: 4.3,
+    distance: '0.8 km',
+    description: 'Evening hot Punugulu, Mirchi Bajji, samosas, and sweets.',
+    veg: true,
+  },
+  {
+    name: 'Cafe Coffee Corner (Pedakakani)',
+    type: 'Cafe',
+    rating: 4.2,
+    distance: '1.8 km',
+    description: 'Freshly brewed cold coffee, sandwiches, and evening snacks.',
+    veg: true,
+  },
+  {
+    name: 'Local Bakery & Juice Bar (Pedakakani)',
+    type: 'Quick Bite',
+    rating: 4.4,
+    distance: '0.4 km',
+    description: 'Fresh fruit juices, milkshakes, and freshly baked pastries.',
+    veg: true,
+  },
+]
+
 export function FoodView() {
   const city = useAppStore((s) => s.city)
   const setSection = useAppStore((s) => s.setSection)
 
   const [meal, setMeal] = React.useState<Meal>('All')
   const [pref, setPref] = React.useState<Preference>('All')
-  const [foods, setFoods] = React.useState<FoodItem[]>([])
+  const [foods, setFoods] = React.useState<FoodItem[]>(INITIAL_FOODS)
   const [raw, setRaw] = React.useState<string | null>(null)
   const [loading, setLoading] = React.useState(false)
-  const [hasSearched, setHasSearched] = React.useState(false)
+  const [hasSearched, setHasSearched] = React.useState(true)
   const [savingIdx, setSavingIdx] = React.useState<number | null>(null)
 
   const recommend = React.useCallback(async (opts?: { meal?: Meal; pref?: Preference }) => {
@@ -347,17 +398,27 @@ function FoodCard({
 
         <div className="mt-3 pt-3 border-t border-border/60 flex items-center gap-1.5">
           <Button size="sm" variant="outline" className="h-8 px-2 text-xs flex-1" onClick={onSave} disabled={saving}>
-            {saving ? <Loader2 className="size-3 mr-1 animate-spin" /> : <Bookmark className="size-3 mr-1" />}
+            {saving ? <Loader2 className="size-3 mr-1 animate-spin" /> : <Bookmark className="size-3 mr-1 text-amber-500" />}
             Save
           </Button>
-          <Button size="sm" variant="ghost" className="h-8 px-2 text-xs flex-1" onClick={onViewMap}>
-            <MapPin className="size-3 mr-1" />
+          <a
+            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(food.name)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center h-8 px-2 text-xs flex-1 rounded-md border border-slate-200 dark:border-slate-800 bg-background hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors"
+          >
+            <MapPin className="size-3 mr-1 text-emerald-600" />
             Map
-          </Button>
-          <Button size="sm" variant="ghost" className="h-8 px-2 text-xs flex-1" onClick={() => toast.info(`Ordering from ${food.name}…`)}>
+          </a>
+          <a
+            href={`https://www.swiggy.com/search?query=${encodeURIComponent(food.name)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center h-8 px-2 text-xs flex-1 rounded-md border border-orange-500/30 bg-orange-500/10 hover:bg-orange-500/20 text-orange-600 dark:text-orange-400 transition-colors font-medium"
+          >
             <ShoppingBag className="size-3 mr-1" />
             Order
-          </Button>
+          </a>
         </div>
       </Card>
     </motion.div>
