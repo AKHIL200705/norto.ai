@@ -5,7 +5,6 @@ export const dynamic = 'force-dynamic'
 interface FoodItem {
   name: string
   type: string
-  price: string
   rating: number
   distance: string
   description: string
@@ -83,14 +82,13 @@ Each food item MUST be an object with these exact keys:
 {
   "name": string,            // dish or restaurant + dish name
   "type": string,            // e.g. "Street Food", "Restaurant", "Cafe", "Quick Bite"
-  "price": string,           // human-readable price in ₹, e.g. "₹120" or "₹80-150"
   "rating": number,          // 0-5, one decimal
   "distance": string,        // e.g. "1.2 km" or "800 m"
   "description": string,     // 1-2 sentence description
   "veg": boolean             // true if vegetarian, false otherwise
 }
 
-All prices MUST be in ₹ (Indian Rupees). Match the meal type, dietary preference, and budget constraint. Be realistic for the city.`
+Do NOT include any price or cost information. Match the meal type and dietary preference. Be realistic for the city.`
 
     const userMessage = `City: ${city}\nMeal: ${mealLabel}\nDietary preference: ${prefLabel}\nBudget: ${budgetLabel}\n\nReturn the JSON array of 6 food items now.`
 

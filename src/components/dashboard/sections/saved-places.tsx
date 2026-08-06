@@ -82,7 +82,7 @@ export function SavedPlaces() {
 
   // Add form state
   const [form, setForm] = React.useState({
-    name: '', category: 'restaurant', address: '', rating: '', price: '', notes: '',
+    name: '', category: 'restaurant', address: '', rating: '', notes: '',
   })
 
   const load = React.useCallback(async () => {
@@ -159,14 +159,13 @@ export function SavedPlaces() {
         category: form.category,
       }
       if (form.address.trim()) body.address = form.address.trim()
-      if (form.rating.trim()) body.rating = parseFloat(form.rating) || undefined
-      if (form.price.trim()) body.price = form.price.trim()
+      if (form.rating.trim()) body.rating = parseFloat(form.rating)
       if (form.notes.trim()) body.notes = form.notes.trim()
       const json = await api('/api/places', { body })
       setPlaces((prev) => [json.place, ...prev])
       toast.success('Place added')
       setAddOpen(false)
-      setForm({ name: '', category: 'restaurant', address: '', rating: '', price: '', notes: '' })
+      setForm({ name: '', category: 'restaurant', address: '', rating: '', notes: '' })
     } catch (e) {
       toast.error(e instanceof Error ? e.message : 'Failed to add place')
     }
@@ -228,15 +227,9 @@ export function SavedPlaces() {
                       <Label htmlFor="np-addr">Address</Label>
                       <Input id="np-addr" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="Street, area, city" />
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1.5">
-                        <Label htmlFor="np-price">Price</Label>
-                        <Input id="np-price" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} placeholder="₹₹₹" />
-                      </div>
-                      <div className="space-y-1.5">
-                        <Label htmlFor="np-dist">Distance</Label>
-                        <Input id="np-dist" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Notes (optional)" />
-                      </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="np-notes">Notes</Label>
+                      <Input id="np-notes" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Notes (optional)" />
                     </div>
                   </div>
                   <DialogFooter>
@@ -439,7 +432,6 @@ export function SavedPlaces() {
                       )}
 
                       <div className="mt-2 flex items-center gap-3 text-[11px] text-muted-foreground">
-                        {p.price && <span className="font-semibold text-foreground">{p.price}</span>}
                         {p.distance && <span className="inline-flex items-center gap-0.5"><MapPin className="size-3" />{p.distance}</span>}
                       </div>
 

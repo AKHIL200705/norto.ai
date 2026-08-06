@@ -475,3 +475,40 @@ Stage Summary:
 - AI grounded with real-time web search → accurate for users in ANY state/city.
 - UI significantly improved: bolder typography (font-extrabold headings/values, font-bold labels), highlighted options (gradient accent bars, hover glows, arrow indicators), better visual hierarchy.
 - Works perfectly on mobile (390px) and desktop (1280px).
+
+---
+Task ID: 15
+Agent: Main (Z.ai Code)
+Task: Remove money from foods/places, remove Connected services, accurate travel history, fix preview.
+
+Work Log:
+1. REMOVED MONEY FROM FOODS:
+   - src/app/api/ai/food/route.ts: removed `price` from FoodItem interface + system prompt. Prompt now says "Do NOT include any price or cost information." API returns only: name, type, rating, distance, description, veg.
+   - src/components/dashboard/sections/food.tsx: removed `price` from FoodItem interface, removed Budget filter (Budget type, BUDGETS array, budget state, budget UI), removed price display from food cards, removed `price` from save-to-places call, removed IndianRupee import, updated empty-state text (removed "budget" mention). Filters are now Meal + Preference only (2-col grid).
+   - Verified: curl test confirms API returns 6 foods with keys [name, type, rating, distance, description, veg] — HAS PRICE: False.
+
+2. REMOVED MONEY FROM PLACES:
+   - src/components/dashboard/sections/smart-map.tsx: removed `price: '—'` from the save-to-places API call.
+   - src/components/dashboard/sections/saved-places.tsx: removed `price` from add-place form state, removed Price form field, removed price display from place cards, cleaned up duplicate rating line.
+
+3. REMOVED "CONNECTED SERVICES" FROM PROFILE:
+   - src/components/dashboard/sections/profile.tsx: deleted the CONNECTED_SERVICES constant + the entire "Connected services" Card section. Profile now goes: header → stats → preferences → travel history → danger zone (no connected services in between).
+
+4. ACCURATE TRAVEL HISTORY:
+   - src/components/dashboard/sections/profile.tsx: made travel history dynamic via `travelHistory` useMemo. The current entry uses the user's actual detected/selected city (from store `city` or `profile.city`), shown as "{city} — Recently — Present — Current" with a pulsing emerald badge. Past cities from the static list are shown below, excluding the current city to avoid duplicates. Travel history heading + city names made font-bold/extrabold for better hierarchy.
+
+5. FIXED PREVIEW (dev server):
+   - The dev server process had died (no `next dev` process running, curl returned HTTP 000). Restarted with `node node_modules/.bin/next dev -p 3000`. Server now serving HTTP 200, page loads in browser. Note: Turbopack can be memory-hungry and the process may die under pressure; restarting resolves it.
+
+Agent Browser verification:
+1. Food section: filters show "Meal" + "Preference" only — no Budget, no price, no ₹. ✓
+2. Food API: 6 foods returned, keys = [name, type, rating, distance, description, veg], HAS PRICE: False. ✓
+3. Profile: "Connected services" count = 0 (completely removed). ✓
+4. Travel history: shows "Hyderabad" as current (Recently — Present — Current badge), followed by Bangalore, Pune, Chennai. Accurate to the user's city. ✓
+5. Console errors: none. Lint: 0 errors. ✓
+
+Stage Summary:
+- No money/prices mentioned anywhere in foods or places (API + UI + save flow).
+- "Connected services" section completely removed from profile.
+- Travel history is now accurate — shows the user's real current city (from live detection) as the current entry.
+- Preview fixed by restarting the dev server.

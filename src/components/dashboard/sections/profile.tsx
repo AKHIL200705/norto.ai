@@ -46,13 +46,6 @@ const TRAVEL_HISTORY = [
   { city: 'Chennai', from: 'Nov 2023', to: 'Jan 2024', current: false },
 ]
 
-const CONNECTED_SERVICES = [
-  { name: 'Gemini AI', desc: 'AI chat & recommendations', status: 'Connected' },
-  { name: 'Maps Service', desc: 'Location & places', status: 'Connected' },
-  { name: 'Weather API', desc: 'Forecasts & alerts', status: 'Connected' },
-  { name: 'OCR Vision', desc: 'Image text extraction', status: 'Connected' },
-]
-
 const container = {
   hidden: { opacity: 0 },
   show: { opacity: 1, transition: { staggerChildren: 0.06 } },
@@ -82,6 +75,18 @@ export function Profile() {
   React.useEffect(() => {
     setForm(profile)
   }, [user, city])
+
+  // Build an accurate travel history: the user's current city (from live
+  // detection or profile) is shown as the current entry, followed by past
+  // cities from the static list (excluding the current city to avoid dupes).
+  const travelHistory = React.useMemo(() => {
+    const currentCity = city || profile.city || 'Hyderabad'
+    const past = TRAVEL_HISTORY.filter((t) => t.city.toLowerCase() !== currentCity.toLowerCase())
+    return [
+      { city: currentCity, from: 'Recently', to: 'Present', current: true },
+      ...past,
+    ]
+  }, [city, profile.city])
 
   const initials = (profile.name || 'CE')
     .split(' ')
@@ -344,14 +349,14 @@ export function Profile() {
             {/* Travel history */}
             <motion.div variants={item}>
               <Card className="p-5 sm:p-6 gap-0 h-full">
-                <h3 className="font-semibold text-sm sm:text-base flex items-center gap-2 mb-4">
+                <h3 className="font-extrabold text-sm sm:text-base flex items-center gap-2 mb-4 tracking-tight">
                   <MapPin className="size-4 text-emerald-600" />
                   Travel history
                 </h3>
                 <div className="relative pl-5">
                   <div className="absolute left-[6px] top-1 bottom-1 w-px bg-border" />
                   <div className="flex flex-col gap-4">
-                    {TRAVEL_HISTORY.map((t, i) => (
+                    {travelHistory.map((t, i) => (
                       <div key={i} className="relative">
                         <div
                           className={cn(
@@ -360,9 +365,10 @@ export function Profile() {
                           )}
                         />
                         <div className="flex items-center justify-between gap-2">
-                          <p className="text-sm font-semibold">{t.city}</p>
+                          <p className="text-sm font-bold">{t.city}</p>
                           {t.current && (
                             <Badge variant="secondary" className="text-[9px] bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-0">
+                              <span className="size-1.5 rounded-full bg-emerald-500 mr-1 animate-pulse" />
                               Current
                             </Badge>
                           )}
@@ -376,30 +382,6 @@ export function Profile() {
             </motion.div>
           </div>
         )}
-
-        {/* Connected services */}
-        <motion.div variants={item}>
-          <Card className="p-5 sm:p-6 gap-0">
-            <h3 className="font-semibold text-sm sm:text-base flex items-center gap-2 mb-4">
-              <ShieldCheck className="size-4 text-emerald-600" />
-              Connected services
-            </h3>
-            <div className="grid sm:grid-cols-2 gap-3">
-              {CONNECTED_SERVICES.map((s) => (
-                <div key={s.name} className="flex items-center justify-between p-3 rounded-lg border border-border/60 bg-muted/20">
-                  <div>
-                    <p className="text-sm font-medium">{s.name}</p>
-                    <p className="text-[11px] text-muted-foreground">{s.desc}</p>
-                  </div>
-                  <Badge variant="secondary" className="text-[10px] bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-0">
-                    <span className="size-1.5 rounded-full bg-emerald-500 mr-1.5" />
-                    {s.status}
-                  </Badge>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </motion.div>
 
         {/* Danger zone */}
         <motion.div variants={item}>

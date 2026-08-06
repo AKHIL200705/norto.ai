@@ -375,7 +375,6 @@ export function SmartMap() {
           category: place.category,
           address: place.address || `${place.lat.toFixed(4)}, ${place.lng.toFixed(4)}`,
           rating: place.rating,
-          price: '—',
           distance: place.distance,
           notes: `Saved from Smart Map · ${city} · real OSM place`,
         },

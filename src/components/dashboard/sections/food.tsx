@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 import {
   UtensilsCrossed, Star, MapPin, Bookmark, Loader2, Sparkles,
-  Shuffle, Leaf, IndianRupee, ShoppingBag, Utensils, Dices,
+  Shuffle, Leaf, ShoppingBag, Utensils, Dices,
 } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
 import { Card } from '@/components/ui/card'
@@ -27,7 +27,6 @@ async function api(path: string, opts: { method?: string; body?: unknown } = {})
 interface FoodItem {
   name: string
   type: string
-  price: string
   rating: number
   distance: string
   description: string
@@ -36,11 +35,9 @@ interface FoodItem {
 
 type Meal = 'All' | 'Breakfast' | 'Lunch' | 'Dinner' | 'Street Food' | 'Healthy'
 type Preference = 'All' | 'Veg' | 'Non-Veg'
-type Budget = 'All' | 'Budget' | 'Premium'
 
 const MEALS: Meal[] = ['All', 'Breakfast', 'Lunch', 'Dinner', 'Street Food', 'Healthy']
 const PREFERENCES: Preference[] = ['All', 'Veg', 'Non-Veg']
-const BUDGETS: Budget[] = ['All', 'Budget', 'Premium']
 
 const container = {
   hidden: { opacity: 0 },
@@ -57,17 +54,15 @@ export function FoodView() {
 
   const [meal, setMeal] = React.useState<Meal>('All')
   const [pref, setPref] = React.useState<Preference>('All')
-  const [budget, setBudget] = React.useState<Budget>('All')
   const [foods, setFoods] = React.useState<FoodItem[]>([])
   const [raw, setRaw] = React.useState<string | null>(null)
   const [loading, setLoading] = React.useState(false)
   const [hasSearched, setHasSearched] = React.useState(false)
   const [savingIdx, setSavingIdx] = React.useState<number | null>(null)
 
-  const recommend = React.useCallback(async (opts?: { meal?: Meal; pref?: Preference; budget?: Budget }) => {
+  const recommend = React.useCallback(async (opts?: { meal?: Meal; pref?: Preference }) => {
     const m = opts?.meal ?? meal
     const p = opts?.pref ?? pref
-    const b = opts?.budget ?? budget
     setLoading(true)
     setHasSearched(true)
     setFoods([])
@@ -78,7 +73,6 @@ export function FoodView() {
           city,
           meal: m === 'All' ? undefined : m,
           preference: p === 'All' ? undefined : p,
-          budget: b === 'All' ? undefined : b,
         },
       })
       setFoods(json.foods || [])
@@ -93,14 +87,13 @@ export function FoodView() {
     } finally {
       setLoading(false)
     }
-  }, [city, meal, pref, budget])
+  }, [city, meal, pref])
 
   const surpriseMe = () => {
     const m = MEALS[1 + Math.floor(Math.random() * (MEALS.length - 1))]
     const p = PREFERENCES[1 + Math.floor(Math.random() * (PREFERENCES.length - 1))]
-    const b = BUDGETS[Math.floor(Math.random() * BUDGETS.length)]
-    setMeal(m); setPref(p); setBudget(b)
-    recommend({ meal: m, pref: p, budget: b })
+    setMeal(m); setPref(p)
+    recommend({ meal: m, pref: p })
   }
 
   const handleSave = async (f: FoodItem, idx: number) => {
@@ -111,7 +104,6 @@ export function FoodView() {
           name: f.name,
           category: 'restaurant',
           rating: f.rating,
-          price: f.price,
           distance: f.distance,
           notes: `${f.type} — ${f.description}`,
         },
@@ -145,10 +137,9 @@ export function FoodView() {
         {/* Filters */}
         <motion.div variants={item}>
           <Card className="p-4 sm:p-5 gap-0">
-            <div className="grid sm:grid-cols-3 gap-4">
+            <div className="grid sm:grid-cols-2 gap-4">
               <FilterGroup label="Meal" icon={Utensils} options={MEALS} value={meal} onChange={(v) => setMeal(v as Meal)} />
               <FilterGroup label="Preference" icon={Leaf} options={PREFERENCES} value={pref} onChange={(v) => setPref(v as Preference)} />
-              <FilterGroup label="Budget" icon={IndianRupee} options={BUDGETS} value={budget} onChange={(v) => setBudget(v as Budget)} />
             </div>
             <div className="mt-4 flex justify-end">
               <Button onClick={() => recommend()} disabled={loading}>
@@ -183,7 +174,7 @@ export function FoodView() {
               <div>
                 <h3 className="text-lg font-semibold">Hungry? Let&apos;s find your next meal</h3>
                 <p className="text-sm text-muted-foreground mt-1.5 max-w-md">
-                  Get personalized food recommendations across {city}. Filter by meal time, preference, and budget — then tap &quot;Recommend Food&quot; to let our AI curate the best picks.
+                  Get personalized food recommendations across {city}. Filter by meal time and preference — then tap &quot;Recommend Food&quot; to let our AI curate the best picks.
                 </p>
               </div>
               <div className="flex flex-wrap gap-2 justify-center">
@@ -340,9 +331,6 @@ function FoodCard({
             <Badge variant="secondary" className="mt-1.5 text-[10px] bg-muted/60 text-muted-foreground border-0">
               {food.type}
             </Badge>
-          </div>
-          <div className="text-right shrink-0">
-            <p className="text-base font-bold tracking-tight">{food.price}</p>
           </div>
         </div>
 
