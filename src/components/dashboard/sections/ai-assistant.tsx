@@ -119,9 +119,11 @@ function EmptyState() {
   )
 }
 
+const EMPTY_MESSAGES: ChatMessage[] = []
+
 export function AiAssistant() {
   const city = useAppStore((s) => s.city)
-  const messages = useChatStore((s) => s.messages[SECTION] || [])
+  const messages = useChatStore((s) => s.messages[SECTION] ?? EMPTY_MESSAGES)
   const addMessage = useChatStore((s) => s.addMessage)
   const clearSection = useChatStore((s) => s.clearSection)
 

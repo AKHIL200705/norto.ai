@@ -19,6 +19,8 @@ export interface LiveLocation {
   accuracy: number // meters
   city: string
   locality: string | null
+  exactAddress?: string | null
+  displayName?: string | null
   region: string | null
   country: string | null
   detectedAt: number // epoch ms
@@ -49,6 +51,7 @@ interface AppState {
   signIn: (u: { name: string; email: string; avatar?: string | null; occupation?: string | null }, provider: 'google' | 'email') => void
   signOut: () => void
   detectLocation: () => Promise<void>
+  setExactLocation: (query: string) => Promise<void>
   clearLocation: () => void
 }
 
@@ -119,6 +122,8 @@ export const useAppStore = create<AppState>()(
             accuracy: result.accuracy,
             city: result.city,
             locality: result.locality,
+            exactAddress: result.exactAddress,
+            displayName: result.displayName,
             region: result.region,
             country: result.country,
             detectedAt: Date.now(),
@@ -139,6 +144,42 @@ export const useAppStore = create<AppState>()(
                 ? err.message
                 : 'Could not detect your location.'
           set({ locationStatus: 'error', locationError: message })
+        }
+      },
+      setExactLocation: async (query: string) => {
+        if (!query.trim()) return
+        set({ locationStatus: 'loading', locationError: null })
+        try {
+          const res = await fetch(`/api/geocode?q=${encodeURIComponent(query.trim())}`)
+          if (!res.ok) {
+            throw new Error('Could not find location.')
+          }
+          const data = await res.json()
+          if (data.error) {
+            throw new Error(data.error)
+          }
+          const live: LiveLocation = {
+            lat: data.latitude,
+            lng: data.longitude,
+            accuracy: 15, // High manual precision
+            city: data.city,
+            locality: data.locality,
+            exactAddress: data.exactAddress,
+            displayName: data.displayName,
+            region: data.region,
+            country: data.country,
+            detectedAt: Date.now(),
+          }
+          set({
+            liveLocation: live,
+            locationStatus: 'success',
+            locationError: null,
+            city: live.city,
+            user: get().user ? { ...get().user!, city: live.city } : get().user,
+          })
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : 'Could not find that location.'
+          set({ locationStatus: 'error', locationError: msg })
         }
       },
       clearLocation: () =>

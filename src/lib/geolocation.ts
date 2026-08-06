@@ -9,6 +9,8 @@ export interface GeoCoords {
 export interface GeoResult extends GeoCoords {
   city: string
   locality: string | null
+  exactAddress: string | null
+  displayName: string | null
   region: string | null
   country: string | null
 }
@@ -70,7 +72,7 @@ export function getCurrentPosition(): Promise<GeoCoords> {
       },
       {
         enableHighAccuracy: true, // use GPS when available for the best accuracy
-        timeout: 15000,
+        timeout: 20000,
         maximumAge: 0, // never use a cached position
       }
     )
@@ -83,6 +85,8 @@ export function getCurrentPosition(): Promise<GeoCoords> {
 export async function reverseGeocode(coords: GeoCoords): Promise<{
   city: string
   locality: string | null
+  exactAddress: string | null
+  displayName: string | null
   region: string | null
   country: string | null
 }> {
@@ -95,6 +99,8 @@ export async function reverseGeocode(coords: GeoCoords): Promise<{
   return {
     city: data.city || 'Unknown area',
     locality: data.locality ?? null,
+    exactAddress: data.exactAddress ?? null,
+    displayName: data.displayName ?? null,
     region: data.region ?? null,
     country: data.country ?? null,
   }

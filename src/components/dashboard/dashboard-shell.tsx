@@ -167,6 +167,7 @@ function LocationChip({
   onDetect: () => void
 }) {
   const [open, setOpen] = React.useState(false)
+  const setExactLocation = useAppStore((s) => s.setExactLocation)
 
   const accuracyM = live ? Math.round(live.accuracy) : null
   // human-friendly accuracy label
@@ -184,14 +185,23 @@ function LocationChip({
 
   if (status === 'error') {
     return (
-      <button
-        onClick={onDetect}
-        title={error || 'Location error — tap to retry'}
-        className="inline-flex items-center gap-1.5 h-9 px-2.5 sm:px-3 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-medium hover:bg-rose-500/20 transition-colors"
-      >
-        <AlertTriangle className="size-3.5" />
-        <span className="hidden sm:inline">Retry location</span>
-      </button>
+      <div className="inline-flex items-center gap-1">
+        <button
+          onClick={() => setExactLocation('Singarayakonda')}
+          title="Set location to Singarayakonda"
+          className="inline-flex items-center gap-1.5 h-9 px-2.5 rounded-lg bg-emerald-600 text-white text-xs font-semibold hover:bg-emerald-700 transition-colors shadow-sm"
+        >
+          <LocateFixed className="size-3.5" />
+          <span>Set Singarayakonda</span>
+        </button>
+        <button
+          onClick={onDetect}
+          title={error || 'Retry auto-detect'}
+          className="inline-flex items-center justify-center size-9 rounded-lg bg-muted text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+        >
+          <AlertTriangle className="size-3.5 text-rose-500" />
+        </button>
+      </div>
     )
   }
 
@@ -213,35 +223,92 @@ function LocationChip({
         {open && (
           <>
             <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-            <div className="absolute right-0 top-11 z-50 w-64 rounded-xl border bg-popover shadow-xl overflow-hidden">
+            <div className="absolute right-0 top-11 z-50 w-72 sm:w-80 rounded-xl border bg-popover shadow-xl overflow-hidden">
               <div className="px-3 py-2.5 bg-gradient-to-br from-emerald-600 to-teal-700 text-white">
-                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-emerald-50/80">
+                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-emerald-50/80 font-bold">
                   <Crosshair className="size-3" />
-                  Live location
+                  Live GPS Location
                 </div>
-                <p className="text-sm font-semibold mt-0.5">{live.city}</p>
+                <p className="text-sm font-bold mt-0.5">{live.exactAddress || live.city}</p>
                 <p className="text-[11px] text-emerald-50/85">
-                  {[live.locality, live.region, live.country].filter(Boolean).join(', ')}
+                  {[live.region, live.country].filter(Boolean).join(', ')}
                 </p>
               </div>
-              <div className="p-3 space-y-1.5 text-xs">
+              <div className="p-3 space-y-2 text-xs">
+                {accuracyM && accuracyM > 5000 && (
+                  <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-300 text-[11px] leading-tight space-y-1">
+                    <p className="font-semibold flex items-center gap-1">
+                      <span>⚠️</span> Desktop ISP Location (Coarse ±{Math.round(accuracyM / 1000)}km)
+                    </p>
+                    <p>Your browser returned an approximate ISP network tower. Type or select your exact town below:</p>
+                  </div>
+                )}
+                {live.displayName && (
+                  <div className="flex flex-col gap-0.5 pb-1 border-b">
+                    <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Full Address</span>
+                    <span className="text-xs font-medium leading-tight text-foreground/90">{live.displayName}</span>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Latitude</span>
-                  <span className="font-mono">{live.lat.toFixed(5)}</span>
+                  <span className="font-mono font-semibold">{live.lat.toFixed(5)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Longitude</span>
-                  <span className="font-mono">{live.lng.toFixed(5)}</span>
+                  <span className="font-mono font-semibold">{live.lng.toFixed(5)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Accuracy</span>
-                  <span className="font-medium text-emerald-600 dark:text-emerald-400">
+                  <span className="font-semibold text-emerald-600 dark:text-emerald-400">
                     ±{accuracyM}m · {accuracyLabel}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Detected</span>
                   <span>{new Date(live.detectedAt).toLocaleTimeString()}</span>
+                </div>
+
+                <div className="pt-2 border-t space-y-2">
+                  <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Set Exact Location</p>
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault()
+                      const val = (e.currentTarget.elements.namedItem('town') as HTMLInputElement)?.value
+                      if (val) {
+                        setExactLocation(val)
+                        setOpen(false)
+                      }
+                    }}
+                    className="flex gap-1.5"
+                  >
+                    <input
+                      name="town"
+                      type="text"
+                      placeholder="e.g. Singarayakonda"
+                      className="flex-1 h-8 px-2 rounded-md border text-xs bg-background focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    />
+                    <button
+                      type="submit"
+                      className="h-8 px-2.5 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium transition-colors"
+                    >
+                      Set
+                    </button>
+                  </form>
+                  <div className="flex flex-wrap gap-1 pt-1">
+                    {['Singarayakonda', 'Ongole', 'Kavali', 'Hyderabad'].map((loc) => (
+                      <button
+                        key={loc}
+                        type="button"
+                        onClick={() => {
+                          setExactLocation(loc)
+                          setOpen(false)
+                        }}
+                        className="px-2 py-0.5 rounded bg-muted hover:bg-accent text-[11px] font-medium transition-colors"
+                      >
+                        {loc}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
               <div className="p-2 border-t">
@@ -250,7 +317,7 @@ function LocationChip({
                   className="w-full flex items-center justify-center gap-1.5 h-8 rounded-lg text-xs font-medium hover:bg-accent transition-colors"
                 >
                   <LocateFixed className="size-3.5" />
-                  Refresh location
+                  Auto-detect location
                 </button>
               </div>
             </div>

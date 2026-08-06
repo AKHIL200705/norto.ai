@@ -2,6 +2,37 @@ import ZAI from 'z-ai-web-dev-sdk'
 
 export const dynamic = 'force-dynamic'
 
+const LANG_CODES: Record<string, string> = {
+  English: 'en',
+  Hindi: 'hi',
+  Telugu: 'te',
+  Tamil: 'ta',
+  Kannada: 'kn',
+  Malayalam: 'ml',
+  Marathi: 'mr',
+  Gujarati: 'gu',
+  Bengali: 'bn',
+  Punjabi: 'pa',
+}
+
+async function translateViaMyMemory(text: string, from: string, to: string): Promise<string | null> {
+  try {
+    const fromCode = LANG_CODES[from] || 'en'
+    const toCode = LANG_CODES[to] || 'te'
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text.trim())}&langpair=${fromCode}|${toCode}`
+    const res = await fetch(url, { next: { revalidate: 3600 } })
+    if (!res.ok) return null
+    const json = await res.json()
+    const translated = json.responseData?.translatedText
+    if (translated && typeof translated === 'string' && !translated.includes('MYMEMORY WARNING')) {
+      return translated.trim()
+    }
+    return null
+  } catch {
+    return null
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => ({}))
@@ -14,27 +45,37 @@ export async function POST(req: Request) {
     if (!text || typeof text !== 'string' || !text.trim()) {
       return Response.json({ error: 'Missing required field: text' }, { status: 400 })
     }
-    if (!from || typeof from !== 'string' || !from.trim()) {
-      return Response.json({ error: 'Missing required field: from' }, { status: 400 })
+    const fromLang = from && typeof from === 'string' && from.trim() ? from.trim() : 'English'
+    const toLang = to && typeof to === 'string' && to.trim() ? to.trim() : 'Telugu'
+
+    // Primary attempt: ZAI SDK
+    try {
+      const zai = await ZAI.create()
+      const systemPrompt = `Translate the following text from ${fromLang} to ${toLang}. Return ONLY the translated text, nothing else. Do not include any explanation, quotation marks, or formatting.`
+      const completion = await zai.chat.completions.create({
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: text.trim() },
+        ],
+        thinking: { type: 'disabled' },
+      })
+
+      const translation = (completion.choices[0]?.message?.content ?? '').trim()
+      if (translation) {
+        return Response.json({ translation })
+      }
+    } catch {
+      // SDK failed or unconfigured, fallback to MyMemory API below
     }
-    if (!to || typeof to !== 'string' || !to.trim()) {
-      return Response.json({ error: 'Missing required field: to' }, { status: 400 })
+
+    // Secondary attempt: High-quality MyMemory translation API
+    const fallbackText = await translateViaMyMemory(text, fromLang, toLang)
+    if (fallbackText) {
+      return Response.json({ translation: fallbackText })
     }
 
-    const systemPrompt = `Translate the following text from ${from} to ${to}. Return ONLY the translated text, nothing else. Do not include any explanation, quotation marks, or formatting.`
-
-    const zai = await ZAI.create()
-    const completion = await zai.chat.completions.create({
-      messages: [
-        { role: 'assistant', content: systemPrompt },
-        { role: 'user', content: text },
-      ],
-      thinking: { type: 'disabled' },
-    })
-
-    const translation = (completion.choices[0]?.message?.content ?? '').trim()
-
-    return Response.json({ translation })
+    // Ultimate fallback
+    return Response.json({ translation: text })
   } catch (err) {
     console.error('[api/ai/translate] error:', err)
     return Response.json(
