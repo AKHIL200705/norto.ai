@@ -1,21 +1,72 @@
 'use client'
 
 import * as React from 'react'
+import dynamic from 'next/dynamic'
 import { useAppStore } from '@/lib/store'
 import { DashboardSidebar, DashboardTopbar, MobileSidebar } from '@/components/dashboard/dashboard-shell'
 import { DashboardHome } from '@/components/dashboard/sections/home'
-import { AiAssistant } from '@/components/dashboard/sections/ai-assistant'
-import { SmartMap } from '@/components/dashboard/sections/smart-map'
-import { BudgetPlanner } from '@/components/dashboard/sections/budget-planner'
-import { WeatherView } from '@/components/dashboard/sections/weather'
-import { Translator } from '@/components/dashboard/sections/translator'
-import { Emergency } from '@/components/dashboard/sections/emergency'
-import { FoodView } from '@/components/dashboard/sections/food'
-import { OcrScanner } from '@/components/dashboard/sections/ocr'
-import { SavedPlaces } from '@/components/dashboard/sections/saved-places'
-import { Profile } from '@/components/dashboard/sections/profile'
 import { SignInDialog } from '@/components/auth/sign-in-dialog'
 import { IntroScreen, shouldPlayIntro } from '@/components/intro/intro-screen'
+import { Skeleton } from '@/components/ui/skeleton'
+
+// Dynamic lazy loading for heavy dashboard sections (Optimized for 100/100 Lighthouse Performance)
+const AiAssistant = dynamic(
+  () => import('@/components/dashboard/sections/ai-assistant').then((m) => m.AiAssistant),
+  { loading: () => <SectionSkeleton title="AI Assistant" /> }
+)
+const SmartMap = dynamic(
+  () => import('@/components/dashboard/sections/smart-map').then((m) => m.SmartMap),
+  { loading: () => <SectionSkeleton title="Smart Map" /> }
+)
+const BudgetPlanner = dynamic(
+  () => import('@/components/dashboard/sections/budget-planner').then((m) => m.BudgetPlanner),
+  { loading: () => <SectionSkeleton title="Budget Planner" /> }
+)
+const WeatherView = dynamic(
+  () => import('@/components/dashboard/sections/weather').then((m) => m.WeatherView),
+  { loading: () => <SectionSkeleton title="Weather Forecast" /> }
+)
+const Translator = dynamic(
+  () => import('@/components/dashboard/sections/translator').then((m) => m.Translator),
+  { loading: () => <SectionSkeleton title="Translator" /> }
+)
+const Emergency = dynamic(
+  () => import('@/components/dashboard/sections/emergency').then((m) => m.Emergency),
+  { loading: () => <SectionSkeleton title="Emergency Hub" /> }
+)
+const FoodView = dynamic(
+  () => import('@/components/dashboard/sections/food').then((m) => m.FoodView),
+  { loading: () => <SectionSkeleton title="Food & Dining" /> }
+)
+const OcrScanner = dynamic(
+  () => import('@/components/dashboard/sections/ocr').then((m) => m.OcrScanner),
+  { loading: () => <SectionSkeleton title="OCR Scanner" /> }
+)
+const SavedPlaces = dynamic(
+  () => import('@/components/dashboard/sections/saved-places').then((m) => m.SavedPlaces),
+  { loading: () => <SectionSkeleton title="Saved Places" /> }
+)
+const Profile = dynamic(
+  () => import('@/components/dashboard/sections/profile').then((m) => m.Profile),
+  { loading: () => <SectionSkeleton title="Profile & Settings" /> }
+)
+
+function SectionSkeleton({ title }: { title: string }) {
+  return (
+    <div className="p-4 lg:p-6 max-w-7xl mx-auto space-y-4 animate-pulse">
+      <div className="flex items-center justify-between">
+        <Skeleton className="h-8 w-48 rounded-lg" />
+        <Skeleton className="h-9 w-24 rounded-lg" />
+      </div>
+      <Skeleton className="h-44 w-full rounded-2xl" />
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <Skeleton className="h-36 rounded-xl" />
+        <Skeleton className="h-36 rounded-xl" />
+        <Skeleton className="h-36 rounded-xl" />
+      </div>
+    </div>
+  )
+}
 
 function DashboardSection() {
   const section = useAppStore((s) => s.section)
@@ -58,7 +109,6 @@ export default function Home() {
   const setSignInOpen = useAppStore((s) => s.setSignInOpen)
   const [LandingPage, setLandingPage] = React.useState<React.ComponentType | null>(null)
 
-  // Branded intro — plays once per browser session (sessionStorage).
   const [showIntro, setShowIntro] = React.useState(false)
   React.useEffect(() => {
     setShowIntro(shouldPlayIntro())
@@ -72,10 +122,6 @@ export default function Home() {
     }
   }, [view])
 
-  // Auth guard: the dashboard is reachable ONLY when signed in.
-  // A signed-out user who somehow has a persisted `view: 'dashboard'`
-  // (e.g. from an older guest session) is bounced to the landing page and
-  // shown the sign-in dialog.
   React.useEffect(() => {
     if (view === 'dashboard' && !isAuth) {
       setView('landing')
@@ -83,43 +129,41 @@ export default function Home() {
     }
   }, [view, isAuth, setView, setSignInOpen])
 
-  // The sign-in dialog is mounted once at the root so it works in every view.
   const dialog = <SignInDialog />
 
-  // Branded intro overlay (plays once per session, then unmounts).
   const intro = showIntro ? (
     <IntroScreen onComplete={() => setShowIntro(false)} />
   ) : null
 
-  // Treat an unauthenticated "dashboard" view as landing until the guard runs.
   const effectiveView: 'landing' | 'dashboard' =
     view === 'dashboard' && !isAuth ? 'landing' : view
 
   if (effectiveView === 'landing') {
-    // SSR-safe fallback while the landing chunk loads
     if (!LandingPage) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-background">
-          <div className="size-10 rounded-full border-4 border-emerald-500/20 border-t-emerald-500 animate-spin" />
-          {dialog}
+        <>
           {intro}
-        </div>
+          <div className="min-h-screen flex items-center justify-center bg-background">
+            <div className="size-8 rounded-full border-2 border-emerald-600 border-t-transparent animate-spin" />
+          </div>
+          {dialog}
+        </>
       )
     }
     return (
       <>
+        {intro}
         <LandingPage />
         {dialog}
-        {intro}
       </>
     )
   }
 
   return (
     <>
+      {intro}
       <Dashboard />
       {dialog}
-      {intro}
     </>
   )
 }
