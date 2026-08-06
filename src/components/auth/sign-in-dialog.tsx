@@ -235,7 +235,7 @@ export function SignInDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="p-0 overflow-hidden max-w-[420px] gap-0">
+      <DialogContent showCloseButton={false} className="p-0 overflow-hidden max-w-[420px] gap-0">
         <DialogTitle className="sr-only">Sign in to Norto with Supabase</DialogTitle>
         <DialogDescription className="sr-only">
           Choose a sign-in method to access your Norto dashboard via Supabase Auth.
