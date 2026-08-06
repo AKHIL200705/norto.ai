@@ -100,6 +100,7 @@ export const PLACE_CATEGORIES = [
 export const LANGUAGES = [
   'English', 'Hindi', 'Telugu', 'Tamil', 'Kannada',
   'Malayalam', 'Marathi', 'Bengali', 'Punjabi', 'Gujarati',
+  'Urdu', 'Odia',
 ]
 
 export const PHRASE_BOOK = [

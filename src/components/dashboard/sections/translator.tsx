@@ -132,7 +132,21 @@ export function Translator() {
     if (typeof window === 'undefined' || !('speechSynthesis' in window) || !text) return
     try {
       const u = new SpeechSynthesisUtterance(text)
-      u.lang = lang === 'English' ? 'en-IN' : lang === 'Hindi' ? 'hi-IN' : lang === 'Telugu' ? 'te-IN' : 'en-IN'
+      const langMap: Record<string, string> = {
+        Hindi: 'hi-IN',
+        Telugu: 'te-IN',
+        Tamil: 'ta-IN',
+        Kannada: 'kn-IN',
+        Malayalam: 'ml-IN',
+        Marathi: 'mr-IN',
+        Gujarati: 'gu-IN',
+        Bengali: 'bn-IN',
+        Punjabi: 'pa-IN',
+        Urdu: 'ur-IN',
+        Odia: 'or-IN',
+        English: 'en-IN',
+      }
+      u.lang = langMap[lang] || 'en-IN'
       window.speechSynthesis.cancel()
       window.speechSynthesis.speak(u)
     } catch {
