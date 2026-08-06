@@ -346,7 +346,7 @@ export function WeatherView() {
                           <YAxis tick={{ fontSize: 11 }} stroke="rgba(0,0,0,0.4)" axisLine={false} tickLine={false} />
                           <Tooltip
                             contentStyle={{ borderRadius: 12, border: '1px solid rgba(0,0,0,0.06)', fontSize: 12, boxShadow: '0 6px 24px rgba(0,0,0,0.08)' }}
-                            formatter={(v: number) => [`${v}°C`, 'Temp']}
+                            formatter={(v: any) => [`${v}°C`, 'Temp']}
                           />
                           <Area type="monotone" dataKey="temp" stroke="#10b981" strokeWidth={2.5} fill="url(#tempGradient)" dot={{ fill: '#10b981', r: 3 }} activeDot={{ r: 5 }} />
                         </AreaChart>

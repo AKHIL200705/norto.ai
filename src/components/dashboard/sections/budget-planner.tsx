@@ -400,7 +400,7 @@ export function BudgetPlanner() {
                             ))}
                           </Pie>
                           <Tooltip
-                            formatter={(v: number) => fmtINR(v)}
+                            formatter={(v: any) => fmtINR(Number(v || 0))}
                             contentStyle={{
                               borderRadius: '0.5rem',
                               border: '1px solid var(--border)',
@@ -446,7 +446,7 @@ export function BudgetPlanner() {
                             tickFormatter={(v: number) => `₹${v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v}`}
                           />
                           <Tooltip
-                            formatter={(v: number) => fmtINR(v)}
+                            formatter={(v: any) => fmtINR(Number(v || 0))}
                             cursor={{ fill: 'var(--accent)', opacity: 0.3 }}
                             contentStyle={{
                               borderRadius: '0.5rem',

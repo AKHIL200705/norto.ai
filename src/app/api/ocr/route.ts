@@ -39,6 +39,7 @@ Format the response as Markdown with these three exact headings:
 
     const zai = await ZAI.create()
     const response = await zai.chat.completions.createVision({
+      model: 'glm-4v',
       messages: [
         {
           role: 'user',
