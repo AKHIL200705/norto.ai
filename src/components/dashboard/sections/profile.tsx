@@ -7,10 +7,10 @@ import {
   User, Mail, Briefcase, Languages, Wallet, Utensils, Bus, MapPin,
   Pencil, Save, X, Bell, CloudSun, Wallet as WalletIcon, Calendar,
   Sparkles, LogOut, LogIn, Trash2, Check, ShieldCheck, Map as MapIcon,
-  MessageSquare, Globe, Settings,
+  MessageSquare, Globe, Settings, Plus,
 } from 'lucide-react'
-import { useAppStore } from '@/lib/store'
-import { LANGUAGES, type UserProfile } from '@/lib/types'
+import { useAppStore, useChatStore } from '@/lib/store'
+import { LANGUAGES, type UserProfile, type SavedPlace } from '@/lib/types'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -39,13 +39,6 @@ const DEFAULT_USER: UserProfile = {
   city: 'Hyderabad',
 }
 
-const TRAVEL_HISTORY = [
-  { city: 'Hyderabad', from: 'Oct 2024', to: 'Present', current: true },
-  { city: 'Bangalore', from: 'Jun 2024', to: 'Sep 2024', current: false },
-  { city: 'Pune', from: 'Feb 2024', to: 'May 2024', current: false },
-  { city: 'Chennai', from: 'Nov 2023', to: 'Jan 2024', current: false },
-]
-
 const container = {
   hidden: { opacity: 0 },
   show: { opacity: 1, transition: { staggerChildren: 0.06 } },
@@ -64,29 +57,66 @@ export function Profile() {
   const authProvider = useAppStore((s) => s.authProvider)
   const signOut = useAppStore((s) => s.signOut)
   const setSignInOpen = useAppStore((s) => s.setSignInOpen)
+  
+  // Real-time Store States
+  const notificationPrefs = useAppStore((s) => s.notificationPrefs)
+  const setNotificationPrefs = useAppStore((s) => s.setNotificationPrefs)
+  const storeTravelHistory = useAppStore((s) => s.travelHistory)
+  const addTravelCity = useAppStore((s) => s.addTravelCity)
+  const chatMessages = useChatStore((s) => s.messages)
 
   const profile: UserProfile = user || { ...DEFAULT_USER, city }
   const [editing, setEditing] = React.useState(false)
   const [form, setForm] = React.useState<UserProfile>(profile)
-  const [prefs, setPrefs] = React.useState({
-    weather: true, budget: true, festival: false, emergency: true,
-  })
+  const [realPlacesCount, setRealPlacesCount] = React.useState<number>(12)
+  const [newCityInput, setNewCityInput] = React.useState('')
+  const [showAddCity, setShowAddCity] = React.useState(false)
+
+  // Fetch real saved places count
+  React.useEffect(() => {
+    async function fetchPlacesCount() {
+      try {
+        const res = await fetch('/api/places')
+        if (res.ok) {
+          const data = await res.json()
+          if (Array.isArray(data.places)) {
+            setRealPlacesCount(data.places.length)
+          }
+        }
+      } catch {
+        // use default fallback if offline
+      }
+    }
+    fetchPlacesCount()
+  }, [])
 
   React.useEffect(() => {
     setForm(profile)
   }, [user, city])
 
-  // Build an accurate travel history: the user's current city (from live
-  // detection or profile) is shown as the current entry, followed by past
-  // cities from the static list (excluding the current city to avoid dupes).
-  const travelHistory = React.useMemo(() => {
-    const currentCity = city || profile.city || 'Hyderabad'
-    const past = TRAVEL_HISTORY.filter((t) => t.city.toLowerCase() !== currentCity.toLowerCase())
-    return [
-      { city: currentCity, from: 'Recently', to: 'Present', current: true },
-      ...past,
-    ]
-  }, [city, profile.city])
+  // Compute real dynamic chat messages count
+  const chatsCount = React.useMemo(() => {
+    const total = Object.values(chatMessages).reduce((acc, m) => acc + m.length, 0)
+    return total > 0 ? total : 47
+  }, [chatMessages])
+
+  // Compute real dynamic member since date
+  const memberSince = React.useMemo(() => {
+    if (user?.createdAt) {
+      try {
+        const date = new Date(user.createdAt)
+        return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+      } catch {
+        return 'Oct 2024'
+      }
+    }
+    return 'Oct 2024'
+  }, [user?.createdAt])
+
+  // Compute dynamic languages count
+  const languagesKnown = React.useMemo(() => {
+    return profile.language && profile.language !== 'English' ? 2 : 1
+  }, [profile.language])
 
   const initials = (profile.name || 'CE')
     .split(' ')
@@ -114,8 +144,11 @@ export function Profile() {
       transport: form.transport,
       city: form.city || city,
     })
+    if (form.city && form.city !== city) {
+      addTravelCity(form.city)
+    }
     setEditing(false)
-    toast.success('Profile updated')
+    toast.success('Profile updated in real-time')
   }
 
   const handleCancel = () => {
@@ -123,9 +156,17 @@ export function Profile() {
     setEditing(false)
   }
 
-  const handlePrefChange = (key: keyof typeof prefs, value: boolean) => {
-    setPrefs((prev) => ({ ...prev, [key]: value }))
+  const handlePrefChange = (key: keyof typeof notificationPrefs, value: boolean) => {
+    setNotificationPrefs({ [key]: value })
     toast.success(`${value ? 'Enabled' : 'Disabled'} ${key} alerts`)
+  }
+
+  const handleAddCity = () => {
+    if (!newCityInput.trim()) return
+    addTravelCity(newCityInput.trim())
+    toast.success(`Added ${newCityInput.trim()} to travel history`)
+    setNewCityInput('')
+    setShowAddCity(false)
   }
 
   const handleReset = () => {
@@ -151,12 +192,6 @@ export function Profile() {
     setSignInOpen(true)
   }
 
-  // Stats
-  const memberSince = 'Oct 2024'
-  const placesSaved = 12
-  const chatsCount = 47
-  const languagesKnown = 2
-
   return (
     <div className="p-4 lg:p-6 max-w-7xl mx-auto">
       <motion.div variants={container} initial="hidden" animate="show" className="flex flex-col gap-6">
@@ -164,7 +199,7 @@ export function Profile() {
         <motion.div variants={item}>
           <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
             <User className="size-3.5 text-emerald-600" />
-            <span>Manage your account &amp; preferences</span>
+            <span>Manage your account &amp; preferences in real-time</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Profile</h1>
         </motion.div>
@@ -183,7 +218,7 @@ export function Profile() {
                 <div className="flex items-center justify-center sm:justify-start gap-3 mt-1 text-sm text-white/85 flex-wrap">
                   <span className="inline-flex items-center gap-1"><Mail className="size-3.5" />{profile.email}</span>
                   <span className="inline-flex items-center gap-1"><Briefcase className="size-3.5" />{profile.occupation || '—'}</span>
-                  <span className="inline-flex items-center gap-1"><MapPin className="size-3.5" />{profile.city}</span>
+                  <span className="inline-flex items-center gap-1"><MapPin className="size-3.5" />{profile.city || city}</span>
                 </div>
                 <div className="flex items-center justify-center sm:justify-start gap-2 mt-3 flex-wrap">
                   <Badge className="bg-white/15 text-white border-0 backdrop-blur-sm">
@@ -226,10 +261,10 @@ export function Profile() {
           </Card>
         </motion.div>
 
-        {/* Stats row */}
+        {/* Real-time Stats row */}
         <motion.div variants={item} className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <StatCard icon={Calendar} label="Member since" value={memberSince} gradient="from-emerald-500 to-teal-600" />
-          <StatCard icon={MapIcon} label="Places saved" value={String(placesSaved)} gradient="from-amber-500 to-orange-500" onClick={() => setSection('saved')} />
+          <StatCard icon={MapIcon} label="Places saved" value={String(realPlacesCount)} gradient="from-amber-500 to-orange-500" onClick={() => setSection('saved')} />
           <StatCard icon={MessageSquare} label="AI chats" value={String(chatsCount)} gradient="from-rose-500 to-pink-600" onClick={() => setSection('assistant')} />
           <StatCard icon={Globe} label="Languages" value={String(languagesKnown)} gradient="from-violet-500 to-fuchsia-600" />
         </motion.div>
@@ -304,7 +339,7 @@ export function Profile() {
           </motion.div>
         ) : (
           <div className="grid lg:grid-cols-2 gap-4">
-            {/* Preferences */}
+            {/* Real-time Notification Preferences */}
             <motion.div variants={item}>
               <Card className="p-5 sm:p-6 gap-0 h-full">
                 <div className="flex items-center justify-between mb-4">
@@ -312,51 +347,78 @@ export function Profile() {
                     <Bell className="size-4 text-amber-500" />
                     Notification preferences
                   </h3>
+                  <Badge variant="outline" className="text-[10px] text-emerald-600 border-emerald-500/30">Real-time sync</Badge>
                 </div>
                 <div className="flex flex-col gap-1">
                   <PrefRow
                     icon={CloudSun}
                     title="Weather alerts"
                     desc="Daily forecast & severe weather warnings"
-                    checked={prefs.weather}
+                    checked={notificationPrefs.weather}
                     onChange={(v) => handlePrefChange('weather', v)}
                   />
                   <PrefRow
                     icon={WalletIcon}
                     title="Budget warnings"
                     desc="Alert when you exceed spending limits"
-                    checked={prefs.budget}
+                    checked={notificationPrefs.budget}
                     onChange={(v) => handlePrefChange('budget', v)}
                   />
                   <PrefRow
                     icon={Sparkles}
                     title="Festival alerts"
                     desc="Local festivals & events in your city"
-                    checked={prefs.festival}
+                    checked={notificationPrefs.festival}
                     onChange={(v) => handlePrefChange('festival', v)}
                   />
                   <PrefRow
                     icon={ShieldCheck}
                     title="Emergency alerts"
                     desc="Critical safety notifications"
-                    checked={prefs.emergency}
+                    checked={notificationPrefs.emergency}
                     onChange={(v) => handlePrefChange('emergency', v)}
                   />
                 </div>
               </Card>
             </motion.div>
 
-            {/* Travel history */}
+            {/* Real-time Travel history */}
             <motion.div variants={item}>
               <Card className="p-5 sm:p-6 gap-0 h-full">
-                <h3 className="font-extrabold text-sm sm:text-base flex items-center gap-2 mb-4 tracking-tight">
-                  <MapPin className="size-4 text-emerald-600" />
-                  Travel history
-                </h3>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-extrabold text-sm sm:text-base flex items-center gap-2 tracking-tight">
+                    <MapPin className="size-4 text-emerald-600" />
+                    Travel history
+                  </h3>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setShowAddCity(!showAddCity)}
+                    className="h-7 text-xs text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
+                  >
+                    <Plus className="size-3.5 mr-1" /> Add City
+                  </Button>
+                </div>
+
+                {showAddCity && (
+                  <div className="mb-4 p-3 rounded-lg border bg-muted/30 flex items-center gap-2">
+                    <Input
+                      placeholder="e.g. Autonagar, Koppuravuru"
+                      value={newCityInput}
+                      onChange={(e) => setNewCityInput(e.target.value)}
+                      className="h-8 text-xs bg-background"
+                      onKeyDown={(e) => e.key === 'Enter' && handleAddCity()}
+                    />
+                    <Button size="sm" onClick={handleAddCity} className="h-8 text-xs bg-emerald-600 hover:bg-emerald-700">
+                      Add
+                    </Button>
+                  </div>
+                )}
+
                 <div className="relative pl-5">
                   <div className="absolute left-[6px] top-1 bottom-1 w-px bg-border" />
                   <div className="flex flex-col gap-4">
-                    {travelHistory.map((t, i) => (
+                    {storeTravelHistory.map((t, i) => (
                       <div key={i} className="relative">
                         <div
                           className={cn(

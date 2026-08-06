@@ -41,6 +41,10 @@ interface AppState {
   locationStatus: LocationStatus
   locationError: string | null
 
+  // notification preferences & travel history
+  notificationPrefs: { weather: boolean; budget: boolean; festival: boolean; emergency: boolean }
+  travelHistory: Array<{ city: string; from: string; to: string; current: boolean }>
+
   setView: (v: View) => void
   setSection: (s: DashboardSection) => void
   setCity: (c: string) => void
@@ -53,6 +57,8 @@ interface AppState {
   detectLocation: () => Promise<void>
   setExactLocation: (query: string) => Promise<void>
   clearLocation: () => void
+  setNotificationPrefs: (p: Partial<{ weather: boolean; budget: boolean; festival: boolean; emergency: boolean }>) => void
+  addTravelCity: (city: string) => void
 }
 
 const GUEST_DEFAULTS: Omit<UserProfile, 'name' | 'email' | 'avatar' | 'occupation'> = {
@@ -77,10 +83,26 @@ export const useAppStore = create<AppState>()(
       liveLocation: null,
       locationStatus: 'idle',
       locationError: null,
+      notificationPrefs: {
+        weather: true,
+        budget: true,
+        festival: false,
+        emergency: true,
+      },
+      travelHistory: [
+        { city: 'Autonagar, Koppuravuru', from: 'Recently', to: 'Present', current: true },
+        { city: 'Hyderabad', from: 'Oct 2024', to: 'Present', current: false },
+        { city: 'Bangalore', from: 'Jun 2024', to: 'Sep 2024', current: false },
+        { city: 'Pune', from: 'Feb 2024', to: 'May 2024', current: false },
+        { city: 'Chennai', from: 'Nov 2023', to: 'Jan 2024', current: false },
+      ],
 
       setView: (v) => set({ view: v }),
       setSection: (s) => set({ section: s, sidebarOpen: false }),
-      setCity: (c) => set({ city: c }),
+      setCity: (c) => {
+        set({ city: c })
+        get().addTravelCity(c)
+      },
       setSidebarOpen: (o) => set({ sidebarOpen: o }),
       setUser: (u) => set({ user: u }),
       updateUser: (u) => set((state) => ({ user: state.user ? { ...state.user, ...u } : null })),
@@ -101,6 +123,7 @@ export const useAppStore = create<AppState>()(
             budget: state.user?.budget ?? GUEST_DEFAULTS.budget,
             foodPref: state.user?.foodPref ?? GUEST_DEFAULTS.foodPref,
             transport: state.user?.transport ?? GUEST_DEFAULTS.transport,
+            createdAt: state.user?.createdAt || new Date().toISOString(),
           },
         })),
       signOut: () =>
@@ -111,6 +134,30 @@ export const useAppStore = create<AppState>()(
           view: 'landing',
           section: 'home',
         }),
+      setNotificationPrefs: (p) =>
+        set((state) => ({
+          notificationPrefs: { ...state.notificationPrefs, ...p },
+        })),
+      addTravelCity: (newCity) => {
+        if (!newCity || !newCity.trim()) return
+        const cityTrimmed = newCity.trim()
+        set((state) => {
+          const updatedHistory = state.travelHistory.map((item) => ({ ...item, current: false }))
+          const existingIdx = updatedHistory.findIndex((h) => h.city.toLowerCase() === cityTrimmed.toLowerCase())
+          if (existingIdx !== -1) {
+            const [item] = updatedHistory.splice(existingIdx, 1)
+            return {
+              travelHistory: [{ ...item, current: true, to: 'Present' }, ...updatedHistory],
+            }
+          }
+          return {
+            travelHistory: [
+              { city: cityTrimmed, from: 'Recently', to: 'Present', current: true },
+              ...updatedHistory,
+            ],
+          }
+        })
+      },
       detectLocation: async () => {
         if (get().locationStatus === 'loading') return
         set({ locationStatus: 'loading', locationError: null })
@@ -195,6 +242,8 @@ export const useAppStore = create<AppState>()(
         isAuthenticated: state.isAuthenticated,
         authProvider: state.authProvider,
         liveLocation: state.liveLocation,
+        notificationPrefs: state.notificationPrefs,
+        travelHistory: state.travelHistory,
       }),
     }
   )
