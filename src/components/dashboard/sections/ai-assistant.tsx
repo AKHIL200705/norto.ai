@@ -249,14 +249,14 @@ export function AiAssistant() {
                 </div>
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h1 className="font-semibold tracking-tight">AI Assistant</h1>
+                    <h1 className="font-extrabold tracking-tight text-lg">AI Assistant</h1>
                     <Badge variant="secondary" className="text-[10px] bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-0">
                       <span className="size-1.5 rounded-full bg-emerald-500 mr-1 animate-pulse" />
                       Online
                     </Badge>
                   </div>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    Relocation expert for <span className="font-medium text-foreground">{city}</span>
+                    Relocation expert for <span className="font-bold text-foreground">{city}</span>
                   </p>
                 </div>
               </div>
@@ -279,7 +279,7 @@ export function AiAssistant() {
                   <BookOpen className="size-4 text-white" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold">Generate Full Relocation Guide</p>
+                  <p className="text-sm font-bold">Generate Full Relocation Guide</p>
                   <p className="text-[11px] text-muted-foreground">A complete Markdown plan for {city} on a ₹25,000 budget</p>
                 </div>
               </div>
@@ -393,7 +393,7 @@ export function AiAssistant() {
           <Card className="p-4 lg:sticky lg:top-20 gap-0">
             <div className="flex items-center gap-2 mb-1">
               <Lightbulb className="size-4 text-amber-500" />
-              <h3 className="font-semibold text-sm">Suggested prompts</h3>
+              <h3 className="font-extrabold text-sm tracking-tight">Suggested prompts</h3>
             </div>
             <p className="text-xs text-muted-foreground mb-3">
               Tap a prompt to send it instantly
@@ -406,13 +406,13 @@ export function AiAssistant() {
                   disabled={loading || guideLoading}
                   whileHover={{ x: 2 }}
                   whileTap={{ scale: 0.98 }}
-                  className="group flex items-center justify-between gap-2 text-left px-3 py-2.5 rounded-xl border bg-background hover:border-emerald-500/40 hover:bg-emerald-500/5 transition-colors disabled:opacity-50 disabled:hover:bg-background disabled:hover:border-border"
+                  className="group flex items-center justify-between gap-2 text-left px-3 py-2.5 rounded-xl border bg-background hover:border-emerald-500/60 hover:bg-emerald-500/[0.07] hover:shadow-md hover:shadow-emerald-500/5 transition-all disabled:opacity-50 disabled:hover:bg-background disabled:hover:border-border"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <span className="size-6 rounded-md bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold flex items-center justify-center shrink-0">
+                    <span className="size-7 rounded-lg bg-gradient-to-br from-emerald-500/15 to-teal-500/15 text-emerald-700 dark:text-emerald-400 text-[10px] font-extrabold flex items-center justify-center shrink-0 group-hover:from-emerald-500 group-hover:to-teal-600 group-hover:text-white transition-all">
                       {String(i + 1).padStart(2, '0')}
                     </span>
-                    <span className="text-xs font-medium leading-snug">{p}</span>
+                    <span className="text-xs font-semibold leading-snug">{p}</span>
                   </div>
                   <ArrowRight className="size-3.5 text-muted-foreground/40 group-hover:text-emerald-600 transition-colors shrink-0" />
                 </motion.button>

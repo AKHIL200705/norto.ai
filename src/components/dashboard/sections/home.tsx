@@ -86,10 +86,10 @@ export function DashboardHome() {
   }
 
   const stats = [
-    { label: 'Current City', value: city, icon: MapPin, color: 'from-emerald-500 to-teal-600', iconColor: 'text-emerald-600' },
-    { label: 'Monthly Budget', value: isAuth && user ? `₹${user.budget.toLocaleString('en-IN')}` : '₹25,000', icon: WalletIcon, color: 'from-amber-500 to-orange-600', iconColor: 'text-amber-500' },
-    { label: 'Saved Places', value: '12', icon: Bookmark, color: 'from-teal-500 to-emerald-600', iconColor: 'text-teal-600' },
-    { label: 'Language', value: isAuth && user ? user.language : 'English', icon: LangIcon, color: 'from-rose-500 to-pink-600', iconColor: 'text-rose-500' },
+    { label: 'Current City', value: city, icon: MapPin, color: 'from-emerald-500 to-teal-600', iconColor: 'text-emerald-600', section: 'map' as DashboardSection },
+    { label: 'Monthly Budget', value: isAuth && user ? `₹${user.budget.toLocaleString('en-IN')}` : '₹25,000', icon: WalletIcon, color: 'from-amber-500 to-orange-600', iconColor: 'text-amber-500', section: 'budget' as DashboardSection },
+    { label: 'Saved Places', value: '12', icon: Bookmark, color: 'from-teal-500 to-emerald-600', iconColor: 'text-teal-600', section: 'saved' as DashboardSection },
+    { label: 'Language', value: isAuth && user ? user.language : 'English', icon: LangIcon, color: 'from-rose-500 to-pink-600', iconColor: 'text-rose-500', section: 'translator' as DashboardSection },
   ]
 
   return (
@@ -158,21 +158,31 @@ export function DashboardHome() {
           />
         </motion.div>
 
-        {/* Quick stats */}
+        {/* Quick stats — bold values, highlighted top accent */}
         <motion.div variants={item} className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {stats.map((s) => {
             const Icon = s.icon
             return (
-              <Card key={s.label} className="p-4 sm:p-5 gap-0 hover:shadow-md transition-shadow">
-                <div className="flex items-center justify-between">
-                  <div className={cn('size-9 rounded-lg flex items-center justify-center bg-gradient-to-br', s.color)}>
-                    <Icon className="size-4 text-white" />
+              <motion.button
+                key={s.label}
+                whileHover={{ y: -3 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setSection(s.section)}
+                className="text-left"
+              >
+                <Card className="p-4 sm:p-5 gap-0 relative overflow-hidden hover:shadow-lg hover:border-emerald-500/30 transition-all h-full">
+                  {/* Top accent bar */}
+                  <div className={cn('absolute top-0 left-0 right-0 h-1 bg-gradient-to-r', s.color)} />
+                  <div className="flex items-center justify-between">
+                    <div className={cn('size-10 rounded-xl flex items-center justify-center bg-gradient-to-br shadow-md', s.color)}>
+                      <Icon className="size-5 text-white" />
+                    </div>
+                    <ChevronRight className="size-4 text-muted-foreground/40" />
                   </div>
-                  <ChevronRight className="size-4 text-muted-foreground/40" />
-                </div>
-                <p className="mt-3 text-xs font-medium text-muted-foreground">{s.label}</p>
-                <p className="text-lg sm:text-xl font-bold tracking-tight mt-0.5">{s.value}</p>
-              </Card>
+                  <p className="mt-3 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">{s.label}</p>
+                  <p className="text-xl sm:text-2xl font-extrabold tracking-tight mt-0.5">{s.value}</p>
+                </Card>
+              </motion.button>
             )
           })}
         </motion.div>
@@ -180,8 +190,8 @@ export function DashboardHome() {
         {/* Quick actions grid */}
         <motion.div variants={item}>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-base sm:text-lg font-semibold tracking-tight">Quick Actions</h2>
-            <span className="text-xs text-muted-foreground">Tap to explore</span>
+            <h2 className="text-lg sm:text-xl font-extrabold tracking-tight">Quick Actions</h2>
+            <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">Tap to explore →</span>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
             {QUICK_ACTIONS.map((a) => {
@@ -194,12 +204,14 @@ export function DashboardHome() {
                   whileTap={{ scale: 0.98 }}
                   className="text-left"
                 >
-                  <Card className="p-4 sm:p-5 gap-0 h-full hover:border-emerald-500/40 hover:shadow-lg hover:shadow-emerald-500/5 transition-all">
-                    <div className={cn('size-10 rounded-xl flex items-center justify-center bg-gradient-to-br shadow-md', a.gradient)}>
+                  <Card className="p-4 sm:p-5 gap-0 h-full relative overflow-hidden hover:border-emerald-500/50 hover:shadow-xl hover:shadow-emerald-500/10 transition-all group">
+                    <div className={cn('size-11 rounded-xl flex items-center justify-center bg-gradient-to-br shadow-lg', a.gradient)}>
                       <Icon className="size-5 text-white" />
                     </div>
-                    <h3 className="mt-3 text-sm font-semibold">{a.title}</h3>
+                    <h3 className="mt-3 text-sm font-bold tracking-tight">{a.title}</h3>
                     <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{a.desc}</p>
+                    {/* Hover arrow */}
+                    <ArrowRight className="absolute bottom-4 right-4 size-4 text-emerald-500 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 -translate-x-2 transition-all" />
                   </Card>
                 </motion.button>
               )
@@ -218,7 +230,7 @@ export function DashboardHome() {
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-sm sm:text-base">AI Insight of the day</h3>
+                    <h3 className="font-extrabold text-sm sm:text-base tracking-tight">AI Insight of the day</h3>
                     <Badge variant="secondary" className="text-[10px] bg-amber-500/15 text-amber-700 dark:text-amber-400 border-0">
                       <Sparkles className="size-3 mr-1" />
                       Tip
@@ -244,7 +256,7 @@ export function DashboardHome() {
           <motion.div variants={item}>
             <Card className="p-5 gap-0 h-full">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="font-semibold text-sm sm:text-base flex items-center gap-2">
+                <h3 className="font-extrabold text-sm sm:text-base flex items-center gap-2 tracking-tight">
                   <Clock className="size-4 text-muted-foreground" />
                   Recent activity
                 </h3>
@@ -272,8 +284,8 @@ export function DashboardHome() {
         {/* Recommended for you */}
         <motion.div variants={item}>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-base sm:text-lg font-semibold tracking-tight flex items-center gap-2">
-              <TrendingUp className="size-4 text-amber-500" />
+            <h2 className="text-lg sm:text-xl font-extrabold tracking-tight flex items-center gap-2">
+              <TrendingUp className="size-5 text-amber-500" />
               Recommended for you
             </h2>
           </div>

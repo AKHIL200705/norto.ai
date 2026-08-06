@@ -204,7 +204,7 @@ export function WeatherView() {
               <span className="text-muted-foreground/40">•</span>
               <span>{new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mt-1">Weather Forecast</h1>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1">Weather Forecast</h1>
           </div>
           <div className="flex items-center gap-2">
             <Button
@@ -272,7 +272,7 @@ export function WeatherView() {
                         <CurrentIcon className="size-12 sm:size-14 text-amber-300" />
                       </motion.div>
                       <div>
-                        <div className="text-5xl sm:text-6xl font-bold tracking-tight">
+                        <div className="text-5xl sm:text-6xl font-extrabold tracking-tight">
                           {data.current.temp}
                         </div>
                         <div className="text-base sm:text-lg text-white/85 mt-1">{data.current.condition}</div>

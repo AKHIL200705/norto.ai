@@ -84,10 +84,10 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
         key={item.id}
         onClick={() => handleClick(item.id)}
         className={cn(
-          'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group relative',
+          'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all group relative',
           active
-            ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-md shadow-emerald-500/20'
-            : 'text-muted-foreground hover:text-foreground hover:bg-accent/60'
+            ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/25 font-bold'
+            : 'font-semibold text-muted-foreground hover:text-foreground hover:bg-accent/60'
         )}
       >
         <Icon className={cn('size-[18px] shrink-0', active ? 'text-white' : 'group-hover:text-emerald-600')} />

@@ -410,7 +410,7 @@ export function SmartMap() {
       {/* Header */}
       <div className="flex items-start justify-between flex-wrap gap-3 mb-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight flex items-center gap-2">
+          <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight flex items-center gap-2">
             <MapPin className="size-5 text-emerald-600" />
             Smart Map
           </h1>
@@ -461,10 +461,10 @@ export function SmartMap() {
           aria-controls="map-filters-panel"
         >
           <div className="flex items-center gap-2 min-w-0">
-            <span className="grid size-7 place-items-center rounded-lg bg-emerald-500/10 text-emerald-600 shrink-0">
-              <Filter className="size-3.5" />
+            <span className="grid size-8 place-items-center rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 text-white shrink-0 shadow-md">
+              <Filter className="size-4" />
             </span>
-            <span className="text-sm font-semibold">Categories &amp; Filters</span>
+            <span className="text-sm font-bold tracking-tight">Categories &amp; Filters</span>
             {/* Active-filter summary chips */}
             <div className="hidden sm:flex items-center gap-1 ml-1 min-w-0">
               {selectedCats.length > 0 && (
