@@ -109,6 +109,18 @@ export function Translator() {
     }
   }, [])
 
+  // Live real-time translation as user types
+  React.useEffect(() => {
+    if (!source.trim()) {
+      setTranslation('')
+      return
+    }
+    const timer = setTimeout(() => {
+      doTranslate(source, from, to)
+    }, 350)
+    return () => clearTimeout(timer)
+  }, [source, from, to, doTranslate])
+
   const handleSwap = () => {
     setFrom(to)
     setTo(from)
