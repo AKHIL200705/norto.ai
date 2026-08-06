@@ -207,37 +207,51 @@
     radial-gradient(at 50% 80%, oklch(0.65 0.2 30 / 0.1) 0px, transparent 50%);
 }
 
-/* Markdown content styling */
-.prose-ll {
-  line-height: 1.7;
+/* High-visibility AI Markdown & Answer content styling */
+.prose-ll, .ai-answer {
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: var(--foreground);
+  font-weight: 450;
 }
 .prose-ll h1, .prose-ll h2, .prose-ll h3 {
-  font-weight: 700;
-  margin-top: 1.2em;
-  margin-bottom: 0.5em;
+  font-weight: 750;
+  color: var(--foreground);
+  margin-top: 1em;
+  margin-bottom: 0.4em;
 }
-.prose-ll h1 { font-size: 1.5rem; }
-.prose-ll h2 { font-size: 1.25rem; }
-.prose-ll h3 { font-size: 1.1rem; }
+.prose-ll h1 { font-size: 1.4rem; }
+.prose-ll h2 { font-size: 1.2rem; }
+.prose-ll h3 { font-size: 1.05rem; }
 .prose-ll ul, .prose-ll ol {
   margin: 0.6em 0;
-  padding-left: 1.5em;
+  padding-left: 1.4em;
 }
-.prose-ll li { margin: 0.25em 0; }
-.prose-ll p { margin: 0.6em 0; }
-.prose-ll strong { font-weight: 600; }
+.prose-ll li { margin: 0.3em 0; }
+.prose-ll p { margin: 0.5em 0; }
+.prose-ll strong {
+  font-weight: 700;
+  color: oklch(0.62 0.17 155);
+}
+.dark .prose-ll strong {
+  color: oklch(0.75 0.18 155);
+}
 .prose-ll code {
-  background: oklch(0.95 0.02 150);
-  padding: 0.15em 0.4em;
-  border-radius: 0.3em;
+  background: oklch(0.94 0.02 150);
+  color: oklch(0.2 0.03 160);
+  padding: 0.2em 0.45em;
+  border-radius: 0.35em;
   font-size: 0.9em;
+  font-weight: 600;
 }
 .dark .prose-ll code {
-  background: oklch(0.3 0.02 160);
+  background: oklch(0.28 0.03 160);
+  color: oklch(0.95 0.01 150);
 }
 .prose-ll blockquote {
-  border-left: 3px solid oklch(0.62 0.17 155);
+  border-left: 4px solid oklch(0.62 0.17 155);
   padding-left: 1em;
   margin: 0.8em 0;
-  opacity: 0.85;
+  font-weight: 500;
+  opacity: 0.95;
 }

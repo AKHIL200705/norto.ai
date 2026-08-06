@@ -405,16 +405,16 @@ function TranslatorCard({
               </Button>
             </div>
           </div>
-          <div className="min-h-[124px] rounded-md border border-input bg-muted/40 p-3 text-sm">
+          <div className="min-h-[124px] rounded-md border border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-950/20 p-3.5 text-base">
             {loading ? (
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Loader2 className="size-4 animate-spin text-emerald-600" />
+              <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-medium">
+                <Loader2 className="size-4 animate-spin" />
                 Translating…
               </div>
             ) : translation ? (
-              <p className="leading-relaxed whitespace-pre-wrap">{translation}</p>
+              <p className="text-base sm:text-lg font-extrabold text-foreground leading-relaxed whitespace-pre-wrap">{translation}</p>
             ) : (
-              <p className="text-muted-foreground/60 italic">Translation will appear here…</p>
+              <p className="text-muted-foreground/70 italic text-sm">Translation will appear here…</p>
             )}
           </div>
         </div>
