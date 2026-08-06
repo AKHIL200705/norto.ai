@@ -45,24 +45,24 @@
 
 :root {
   --radius: 0.75rem;
-  /* LifeLens AI — emerald + amber palette */
+  /* LifeLens AI — emerald + amber palette with high contrast typography */
   --background: oklch(0.99 0.005 150);
-  --foreground: oklch(0.16 0.02 160);
+  --foreground: oklch(0.12 0.02 160);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.16 0.02 160);
+  --card-foreground: oklch(0.12 0.02 160);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.16 0.02 160);
+  --popover-foreground: oklch(0.12 0.02 160);
   --primary: oklch(0.62 0.17 155);
   --primary-foreground: oklch(0.99 0.005 150);
   --secondary: oklch(0.96 0.02 150);
-  --secondary-foreground: oklch(0.25 0.03 160);
-  --muted: oklch(0.96 0.01 150);
-  --muted-foreground: oklch(0.52 0.02 160);
+  --secondary-foreground: oklch(0.2 0.03 160);
+  --muted: oklch(0.95 0.01 150);
+  --muted-foreground: oklch(0.38 0.02 160);
   --accent: oklch(0.94 0.04 80);
-  --accent-foreground: oklch(0.3 0.05 70);
+  --accent-foreground: oklch(0.25 0.05 70);
   --destructive: oklch(0.58 0.22 25);
-  --border: oklch(0.9 0.01 150);
-  --input: oklch(0.92 0.01 150);
+  --border: oklch(0.88 0.01 150);
+  --input: oklch(0.9 0.01 150);
   --ring: oklch(0.62 0.17 155);
   --chart-1: oklch(0.62 0.17 155);
   --chart-2: oklch(0.72 0.16 75);
@@ -70,33 +70,33 @@
   --chart-4: oklch(0.6 0.13 200);
   --chart-5: oklch(0.7 0.18 300);
   --sidebar: oklch(0.985 0.005 150);
-  --sidebar-foreground: oklch(0.16 0.02 160);
+  --sidebar-foreground: oklch(0.12 0.02 160);
   --sidebar-primary: oklch(0.62 0.17 155);
   --sidebar-primary-foreground: oklch(0.99 0.005 150);
   --sidebar-accent: oklch(0.95 0.02 150);
-  --sidebar-accent-foreground: oklch(0.25 0.03 160);
-  --sidebar-border: oklch(0.9 0.01 150);
+  --sidebar-accent-foreground: oklch(0.2 0.03 160);
+  --sidebar-border: oklch(0.88 0.01 150);
   --sidebar-ring: oklch(0.62 0.17 155);
 }
 
 .dark {
   --background: oklch(0.15 0.015 160);
-  --foreground: oklch(0.97 0.005 150);
+  --foreground: oklch(0.98 0.005 150);
   --card: oklch(0.2 0.02 160);
-  --card-foreground: oklch(0.97 0.005 150);
+  --card-foreground: oklch(0.98 0.005 150);
   --popover: oklch(0.2 0.02 160);
-  --popover-foreground: oklch(0.97 0.005 150);
+  --popover-foreground: oklch(0.98 0.005 150);
   --primary: oklch(0.7 0.18 155);
   --primary-foreground: oklch(0.15 0.015 160);
   --secondary: oklch(0.26 0.025 160);
-  --secondary-foreground: oklch(0.97 0.005 150);
+  --secondary-foreground: oklch(0.98 0.005 150);
   --muted: oklch(0.26 0.02 160);
-  --muted-foreground: oklch(0.7 0.02 160);
+  --muted-foreground: oklch(0.82 0.02 160);
   --accent: oklch(0.3 0.05 75);
   --accent-foreground: oklch(0.95 0.03 75);
   --destructive: oklch(0.7 0.19 22);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 12%);
+  --border: oklch(1 0 0 / 15%);
+  --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.7 0.18 155);
   --chart-1: oklch(0.7 0.18 155);
   --chart-2: oklch(0.75 0.16 75);
@@ -104,12 +104,12 @@
   --chart-4: oklch(0.65 0.14 200);
   --chart-5: oklch(0.72 0.18 300);
   --sidebar: oklch(0.18 0.018 160);
-  --sidebar-foreground: oklch(0.97 0.005 150);
+  --sidebar-foreground: oklch(0.98 0.005 150);
   --sidebar-primary: oklch(0.7 0.18 155);
   --sidebar-primary-foreground: oklch(0.15 0.015 160);
   --sidebar-accent: oklch(0.26 0.025 160);
-  --sidebar-accent-foreground: oklch(0.97 0.005 150);
-  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-accent-foreground: oklch(0.98 0.005 150);
+  --sidebar-border: oklch(1 0 0 / 15%);
   --sidebar-ring: oklch(0.7 0.18 155);
 }
 
@@ -118,7 +118,21 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground text-sm sm:text-base antialiased;
+    font-size: 15px;
+  }
+}
+
+/* High visibility typography overrides for micro-labels & badges */
+@layer utilities {
+  .text-\[9px\], .text-\[10px\], .text-\[11px\] {
+    font-size: 0.8125rem !important; /* 13px minimum readable font */
+    line-height: 1.15rem !important;
+    font-weight: 500 !important;
+  }
+  .text-xs {
+    font-size: 0.875rem !important; /* 14px clear font */
+    line-height: 1.25rem !important;
   }
 }
 
