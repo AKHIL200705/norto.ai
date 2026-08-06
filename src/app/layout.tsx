@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
+import { SupabaseAuthProvider } from "@/components/auth/supabase-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -63,7 +64,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <SupabaseAuthProvider>
+            {children}
+          </SupabaseAuthProvider>
           <Toaster />
           <SonnerToaster position="top-right" richColors />
         </ThemeProvider>
