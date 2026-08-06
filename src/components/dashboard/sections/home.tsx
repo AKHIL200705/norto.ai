@@ -67,6 +67,24 @@ export function DashboardHome() {
   const liveLocation = useAppStore((s) => s.liveLocation)
   const locationStatus = useAppStore((s) => s.locationStatus)
   const locationError = useAppStore((s) => s.locationError)
+  const [realSavedCount, setRealSavedCount] = React.useState<number>(0)
+
+  React.useEffect(() => {
+    async function getCount() {
+      try {
+        const res = await fetch('/api/places')
+        if (res.ok) {
+          const data = await res.json()
+          if (Array.isArray(data.places)) {
+            setRealSavedCount(data.places.length)
+          }
+        }
+      } catch {
+        // fallback
+      }
+    }
+    getCount()
+  }, [])
 
   const firstName = isAuth && user ? (user.name.split(' ')[0] || 'Explorer') : 'Explorer'
 
@@ -88,7 +106,7 @@ export function DashboardHome() {
   const stats = [
     { label: 'Current City', value: city, icon: MapPin, color: 'from-emerald-500 to-teal-600', iconColor: 'text-emerald-600', section: 'map' as DashboardSection },
     { label: 'Monthly Budget', value: isAuth && user ? `₹${user.budget.toLocaleString('en-IN')}` : '₹25,000', icon: WalletIcon, color: 'from-amber-500 to-orange-600', iconColor: 'text-amber-500', section: 'budget' as DashboardSection },
-    { label: 'Saved Places', value: '12', icon: Bookmark, color: 'from-teal-500 to-emerald-600', iconColor: 'text-teal-600', section: 'saved' as DashboardSection },
+    { label: 'Saved Places', value: String(realSavedCount), icon: Bookmark, color: 'from-teal-500 to-emerald-600', iconColor: 'text-teal-600', section: 'saved' as DashboardSection },
     { label: 'Language', value: isAuth && user ? user.language : 'English', icon: LangIcon, color: 'from-rose-500 to-pink-600', iconColor: 'text-rose-500', section: 'translator' as DashboardSection },
   ]
 
