@@ -234,6 +234,7 @@ function LocationChip({
                   {[live.region, live.country].filter(Boolean).join(', ')}
                 </p>
               </div>
+              <div className="p-3 space-y-2 text-xs">
                 <div className="p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/25 text-emerald-800 dark:text-emerald-300 text-[11px] leading-tight space-y-1.5">
                   <div className="flex items-center justify-between">
                     <p className="font-bold flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400">
