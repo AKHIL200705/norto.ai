@@ -277,7 +277,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const url = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&addressdetails=1&accept-language=en`
+    const url = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&addressdetails=1&zoom=18&accept-language=en`
     const upstream = await fetch(url, {
       headers: {
         Accept: 'application/json',
