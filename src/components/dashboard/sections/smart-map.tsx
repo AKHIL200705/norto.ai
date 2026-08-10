@@ -406,7 +406,7 @@ export function SmartMap() {
   const locating = locationStatus === 'loading'
 
   return (
-    <div className="p-4 lg:p-6 max-w-7xl mx-auto">
+    <div className="p-4 lg:p-6 pb-28 lg:pb-32 max-w-7xl mx-auto">
       {/* Header */}
       <div className="flex items-start justify-between flex-wrap gap-3 mb-4">
         <div>
@@ -452,8 +452,8 @@ export function SmartMap() {
         </div>
       </div>
 
-      {/* ===== Myntra-Style Filter Navbar ===== */}
-      <div className="sticky top-14 z-30 mb-5 rounded-2xl glass-card border-[#D9D9D9] p-3 backdrop-blur-xl bg-background/90 shadow-lg">
+      {/* ===== Myntra-Style Fixed Bottom Filter Navbar ===== */}
+      <div className="fixed bottom-3 left-4 right-4 md:left-72 z-40 rounded-2xl glass-card border-[#D9D9D9] p-3 backdrop-blur-2xl bg-background/95 shadow-2xl border-t border-t-[#DD0200]/40 max-w-6xl mx-auto">
         {/* Row 1: Header summary + Quick Sort pills */}
         <div className="flex items-center justify-between gap-3 flex-wrap pb-2 border-b border-[#D9D9D9]/60">
           <div className="flex items-center gap-2">
