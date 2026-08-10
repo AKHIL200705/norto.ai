@@ -86,31 +86,31 @@
 }
 
 .dark {
-  --background: #1a0706;
+  --background: #000000;
   --foreground: #ffffff;
-  --card: rgba(35, 12, 10, 0.85);
+  --card: rgba(15, 15, 15, 0.90);
   --card-foreground: #ffffff;
-  --popover: #1a0706;
+  --popover: #000000;
   --popover-foreground: #ffffff;
   --primary: #dd0200;
   --primary-foreground: #ffffff;
   --secondary: #55100d;
   --secondary-foreground: #ffffff;
-  --muted: #2a0c0a;
+  --muted: #141414;
   --muted-foreground: #d9d9d9;
   --accent: #55100d;
   --accent-foreground: #ffffff;
   --destructive: #dd0200;
-  --border: rgba(217, 217, 217, 0.2);
-  --input: rgba(217, 217, 217, 0.2);
+  --border: rgba(217, 217, 217, 0.18);
+  --input: rgba(217, 217, 217, 0.18);
   --ring: #dd0200;
-  --sidebar: #1a0706;
+  --sidebar: #000000;
   --sidebar-foreground: #ffffff;
   --sidebar-primary: #dd0200;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #55100d;
   --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: rgba(217, 217, 217, 0.2);
+  --sidebar-border: rgba(217, 217, 217, 0.18);
   --sidebar-ring: #dd0200;
 }
 
@@ -169,7 +169,7 @@
   border: 1px solid rgba(217, 217, 217, 0.6);
 }
 .dark .glass {
-  background: rgba(26, 7, 6, 0.82);
+  background: rgba(0, 0, 0, 0.85);
   border: 1px solid rgba(217, 217, 217, 0.15);
 }
 
