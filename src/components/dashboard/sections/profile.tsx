@@ -263,33 +263,33 @@ export function Profile() {
 
         {/* Real-time Stats row */}
         <motion.div variants={item} className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          <StatCard icon={Calendar} label="Member since" value={memberSince} gradient="from-emerald-500 to-teal-600" />
-          <StatCard icon={MapIcon} label="Places saved" value={String(realPlacesCount)} gradient="from-amber-500 to-orange-500" onClick={() => setSection('saved')} />
-          <StatCard icon={MessageSquare} label="AI chats" value={String(chatsCount)} gradient="from-rose-500 to-pink-600" onClick={() => setSection('assistant')} />
-          <StatCard icon={Globe} label="Languages" value={String(languagesKnown)} gradient="from-violet-500 to-fuchsia-600" />
+          <StatCard icon={Calendar} label="Member since" value={memberSince} gradient="from-[#DD0200] to-[#55100D]" />
+          <StatCard icon={MapIcon} label="Places saved" value={String(realPlacesCount)} gradient="from-[#8B0000] to-[#1A0706]" onClick={() => setSection('saved')} />
+          <StatCard icon={MessageSquare} label="AI chats" value={String(chatsCount)} gradient="from-[#DD0200] to-[#8B0000]" onClick={() => setSection('assistant')} />
+          <StatCard icon={Globe} label="Languages" value={String(languagesKnown)} gradient="from-[#55100D] to-[#1A0706]" />
         </motion.div>
 
         {/* Edit form OR preferences + travel history */}
         {editing ? (
           <motion.div variants={item}>
-            <Card className="p-5 sm:p-6 gap-0">
+            <Card className="glass-card p-5 sm:p-6 gap-0 border-[#D9D9D9]">
               <div className="flex items-center gap-2 mb-4">
-                <Settings className="size-4 text-emerald-600" />
-                <h3 className="font-semibold text-sm sm:text-base">Edit profile</h3>
+                <Settings className="size-4 text-[#DD0200]" />
+                <h3 className="font-extrabold text-sm sm:text-base">Edit profile</h3>
               </div>
               <div className="grid sm:grid-cols-2 gap-4">
                 <Field label="Full name" icon={User}>
-                  <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Your name" />
+                  <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Your name" className="border-[#D9D9D9]" />
                 </Field>
                 <Field label="Email" icon={Mail}>
-                  <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="you@email.com" />
+                  <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="you@email.com" className="border-[#D9D9D9]" />
                 </Field>
                 <Field label="Occupation" icon={Briefcase}>
-                  <Input value={form.occupation || ''} onChange={(e) => setForm({ ...form, occupation: e.target.value })} placeholder="Software Engineer" />
+                  <Input value={form.occupation || ''} onChange={(e) => setForm({ ...form, occupation: e.target.value })} placeholder="Software Engineer" className="border-[#D9D9D9]" />
                 </Field>
                 <Field label="Language" icon={Languages}>
                   <Select value={form.language} onValueChange={(v) => setForm({ ...form, language: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectTrigger className="border-[#D9D9D9]"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       {LANGUAGES.map((l) => <SelectItem key={l} value={l}>{l}</SelectItem>)}
                     </SelectContent>
@@ -301,11 +301,12 @@ export function Profile() {
                     value={form.budget}
                     onChange={(e) => setForm({ ...form, budget: Number(e.target.value) })}
                     placeholder="25000"
+                    className="border-[#D9D9D9]"
                   />
                 </Field>
                 <Field label="Food preference" icon={Utensils}>
                   <Select value={form.foodPref} onValueChange={(v) => setForm({ ...form, foodPref: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectTrigger className="border-[#D9D9D9]"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Veg">Veg</SelectItem>
                       <SelectItem value="Non-Veg">Non-Veg</SelectItem>
@@ -315,7 +316,7 @@ export function Profile() {
                 </Field>
                 <Field label="Preferred transport" icon={Bus}>
                   <Select value={form.transport} onValueChange={(v) => setForm({ ...form, transport: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectTrigger className="border-[#D9D9D9]"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Public">Public Transport</SelectItem>
                       <SelectItem value="Own Vehicle">Own Vehicle</SelectItem>
@@ -325,7 +326,7 @@ export function Profile() {
                   </Select>
                 </Field>
                 <Field label="Current city" icon={MapPin}>
-                  <Input value={form.city || ''} onChange={(e) => setForm({ ...form, city: e.target.value })} placeholder="Hyderabad" />
+                  <Input value={form.city || ''} onChange={(e) => setForm({ ...form, city: e.target.value })} placeholder="Hyderabad" className="border-[#D9D9D9]" />
                 </Field>
               </div>
               <div className="mt-5 flex justify-end gap-2">
@@ -341,13 +342,13 @@ export function Profile() {
           <div className="grid lg:grid-cols-2 gap-4">
             {/* Real-time Notification Preferences */}
             <motion.div variants={item}>
-              <Card className="p-5 sm:p-6 gap-0 h-full">
+              <Card className="glass-card p-5 sm:p-6 gap-0 h-full border-[#D9D9D9]">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-semibold text-sm sm:text-base flex items-center gap-2">
-                    <Bell className="size-4 text-amber-500" />
+                  <h3 className="font-extrabold text-sm sm:text-base flex items-center gap-2">
+                    <Bell className="size-4 text-[#DD0200]" />
                     Notification preferences
                   </h3>
-                  <Badge variant="outline" className="text-[10px] text-emerald-600 border-emerald-500/30">Real-time sync</Badge>
+                  <Badge variant="secondary" className="text-[10px] bg-[#DD0200]/15 text-[#DD0200] border-0 font-bold">Real-time sync</Badge>
                 </div>
                 <div className="flex flex-col gap-1">
                   <PrefRow
@@ -384,58 +385,58 @@ export function Profile() {
 
             {/* Real-time Travel history */}
             <motion.div variants={item}>
-              <Card className="p-5 sm:p-6 gap-0 h-full">
+              <Card className="glass-card p-5 sm:p-6 gap-0 h-full border-[#D9D9D9]">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-extrabold text-sm sm:text-base flex items-center gap-2 tracking-tight">
-                    <MapPin className="size-4 text-emerald-600" />
+                    <MapPin className="size-4 text-[#DD0200]" />
                     Travel history
                   </h3>
                   <Button
                     size="sm"
                     variant="ghost"
                     onClick={() => setShowAddCity(!showAddCity)}
-                    className="h-7 text-xs text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
+                    className="h-7 text-xs text-[#DD0200] hover:text-[#DD0200] hover:bg-[#DD0200]/10 font-bold"
                   >
                     <Plus className="size-3.5 mr-1" /> Add City
                   </Button>
                 </div>
 
                 {showAddCity && (
-                  <div className="mb-4 p-3 rounded-lg border bg-muted/30 flex items-center gap-2">
+                  <div className="mb-4 p-3 rounded-xl border border-[#D9D9D9] bg-card flex items-center gap-2">
                     <Input
                       placeholder="e.g. Autonagar, Koppuravuru"
                       value={newCityInput}
                       onChange={(e) => setNewCityInput(e.target.value)}
-                      className="h-8 text-xs bg-background"
+                      className="h-8 text-xs bg-background border-[#D9D9D9]"
                       onKeyDown={(e) => e.key === 'Enter' && handleAddCity()}
                     />
-                    <Button size="sm" onClick={handleAddCity} className="h-8 text-xs bg-emerald-600 hover:bg-emerald-700">
+                    <Button size="sm" onClick={handleAddCity} className="h-8 text-xs font-bold">
                       Add
                     </Button>
                   </div>
                 )}
 
                 <div className="relative pl-5">
-                  <div className="absolute left-[6px] top-1 bottom-1 w-px bg-border" />
+                  <div className="absolute left-[6px] top-1 bottom-1 w-px bg-[#D9D9D9]" />
                   <div className="flex flex-col gap-4">
                     {storeTravelHistory.map((t, i) => (
                       <div key={i} className="relative">
                         <div
                           className={cn(
                             'absolute -left-5 top-1 size-3 rounded-full border-2 border-background',
-                            t.current ? 'bg-emerald-500' : 'bg-muted-foreground/40',
+                            t.current ? 'bg-[#DD0200]' : 'bg-muted-foreground/40',
                           )}
                         />
                         <div className="flex items-center justify-between gap-2">
-                          <p className="text-sm font-bold">{t.city}</p>
+                          <p className="text-sm font-extrabold">{t.city}</p>
                           {t.current && (
-                            <Badge variant="secondary" className="text-[9px] bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-0">
-                              <span className="size-1.5 rounded-full bg-emerald-500 mr-1 animate-pulse" />
+                            <Badge variant="secondary" className="text-[9px] bg-[#DD0200]/15 text-[#DD0200] border-0 font-bold">
+                              <span className="size-1.5 rounded-full bg-[#DD0200] mr-1 animate-pulse" />
                               Current
                             </Badge>
                           )}
                         </div>
-                        <p className="text-[11px] text-muted-foreground mt-0.5">{t.from} — {t.to}</p>
+                        <p className="text-[11px] text-muted-foreground font-semibold mt-0.5">{t.from} — {t.to}</p>
                       </div>
                     ))}
                   </div>
@@ -447,21 +448,21 @@ export function Profile() {
 
         {/* Danger zone */}
         <motion.div variants={item}>
-          <Card className="p-5 sm:p-6 gap-0 border-rose-500/30 bg-rose-500/5">
-            <h3 className="font-semibold text-sm sm:text-base flex items-center gap-2 mb-1">
+          <Card className="glass-card p-5 sm:p-6 gap-0 border-[#DD0200]/30 bg-[#DD0200]/5">
+            <h3 className="font-extrabold text-sm sm:text-base flex items-center gap-2 mb-1">
               <AlertTriangleIcon />
               Danger zone
             </h3>
             <p className="text-xs text-muted-foreground mb-4">Irreversible &amp; destructive actions</p>
             <div className="flex flex-col sm:flex-row gap-3">
-              <div className="flex-1 p-3 rounded-lg border border-rose-500/20 bg-background/50 flex items-center justify-between gap-3">
+              <div className="flex-1 p-3 rounded-xl border border-[#DD0200]/20 bg-background/50 flex items-center justify-between gap-3 backdrop-blur-md">
                 <div>
-                  <p className="text-sm font-medium">Reset all data</p>
+                  <p className="text-sm font-bold">Reset all data</p>
                   <p className="text-[11px] text-muted-foreground">Clears your profile, saved places, phrases &amp; recents</p>
                 </div>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="outline" size="sm" className="border-rose-500/30 text-rose-600 hover:bg-rose-500/10 hover:text-rose-700">
+                    <Button variant="outline" size="sm" className="border-[#DD0200]/30 text-[#DD0200] hover:bg-[#DD0200]/10 font-bold">
                       <Trash2 className="size-4" />
                       Reset
                     </Button>
@@ -475,16 +476,16 @@ export function Profile() {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={handleReset} className="bg-rose-600 hover:bg-rose-700 text-white">
+                      <AlertDialogAction onClick={handleReset} className="bg-[#DD0200] hover:bg-[#55100D] text-white font-bold">
                         Yes, reset everything
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
               </div>
-              <div className="flex-1 p-3 rounded-lg border border-border/60 bg-background/50 flex items-center justify-between gap-3">
+              <div className="flex-1 p-3 rounded-xl border border-[#D9D9D9] bg-background/50 flex items-center justify-between gap-3 backdrop-blur-md">
                 <div>
-                  <p className="text-sm font-medium">
+                  <p className="text-sm font-bold">
                     {isAuth ? 'Sign out' : 'Sign in'}
                   </p>
                   <p className="text-[11px] text-muted-foreground">
@@ -494,7 +495,7 @@ export function Profile() {
                   </p>
                 </div>
                 {isAuth ? (
-                  <Button variant="outline" size="sm" onClick={handleSignOut}>
+                  <Button variant="outline" size="sm" onClick={handleSignOut} className="font-bold">
                     <LogOut className="size-4" />
                     Sign out
                   </Button>
@@ -503,7 +504,7 @@ export function Profile() {
                     variant="outline"
                     size="sm"
                     onClick={handleSignIn}
-                    className="border-emerald-500/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/10"
+                    className="border-[#DD0200]/30 text-[#DD0200] hover:bg-[#DD0200]/10 font-bold"
                   >
                     <LogIn className="size-4" />
                     Sign in
@@ -519,7 +520,7 @@ export function Profile() {
 }
 
 function AlertTriangleIcon() {
-  return <ShieldCheck className="size-4 text-rose-600" />
+  return <ShieldCheck className="size-4 text-[#DD0200]" />
 }
 
 function StatCard({
@@ -539,12 +540,12 @@ function StatCard({
       className="text-left disabled:cursor-default"
       disabled={!onClick}
     >
-      <Card className="p-4 sm:p-5 gap-0 h-full hover:shadow-md transition-shadow">
-        <div className={cn('size-9 rounded-lg flex items-center justify-center bg-gradient-to-br shadow-md', gradient)}>
+      <Card className="glass-card p-4 sm:p-5 gap-0 h-full border-[#D9D9D9]">
+        <div className={cn('size-9 rounded-xl flex items-center justify-center bg-gradient-to-br shadow-md', gradient)}>
           <Icon className="size-4 text-white" />
         </div>
-        <p className="mt-3 text-xs font-medium text-muted-foreground">{label}</p>
-        <p className="text-lg sm:text-xl font-bold tracking-tight mt-0.5">{value}</p>
+        <p className="mt-3 text-xs font-bold text-muted-foreground">{label}</p>
+        <p className="text-lg sm:text-xl font-extrabold tracking-tight mt-0.5">{value}</p>
       </Card>
     </motion.button>
   )
@@ -553,8 +554,8 @@ function StatCard({
 function Field({ label, icon: Icon, children }: { label: string; icon: React.ElementType; children: React.ReactNode }) {
   return (
     <div className="space-y-1.5">
-      <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
-        <Icon className="size-3" />
+      <Label className="text-xs text-muted-foreground font-semibold flex items-center gap-1.5">
+        <Icon className="size-3 text-[#DD0200]" />
         {label}
       </Label>
       {children}
@@ -572,13 +573,13 @@ function PrefRow({
   onChange: (v: boolean) => void
 }) {
   return (
-    <div className="flex items-center justify-between gap-3 p-2.5 rounded-md hover:bg-muted/40 transition-colors">
+    <div className="flex items-center justify-between gap-3 p-2.5 rounded-xl hover:bg-[#DD0200]/5 transition-colors">
       <div className="flex items-center gap-3">
-        <div className="size-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
-          <Icon className="size-4 text-muted-foreground" />
+        <div className="size-8 rounded-lg bg-[#DD0200]/15 flex items-center justify-center shrink-0">
+          <Icon className="size-4 text-[#DD0200]" />
         </div>
         <div>
-          <p className="text-sm font-medium">{title}</p>
+          <p className="text-sm font-bold">{title}</p>
           <p className="text-[11px] text-muted-foreground">{desc}</p>
         </div>
       </div>
