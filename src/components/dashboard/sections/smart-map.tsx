@@ -429,32 +429,6 @@ export function SmartMap() {
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          <div className="flex items-center gap-1 rounded-xl border border-[#D9D9D9] bg-muted/60 p-0.5 backdrop-blur-md">
-            <button
-              onClick={() => setViewMode('google-maps')}
-              className={cn(
-                'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer',
-                viewMode === 'google-maps'
-                  ? 'bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] text-white shadow-md shadow-[#DD0200]/25'
-                  : 'text-muted-foreground hover:text-[#DD0200]'
-              )}
-            >
-              <Navigation className="size-3.5" />
-              Google Maps
-            </button>
-            <button
-              onClick={() => setViewMode('radar-map')}
-              className={cn(
-                'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer',
-                viewMode === 'radar-map'
-                  ? 'bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] text-white shadow-md shadow-[#DD0200]/25'
-                  : 'text-muted-foreground hover:text-[#DD0200]'
-              )}
-            >
-              <Crosshair className="size-3.5" />
-              Radar Pins
-            </button>
-          </div>
           <Button
             variant="outline"
             size="sm"
@@ -654,194 +628,35 @@ export function SmartMap() {
         {/* Map area */}
         <div className="flex flex-col gap-3 order-1">
           {/* Map canvas */}
-          <Card className="relative overflow-hidden p-0 gap-0 border-2">
-            {viewMode === 'google-maps' ? (
-              <div className="relative w-full h-[400px] sm:h-[480px] rounded-xl overflow-hidden bg-muted">
-                <iframe
-                  title="Live Google Maps View"
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  loading="lazy"
-                  allowFullScreen
-                  src={`https://maps.google.com/maps?q=${queryLat && queryLng ? `${queryLat},${queryLng}` : encodeURIComponent((liveLocation?.city || city) + ', India')}&z=15&output=embed`}
-                />
-                <div className="absolute top-3 right-3 z-10">
-                  <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${queryLat && queryLng ? `${queryLat},${queryLng}` : encodeURIComponent((liveLocation?.city || city) + ', India')}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-background/95 backdrop-blur border text-xs font-semibold text-foreground shadow-md hover:bg-background transition-colors"
-                  >
-                    <Navigation className="size-3.5 text-emerald-600" />
-                    Open Google Maps App ↗
-                  </a>
-                </div>
-                <div className="absolute bottom-3 left-3 z-10">
-                  <span className="text-[10px] font-medium bg-background/90 backdrop-blur px-2.5 py-1 rounded-md border shadow-sm flex items-center gap-1.5">
-                    <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-                    Google Maps Live · {liveLocation ? liveLocation.city : city}
-                  </span>
-                </div>
+          <Card className="glass-card relative overflow-hidden p-0 gap-0 border-[#D9D9D9]">
+            <div className="relative w-full h-[420px] sm:h-[500px] rounded-xl overflow-hidden bg-muted">
+              <iframe
+                title="Live Google Maps View"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                loading="lazy"
+                allowFullScreen
+                src={`https://maps.google.com/maps?q=${queryLat && queryLng ? `${queryLat},${queryLng}` : encodeURIComponent((liveLocation?.city || city) + ', India')}&z=15&output=embed`}
+              />
+              <div className="absolute top-3 right-3 z-10">
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${queryLat && queryLng ? `${queryLat},${queryLng}` : encodeURIComponent((liveLocation?.city || city) + ', India')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-background/90 backdrop-blur-md border border-[#D9D9D9] text-xs font-bold text-foreground shadow-lg hover:bg-[#DD0200]/10 hover:text-[#DD0200] transition-all"
+                >
+                  <Navigation className="size-3.5 text-[#DD0200]" />
+                  Open Google Maps App ↗
+                </a>
               </div>
-            ) : (
-              <div className="relative w-full h-[400px] sm:h-[480px] mesh-bg bg-gradient-to-br from-emerald-50 via-background to-amber-50/40 dark:from-emerald-950/20 dark:via-background dark:to-amber-950/10">
-                {/* Decorative roads */}
-                <div className="absolute left-0 right-0 top-[42%] h-1.5 bg-foreground/5 rotate-[-2deg] origin-center" />
-                <div className="absolute left-0 right-0 top-[68%] h-1 bg-foreground/5 rotate-[1deg] origin-center" />
-                <div className="absolute top-0 bottom-0 left-[35%] w-1.5 bg-foreground/5 rotate-[8deg] origin-center" />
-                <div className="absolute top-0 bottom-0 left-[68%] w-1 bg-foreground/5 rotate-[-6deg] origin-center" />
-
-                {/* "You are here" indicator (center) */}
-                <div className="absolute left-[50%] top-[50%] -translate-x-1/2 -translate-y-1/2 z-10">
-                  <div className="relative">
-                    <div className="size-12 rounded-full bg-emerald-500/20 absolute -inset-3 animate-ping" />
-                    <div className="size-6 rounded-full bg-emerald-600 border-4 border-white shadow-lg relative flex items-center justify-center">
-                      <div className="size-2 rounded-full bg-white" />
-                    </div>
-                    <div className="absolute top-7 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-semibold bg-background/90 backdrop-blur px-2 py-0.5 rounded-md border shadow-sm">
-                      You · {liveLocation ? liveLocation.city : city}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Loading overlay */}
-                {loading && (
-                  <div className="absolute inset-0 bg-background/60 backdrop-blur-sm flex items-center justify-center z-30">
-                    <div className="flex flex-col items-center gap-3 bg-background/90 border rounded-xl px-6 py-5 shadow-lg">
-                      <Loader2 className="size-8 text-emerald-600 animate-spin" />
-                      <p className="text-sm font-medium">Fetching real places nearby…</p>
-                      <p className="text-[11px] text-muted-foreground">Categories: {selectedCats.join(', ')}</p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Error overlay */}
-                {!loading && error && (
-                  <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-30 p-6">
-                    <div className="flex flex-col items-center gap-3 bg-background border rounded-xl px-6 py-5 shadow-lg max-w-sm text-center">
-                      <div className="size-12 rounded-full bg-rose-500/10 flex items-center justify-center">
-                        <AlertTriangle className="size-6 text-rose-500" />
-                      </div>
-                      <p className="text-sm font-semibold">Couldn&apos;t load places</p>
-                      <p className="text-[11px] text-muted-foreground">{error}</p>
-                      <Button size="sm" onClick={fetchPlaces} className="mt-1 bg-gradient-to-r from-emerald-600 to-teal-700">
-                        <RefreshCw className="size-4" /> Retry
-                      </Button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Markers */}
-                {!loading && !error && filtered.map((p) => {
-                  const Icon = ICONS[p.category] || MapPin
-                  const c = colorFor(p.category)
-                  const isActive = activeId === p.id
-                  const isHovered = hoveredId === p.id
-                  const isSaved = savedIds.has(p.id)
-                  return (
-                    <div
-                      key={p.id}
-                      className="absolute z-20"
-                      style={{ left: `${p.x}%`, top: `${p.y}%`, transform: 'translate(-50%, -100%)' }}
-                    >
-                      {/* Label on hover/active */}
-                      {(isHovered || isActive) && (
-                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 whitespace-nowrap max-w-[180px]">
-                          <span className="text-[10px] font-semibold bg-background/95 backdrop-blur border shadow-sm px-2 py-0.5 rounded-md block truncate">
-                            {p.name}
-                          </span>
-                        </div>
-                      )}
-
-                      <button
-                        onClick={() => setActiveId(isActive ? null : p.id)}
-                        onMouseEnter={() => setHoveredId(p.id)}
-                        onMouseLeave={() => setHoveredId(null)}
-                        className="relative block group"
-                        aria-label={`${p.name} — ${p.category}`}
-                      >
-                        <div className={cn(
-                          'flex flex-col items-center transition-transform',
-                          (isHovered || isActive) && 'scale-110'
-                        )}>
-                          <div className={cn(
-                            'relative size-7 rounded-full flex items-center justify-center ring-2 ring-background shadow-md transition-all',
-                            c.pin,
-                            isActive && 'ring-4 ring-emerald-500/30'
-                          )}>
-                            <Icon className="size-3.5 text-white" />
-                            {isSaved && (
-                              <span className="absolute -top-1 -right-1 size-3 rounded-full bg-amber-400 border border-background flex items-center justify-center">
-                                <Bookmark className="size-2 text-white fill-white" />
-                              </span>
-                            )}
-                          </div>
-                          {/* Pin tip */}
-                          <div className={cn('w-0 h-0 border-l-[5px] border-r-[5px] border-t-[7px] border-l-transparent border-r-transparent -mt-0.5', c.pin)} style={{ borderBottom: 'none' }} />
-                        </div>
-                      </button>
-
-                      {/* Detail popover */}
-                      <AnimatePresence>
-                        {isActive && (
-                          <PlaceDetailPopover
-                            place={p}
-                            onClose={() => setActiveId(null)}
-                            onSave={handleSave}
-                            saved={isSaved}
-                          />
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  )
-                })}
-
-                {/* Legend */}
-                <div className="hidden sm:block absolute bottom-3 left-3 z-10">
-                  <Card className="p-2.5 gap-0 bg-background/90 backdrop-blur shadow-sm max-w-[200px]">
-                    <p className="text-[10px] font-semibold text-muted-foreground mb-1.5 px-1">Legend</p>
-                    <div className="grid grid-cols-2 gap-x-2 gap-y-1">
-                      {selectedCats.slice(0, 6).map((catId) => {
-                        const cat = PLACE_CATEGORIES.find((c) => c.id === catId)
-                        if (!cat) return null
-                        const c = colorFor(catId)
-                        return (
-                          <div key={catId} className="flex items-center gap-1.5">
-                            <span className={cn('size-2 rounded-full', c.pin)} />
-                            <span className="text-[10px] text-muted-foreground truncate">{cat.label}</span>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </Card>
-                </div>
-
-                {/* Empty state */}
-                {!loading && !error && filtered.length === 0 && (
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="text-center bg-background/80 backdrop-blur px-6 py-4 rounded-xl border">
-                      <MapPin className="size-8 mx-auto text-muted-foreground/50" />
-                      <p className="text-sm font-medium mt-2">
-                        {selectedCats.length === 0 ? 'Select a category to load places' : 'No places match your filters'}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        {selectedCats.length === 0 ? 'Tap any category chip above' : 'Try adjusting filters above'}
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Source attribution */}
-                {!loading && !error && filtered.length > 0 && (
-                  <div className="absolute bottom-3 right-3 z-10">
-                    <span className="text-[9px] text-muted-foreground/70 bg-background/70 backdrop-blur px-2 py-0.5 rounded font-bold">
-                      Google Maps Live Sync
-                    </span>
-                  </div>
-                )}
+              <div className="absolute bottom-3 left-3 z-10">
+                <span className="text-[11px] font-bold bg-background/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-[#D9D9D9] shadow-md flex items-center gap-2">
+                  <span className="size-2 rounded-full bg-[#DD0200] animate-ping" />
+                  Google Maps Live · {liveLocation ? liveLocation.city : city}
+                </span>
               </div>
-            )}
+            </div>
           </Card>
         </div>
 
