@@ -452,49 +452,7 @@ export function SmartMap() {
         </div>
       </div>
 
-      {/* ===== Myntra-Style Category Pill Bar (Top) ===== */}
-      <div className="mb-4 rounded-2xl glass-card border-[#D9D9D9] p-3 backdrop-blur-xl bg-background/90 shadow-sm">
-        <div className="flex items-center justify-between gap-2 mb-2">
-          <div className="flex items-center gap-2">
-            <span className="grid size-6 place-items-center rounded-md bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] text-white text-[11px] font-extrabold">
-              <Filter className="size-3" />
-            </span>
-            <span className="text-xs font-extrabold tracking-tight">Active Categories</span>
-            <Badge variant="secondary" className="text-[10px] bg-[#DD0200]/15 text-[#DD0200] border-0 font-bold">
-              {selectedCats.length} categories · {loading ? 'loading…' : `${filtered.length} places`}
-            </Badge>
-          </div>
-          <button
-            onClick={() => setCatModalOpen(true)}
-            className="text-[11px] font-bold text-[#DD0200] hover:underline cursor-pointer"
-          >
-            Manage All →
-          </button>
-        </div>
 
-        {/* Horizontal Scrollable Category Chips */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar scroll-smooth">
-          {PLACE_CATEGORIES.map((c) => {
-            const Icon = ICONS[c.icon] || MapPin
-            const active = selectedCats.includes(c.id)
-            return (
-              <button
-                key={c.id}
-                onClick={() => toggleCat(c.id)}
-                className={cn(
-                  'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap border transition-all cursor-pointer shrink-0',
-                  active
-                    ? 'bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] text-white border-transparent shadow-md shadow-[#DD0200]/25 scale-[1.02]'
-                    : 'bg-[#D9D9D9]/30 border-[#D9D9D9] text-foreground hover:bg-[#DD0200]/10 hover:text-[#DD0200]'
-                )}
-              >
-                <Icon className="size-3.5" />
-                {c.label}
-              </button>
-            )
-          })}
-        </div>
-      </div>
 
       <div className="grid lg:grid-cols-[1fr_340px] gap-4">
         {/* Map area */}
