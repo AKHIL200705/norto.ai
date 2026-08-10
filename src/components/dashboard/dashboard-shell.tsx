@@ -52,12 +52,12 @@ function SidebarLogo() {
       className="flex items-center gap-2.5 w-full px-2 group"
       aria-label="Norto home"
     >
-      <div className="size-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/25 group-hover:scale-105 transition-transform">
-        <Compass className="size-5 text-white" />
+      <div className="size-9 rounded-xl bg-gradient-to-br from-[#DD0200] to-[#55100D] flex items-center justify-center shadow-lg shadow-[#DD0200]/25 group-hover:scale-105 transition-transform">
+        <Compass className="size-5 text-[#D9D9D9]" />
       </div>
       <div className="flex flex-col items-start leading-none">
-        <span className="font-bold text-base tracking-tight">Norto</span>
-        <span className="text-[10px] text-muted-foreground font-medium">Your City Companion</span>
+        <span className="font-bold text-base tracking-tight text-[#D9D9D9]">Norto</span>
+        <span className="text-[10px] text-[#D9D9D9]/70 font-medium">Your City Companion</span>
       </div>
     </button>
   )
@@ -85,13 +85,13 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
         className={cn(
           'w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all group relative',
           active
-            ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 text-white shadow-lg shadow-emerald-500/30 font-bold scale-[1.01]'
-            : 'font-semibold text-muted-foreground hover:text-foreground hover:bg-accent/70 hover:scale-[1.01]'
+            ? 'bg-gradient-to-r from-[#DD0200] to-[#55100D] text-[#D9D9D9] shadow-lg shadow-[#DD0200]/30 font-bold scale-[1.01]'
+            : 'font-semibold text-[#D9D9D9]/75 hover:text-[#D9D9D9] hover:bg-[#55100D]/50 hover:scale-[1.01]'
         )}
       >
-        <Icon className={cn('size-[18px] shrink-0 transition-transform group-hover:scale-110', active ? 'text-white' : 'group-hover:text-emerald-600')} />
+        <Icon className={cn('size-[18px] shrink-0 transition-transform group-hover:scale-110', active ? 'text-[#D9D9D9]' : 'group-hover:text-[#DD0200]')} />
         <span className="flex-1 text-left">{item.label}</span>
-        {active && <ChevronRight className="size-4 text-white/90 animate-pulse" />}
+        {active && <ChevronRight className="size-4 text-[#D9D9D9]/90 animate-pulse" />}
       </button>
     )
   }
@@ -100,18 +100,18 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
     <nav className="flex flex-col gap-1 px-3 py-2">
       {mainItems.map(renderItem)}
       <div className="px-3 pt-5 pb-1.5">
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70">
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-[#D9D9D9]/60">
           City Tools
         </span>
       </div>
       {toolItems.map(renderItem)}
-      <div className="mt-4 mx-1 rounded-xl bg-gradient-to-br from-emerald-500/10 to-amber-400/10 border border-emerald-500/15 p-3">
+      <div className="mt-4 mx-1 rounded-xl bg-gradient-to-br from-[#55100D] to-[#1A0706] border border-[#DD0200]/30 p-3">
         <div className="flex items-center gap-2 mb-1.5">
-          <Map className="size-3.5 text-emerald-600" />
-          <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">Current City</span>
+          <Map className="size-3.5 text-[#DD0200]" />
+          <span className="text-xs font-semibold text-[#D9D9D9]">Current City</span>
         </div>
-        <p className="text-sm font-bold">{city}</p>
-        <p className="text-[11px] text-muted-foreground mt-0.5">Explore local intel below</p>
+        <p className="text-sm font-bold text-[#D9D9D9]">{city}</p>
+        <p className="text-[11px] text-[#D9D9D9]/70 mt-0.5">Explore local intel below</p>
       </div>
     </nav>
   )
