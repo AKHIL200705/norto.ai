@@ -1,4 +1,4 @@
--- Norto AI - Full Supabase PostgreSQL Schema Script
+-- Norto AI - Full Supabase PostgreSQL Schema Script with RLS Enabled
 -- Paste this script into your Supabase Dashboard -> SQL Editor and click "RUN"
 
 -- 1. Create User table
@@ -19,8 +19,8 @@ CREATE TABLE IF NOT EXISTS public."User" (
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
 
--- Unique index for user email
 CREATE UNIQUE INDEX IF NOT EXISTS "User_email_key" ON public."User"("email");
+ALTER TABLE public."User" ENABLE ROW LEVEL SECURITY;
 
 -- 2. Create SavedPlace table
 CREATE TABLE IF NOT EXISTS public."SavedPlace" (
@@ -40,6 +40,8 @@ CREATE TABLE IF NOT EXISTS public."SavedPlace" (
     CONSTRAINT "SavedPlace_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."User"("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+ALTER TABLE public."SavedPlace" ENABLE ROW LEVEL SECURITY;
+
 -- 3. Create ChatHistory table
 CREATE TABLE IF NOT EXISTS public."ChatHistory" (
     "id" TEXT NOT NULL,
@@ -52,6 +54,8 @@ CREATE TABLE IF NOT EXISTS public."ChatHistory" (
     CONSTRAINT "ChatHistory_pkey" PRIMARY KEY ("id"),
     CONSTRAINT "ChatHistory_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."User"("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+ALTER TABLE public."ChatHistory" ENABLE ROW LEVEL SECURITY;
 
 -- 4. Create Budget table
 CREATE TABLE IF NOT EXISTS public."Budget" (
@@ -73,6 +77,8 @@ CREATE TABLE IF NOT EXISTS public."Budget" (
     CONSTRAINT "Budget_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."User"("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+ALTER TABLE public."Budget" ENABLE ROW LEVEL SECURITY;
+
 -- 5. Create Notification table
 CREATE TABLE IF NOT EXISTS public."Notification" (
     "id" TEXT NOT NULL,
@@ -86,3 +92,5 @@ CREATE TABLE IF NOT EXISTS public."Notification" (
     CONSTRAINT "Notification_pkey" PRIMARY KEY ("id"),
     CONSTRAINT "Notification_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."User"("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+ALTER TABLE public."Notification" ENABLE ROW LEVEL SECURITY;
