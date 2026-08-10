@@ -191,6 +191,9 @@ export async function POST(req: Request) {
           if (text && text.trim()) {
             return Response.json({ response: text.trim(), source: 'google_gemini' })
           }
+        } else {
+          const errText = await gRes.text().catch(() => '')
+          console.warn('[Google Gemini API] Non-OK status:', gRes.status, errText.slice(0, 200))
         }
       } catch (e) {
         console.error('[Google Gemini API] Error:', e)
