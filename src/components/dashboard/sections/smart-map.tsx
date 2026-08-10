@@ -411,17 +411,17 @@ export function SmartMap() {
       <div className="flex items-start justify-between flex-wrap gap-3 mb-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight flex items-center gap-2">
-            <MapPin className="size-5 text-emerald-600" />
+            <MapPin className="size-5 text-[#DD0200]" />
             Smart Map
           </h1>
-          <p className="text-sm text-muted-foreground mt-0.5 flex items-center gap-1.5 flex-wrap">
+          <p className="text-sm text-muted-foreground mt-0.5 flex items-center gap-1.5 flex-wrap font-medium">
             Real places around
-            <span className="font-medium text-foreground inline-flex items-center gap-1">
-              <MapPin className="size-3 text-emerald-600" />
+            <span className="font-bold text-foreground inline-flex items-center gap-1">
+              <MapPin className="size-3 text-[#DD0200]" />
               {liveLocation ? liveLocation.city : city}
             </span>
             {liveLocation && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 rounded-full px-1.5 py-0.5">
+              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#DD0200] bg-[#DD0200]/15 rounded-full px-2 py-0.5">
                 <Crosshair className="size-2.5" />
                 Live · ±{Math.round(liveLocation.accuracy)}m
               </span>
@@ -429,14 +429,14 @@ export function SmartMap() {
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          <div className="flex items-center gap-1 rounded-lg border bg-muted/60 p-0.5">
+          <div className="flex items-center gap-1 rounded-xl border border-[#D9D9D9] bg-muted/60 p-0.5 backdrop-blur-md">
             <button
               onClick={() => setViewMode('google-maps')}
               className={cn(
-                'flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold transition-colors',
+                'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer',
                 viewMode === 'google-maps'
-                  ? 'bg-emerald-600 text-white shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
+                  ? 'bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] text-white shadow-md shadow-[#DD0200]/25'
+                  : 'text-muted-foreground hover:text-[#DD0200]'
               )}
             >
               <Navigation className="size-3.5" />
@@ -445,10 +445,10 @@ export function SmartMap() {
             <button
               onClick={() => setViewMode('radar-map')}
               className={cn(
-                'flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold transition-colors',
+                'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer',
                 viewMode === 'radar-map'
-                  ? 'bg-emerald-600 text-white shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
+                  ? 'bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] text-white shadow-md shadow-[#DD0200]/25'
+                  : 'text-muted-foreground hover:text-[#DD0200]'
               )}
             >
               <Crosshair className="size-3.5" />
@@ -460,7 +460,7 @@ export function SmartMap() {
             size="sm"
             onClick={handleLocate}
             disabled={locating}
-            className="border-emerald-500/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/10"
+            className="border-[#DD0200]/30 text-[#DD0200] hover:bg-[#DD0200]/10 font-bold"
           >
             {locating ? <Loader2 className="size-4 animate-spin" /> : <LocateFixed className="size-4" />}
             <span className="hidden sm:inline">{locating ? 'Locating…' : 'My location'}</span>
@@ -470,58 +470,59 @@ export function SmartMap() {
             size="sm"
             onClick={fetchPlaces}
             disabled={loading}
+            className="font-bold border-[#D9D9D9]"
           >
-            <RefreshCw className={cn('size-4', loading && 'animate-spin')} />
+            <RefreshCw className={cn('size-4 text-[#DD0200]', loading && 'animate-spin')} />
             <span className="hidden sm:inline">Refresh</span>
           </Button>
         </div>
       </div>
 
       {/* ===== Collapsible control panel: Categories (left) + Sort & filter (right) ===== */}
-      <Card className="mb-4 gap-0 overflow-hidden">
+      <Card className="glass-card mb-4 gap-0 overflow-hidden border-[#D9D9D9]">
         {/* Toggle bar — always visible. Click to show/hide the filters. */}
         <button
           onClick={() => setShowFilters((v) => !v)}
-          className="w-full flex items-center justify-between gap-2 px-3 py-2.5 hover:bg-accent/40 transition-colors"
+          className="w-full flex items-center justify-between gap-2 px-3.5 py-3 hover:bg-[#DD0200]/5 transition-colors"
           aria-expanded={showFilters}
           aria-controls="map-filters-panel"
         >
           <div className="flex items-center gap-2 min-w-0">
-            <span className="grid size-8 place-items-center rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 text-white shrink-0 shadow-md">
+            <span className="grid size-8 place-items-center rounded-xl bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] text-white shrink-0 shadow-md">
               <Filter className="size-4" />
             </span>
-            <span className="text-sm font-bold tracking-tight">Categories &amp; Filters</span>
+            <span className="text-sm font-extrabold tracking-tight">Categories &amp; Filters</span>
             {/* Active-filter summary chips */}
             <div className="hidden sm:flex items-center gap-1 ml-1 min-w-0">
               {selectedCats.length > 0 && (
-                <Badge variant="secondary" className="text-[10px] bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-0">
+                <Badge variant="secondary" className="text-[10px] bg-[#DD0200]/15 text-[#DD0200] border-0 font-bold">
                   {selectedCats.length} categor{selectedCats.length === 1 ? 'y' : 'ies'}
                 </Badge>
               )}
               {sortBy !== 'distance' && (
-                <Badge variant="secondary" className="text-[10px] bg-muted text-muted-foreground border-0 capitalize">
+                <Badge variant="secondary" className="text-[10px] bg-muted text-muted-foreground border-0 capitalize font-bold">
                   {sortBy}
                 </Badge>
               )}
               {ratingFilter !== 'all' && (
-                <Badge variant="secondary" className="text-[10px] bg-amber-500/10 text-amber-600 border-0">
+                <Badge variant="secondary" className="text-[10px] bg-[#DD0200]/15 text-[#DD0200] border-0 font-bold">
                   {ratingFilter}★
                 </Badge>
               )}
               {openOnly && (
-                <Badge variant="secondary" className="text-[10px] bg-emerald-500/10 text-emerald-700 border-0">
+                <Badge variant="secondary" className="text-[10px] bg-[#DD0200]/15 text-[#DD0200] border-0 font-bold">
                   Open
                 </Badge>
               )}
               {favoritesOnly && (
-                <Badge variant="secondary" className="text-[10px] bg-rose-500/10 text-rose-500 border-0">
+                <Badge variant="secondary" className="text-[10px] bg-[#DD0200]/15 text-[#DD0200] border-0 font-bold">
                   <Heart className="size-2.5 fill-current mr-0.5" />Fav
                 </Badge>
               )}
             </div>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <span className="text-[11px] text-muted-foreground">
+            <span className="text-[11px] font-bold text-muted-foreground">
               {loading ? 'loading…' : `${filtered.length} places`}
             </span>
             <ChevronRight className={cn('size-4 text-muted-foreground transition-transform', showFilters && 'rotate-90')} />
@@ -539,27 +540,26 @@ export function SmartMap() {
               transition={{ duration: 0.25, ease: 'easeInOut' }}
               className="overflow-hidden"
             >
-              <div className="px-3 pb-3 pt-1 grid lg:grid-cols-[1fr_auto] gap-3 lg:gap-4 items-start border-t">
+              <div className="px-3.5 pb-3.5 pt-1 grid lg:grid-cols-[1fr_auto] gap-3 lg:gap-4 items-start border-t border-[#D9D9D9]">
                 {/* LEFT: Category chips */}
                 <div>
                   <div className="flex items-center gap-1.5 mb-2">
-                    <Filter className="size-3.5 text-muted-foreground" />
-                    <span className="text-xs font-semibold text-muted-foreground">Categories — click to load real places</span>
+                    <Filter className="size-3.5 text-[#DD0200]" />
+                    <span className="text-xs font-bold text-muted-foreground">Categories — click to load real places</span>
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {PLACE_CATEGORIES.map((c) => {
                       const Icon = ICONS[c.icon] || MapPin
                       const active = selectedCats.includes(c.id)
-                      const col = colorFor(c.id)
                       return (
                         <button
                           key={c.id}
                           onClick={() => toggleCat(c.id)}
                           className={cn(
-                            'inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-medium border transition-all',
+                            'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer',
                             active
-                              ? cn('border-transparent text-white shadow-sm', col.pin)
-                              : 'bg-background hover:bg-accent text-muted-foreground hover:text-foreground'
+                              ? 'bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] text-white border-transparent shadow-md shadow-[#DD0200]/25'
+                              : 'bg-[#D9D9D9]/30 border-[#D9D9D9] text-foreground hover:bg-[#DD0200]/10 hover:text-[#DD0200]'
                           )}
                         >
                           <Icon className="size-3.5" />
@@ -571,13 +571,13 @@ export function SmartMap() {
                 </div>
 
                 {/* Divider (desktop only) */}
-                <div className="hidden lg:block h-full w-px bg-border self-stretch" />
+                <div className="hidden lg:block h-full w-px bg-[#D9D9D9] self-stretch" />
 
                 {/* RIGHT: Sort & filter options — side by side with categories */}
                 <div className="lg:w-auto">
                   <div className="flex items-center gap-1.5 mb-2">
-                    <ArrowUpDown className="size-3.5 text-muted-foreground" />
-                    <span className="text-xs font-semibold text-muted-foreground">Sort &amp; filter</span>
+                    <ArrowUpDown className="size-3.5 text-[#DD0200]" />
+                    <span className="text-xs font-bold text-muted-foreground">Sort &amp; filter</span>
                   </div>
                   <div className="flex flex-wrap items-center gap-2 lg:gap-3">
                     {/* Sort by */}
@@ -587,10 +587,10 @@ export function SmartMap() {
                           key={s}
                           onClick={() => setSortBy(s)}
                           className={cn(
-                            'text-[11px] px-2 py-1 rounded-md font-medium capitalize transition-colors',
+                            'text-[11px] px-2.5 py-1 rounded-lg font-bold capitalize transition-all cursor-pointer',
                             sortBy === s
-                              ? 'bg-emerald-600 text-white'
-                              : 'bg-muted/50 text-muted-foreground hover:bg-muted'
+                              ? 'bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] text-white shadow-xs'
+                              : 'bg-[#D9D9D9]/40 text-muted-foreground hover:bg-[#DD0200]/10 hover:text-[#DD0200]'
                           )}
                         >
                           {s === 'distance' ? 'Nearest' : s}
@@ -598,7 +598,7 @@ export function SmartMap() {
                       ))}
                     </div>
 
-                    <div className="h-4 w-px bg-border" />
+                    <div className="h-4 w-px bg-[#D9D9D9]" />
 
                     {/* Rating filter */}
                     <div className="flex items-center gap-1">
@@ -607,10 +607,10 @@ export function SmartMap() {
                           key={r}
                           onClick={() => setRatingFilter(r)}
                           className={cn(
-                            'text-[11px] px-2 py-1 rounded-md font-medium transition-colors',
+                            'text-[11px] px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer',
                             ratingFilter === r
-                              ? 'bg-amber-500 text-white'
-                              : 'bg-muted/50 text-muted-foreground hover:bg-muted'
+                              ? 'bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] text-white shadow-xs'
+                              : 'bg-[#D9D9D9]/40 text-muted-foreground hover:bg-[#DD0200]/10 hover:text-[#DD0200]'
                           )}
                         >
                           {r === 'all' ? 'All' : `${r}★`}
@@ -847,24 +847,24 @@ export function SmartMap() {
 
         {/* Right sidebar list */}
         <div className="order-2">
-          <Card className="p-0 gap-0 overflow-hidden lg:sticky lg:top-20">
-            <div className="px-4 py-3 border-b bg-muted/30">
-              <h3 className="text-sm font-semibold flex items-center gap-2">
-                <MapPin className="size-4 text-emerald-600" />
+          <Card className="glass-card p-0 gap-0 overflow-hidden lg:sticky lg:top-20 border-[#D9D9D9]">
+            <div className="px-4 py-3 border-b border-[#D9D9D9] bg-[#DD0200]/5">
+              <h3 className="text-sm font-extrabold flex items-center gap-2">
+                <MapPin className="size-4 text-[#DD0200]" />
                 Real places nearby
               </h3>
-              <p className="text-[11px] text-muted-foreground mt-0.5">
+              <p className="text-[11px] text-muted-foreground font-semibold mt-0.5">
                 {loading ? 'Loading…' : `${filtered.length} places from OpenStreetMap`}
               </p>
             </div>
             <div className="max-h-[60vh] lg:max-h-[70vh] overflow-y-auto">
               {loading ? (
                 <div className="px-4 py-10 flex flex-col items-center gap-2 text-muted-foreground">
-                  <Loader2 className="size-6 animate-spin text-emerald-600" />
-                  <p className="text-xs">Fetching real places…</p>
+                  <Loader2 className="size-6 animate-spin text-[#DD0200]" />
+                  <p className="text-xs font-bold">Fetching real places…</p>
                 </div>
               ) : filtered.length === 0 ? (
-                <div className="px-4 py-10 text-center text-sm text-muted-foreground">
+                <div className="px-4 py-10 text-center text-sm font-semibold text-muted-foreground">
                   {selectedCats.length === 0 ? 'Select a category' : 'No places match your filters'}
                 </div>
               ) : (
@@ -881,25 +881,25 @@ export function SmartMap() {
                         onMouseEnter={() => setHoveredId(p.id)}
                         onMouseLeave={() => setHoveredId(null)}
                         className={cn(
-                          'px-4 py-3 border-b last:border-0 transition-colors cursor-pointer',
-                          isActive ? 'bg-emerald-500/5' : 'hover:bg-accent/40'
+                          'px-4 py-3 border-b border-[#D9D9D9] last:border-0 transition-all cursor-pointer',
+                          isActive ? 'bg-[#DD0200]/10 border-l-4 border-l-[#DD0200]' : 'hover:bg-[#DD0200]/5'
                         )}
                         onClick={() => setActiveId(isActive ? null : p.id)}
                       >
                         <div className="flex items-start gap-2.5">
-                          <div className={cn('size-8 rounded-lg flex items-center justify-center shrink-0', c.bg)}>
+                          <div className={cn('size-8 rounded-xl flex items-center justify-center shrink-0 shadow-xs', c.bg)}>
                             <Icon className={cn('size-4', c.text)} />
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between gap-2">
-                              <p className="text-sm font-semibold truncate">{p.name}</p>
+                              <p className="text-sm font-extrabold truncate">{p.name}</p>
                               {p.open === true && (
-                                <Badge variant="secondary" className="text-[9px] bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-0 shrink-0">
+                                <Badge variant="secondary" className="text-[9px] bg-[#DD0200]/15 text-[#DD0200] border-0 shrink-0 font-bold">
                                   Open
                                 </Badge>
                               )}
                               {p.open === false && (
-                                <Badge variant="secondary" className="text-[9px] bg-rose-500/10 text-rose-600 dark:text-rose-400 border-0 shrink-0">
+                                <Badge variant="secondary" className="text-[9px] bg-muted/60 text-muted-foreground border-0 shrink-0 font-bold">
                                   Closed
                                 </Badge>
                               )}
@@ -907,15 +907,15 @@ export function SmartMap() {
                             <div className="flex items-center gap-2 mt-0.5">
                               <Stars rating={p.rating} />
                             </div>
-                            <div className="flex items-center gap-2 mt-1 text-[11px] text-muted-foreground">
-                              <span className="flex items-center gap-0.5 font-medium text-emerald-700 dark:text-emerald-400">
+                            <div className="flex items-center gap-2 mt-1 text-[11px] text-muted-foreground font-semibold">
+                              <span className="flex items-center gap-0.5 font-bold text-[#DD0200]">
                                 <Navigation className="size-2.5" />
                                 {p.distance}
                               </span>
                               <span>·</span>
                               <span className="capitalize">{p.category}</span>
                             </div>
-                            <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-1">
+                            <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-1 font-medium">
                               {p.address || `${p.lat.toFixed(4)}, ${p.lng.toFixed(4)}`}
                             </p>
                           </div>
@@ -925,9 +925,9 @@ export function SmartMap() {
                             href={`https://www.google.com/maps/search/?api=1&query=${p.lat},${p.lng}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 h-7 text-xs px-2.5 rounded-md border border-slate-200 dark:border-slate-800 bg-background hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors"
+                            className="inline-flex items-center gap-1 h-7 text-xs px-2.5 rounded-lg border border-[#D9D9D9] bg-background hover:bg-[#DD0200]/10 hover:text-[#DD0200] text-foreground font-bold transition-all"
                           >
-                            <Navigation className="size-3 text-emerald-600" />
+                            <Navigation className="size-3 text-[#DD0200]" />
                             Google Maps
                           </a>
                           <Button
@@ -936,8 +936,8 @@ export function SmartMap() {
                             disabled={isSaved || isSaving}
                             onClick={() => handleSave(p)}
                             className={cn(
-                              'h-7 text-xs px-2.5',
-                              isSaved && 'border-emerald-500/30 text-emerald-700 dark:text-emerald-400 bg-emerald-500/5'
+                              'h-7 text-xs px-2.5 font-bold border-[#D9D9D9]',
+                              isSaved && 'border-[#DD0200]/30 text-[#DD0200] bg-[#DD0200]/10'
                             )}
                           >
                             {isSaving ? (
