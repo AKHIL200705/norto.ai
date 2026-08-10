@@ -108,6 +108,18 @@ export default function Home() {
     setShowIntro(shouldPlayIntro())
   }, [])
 
+  // Return to home page whenever user presses browser back button from any section
+  React.useEffect(() => {
+    const handlePopState = () => {
+      const currentSection = useAppStore.getState().section
+      if (currentSection !== 'home') {
+        useAppStore.setState({ section: 'home', sidebarOpen: false })
+      }
+    }
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [])
+
   React.useEffect(() => {
     if (view === 'landing') {
       import('@/components/landing/landing-page').then((mod) => {

@@ -98,7 +98,16 @@ export const useAppStore = create<AppState>()(
       ],
 
       setView: (v) => set({ view: v }),
-      setSection: (s) => set({ section: s, sidebarOpen: false }),
+      setSection: (s) => {
+        set({ section: s, sidebarOpen: false })
+        if (typeof window !== 'undefined') {
+          try {
+            window.history.pushState({ section: s }, '', `/#/${s}`)
+          } catch {
+            // fallback
+          }
+        }
+      },
       setCity: (c) => {
         set({ city: c })
         get().addTravelCity(c)
