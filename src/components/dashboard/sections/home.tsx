@@ -349,7 +349,7 @@ function LiveLocationCard({
   if (status === 'success' && live) {
     const accuracyM = Math.round(live.accuracy)
     const accuracyLabel = accuracyM < 50 ? 'High accuracy' : accuracyM < 200 ? 'Good accuracy' : 'Approximate'
-    const mapsUrl = `https://www.openstreetmap.org/?mlat=${live.lat}&mlon=${live.lng}#map=16/${live.lat}/${live.lng}`
+    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${live.lat},${live.lng}`
     return (
       <Card className="glass-card p-0 gap-0 overflow-hidden border-[#D9D9D9]">
         <div className="grid sm:grid-cols-[1fr_auto]">

@@ -157,7 +157,7 @@ function PlaceDetailPopover({
 }) {
   const Icon = ICONS[place.category] || MapPin
   const c = colorFor(place.category)
-  const mapsUrl = `https://www.openstreetmap.org/?mlat=${place.lat}&mlon=${place.lng}#map=18/${place.lat}/${place.lng}`
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${place.lat},${place.lng}`
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.92, y: -4 }}
@@ -710,7 +710,7 @@ export function SmartMap() {
                   <div className="absolute inset-0 bg-background/60 backdrop-blur-sm flex items-center justify-center z-30">
                     <div className="flex flex-col items-center gap-3 bg-background/90 border rounded-xl px-6 py-5 shadow-lg">
                       <Loader2 className="size-8 text-emerald-600 animate-spin" />
-                      <p className="text-sm font-medium">Fetching real places from OpenStreetMap…</p>
+                      <p className="text-sm font-medium">Fetching real places nearby…</p>
                       <p className="text-[11px] text-muted-foreground">Categories: {selectedCats.join(', ')}</p>
                     </div>
                   </div>
@@ -835,8 +835,8 @@ export function SmartMap() {
                 {/* Source attribution */}
                 {!loading && !error && filtered.length > 0 && (
                   <div className="absolute bottom-3 right-3 z-10">
-                    <span className="text-[9px] text-muted-foreground/70 bg-background/70 backdrop-blur px-2 py-0.5 rounded">
-                      Real data © OpenStreetMap
+                    <span className="text-[9px] text-muted-foreground/70 bg-background/70 backdrop-blur px-2 py-0.5 rounded font-bold">
+                      Google Maps Live Sync
                     </span>
                   </div>
                 )}
@@ -854,7 +854,7 @@ export function SmartMap() {
                 Real places nearby
               </h3>
               <p className="text-[11px] text-muted-foreground font-semibold mt-0.5">
-                {loading ? 'Loading…' : `${filtered.length} places from OpenStreetMap`}
+                {loading ? 'Loading…' : `${filtered.length} places nearby`}
               </p>
             </div>
             <div className="max-h-[60vh] lg:max-h-[70vh] overflow-y-auto">
