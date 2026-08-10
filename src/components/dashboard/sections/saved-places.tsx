@@ -37,24 +37,24 @@ async function api(path: string, opts: { method?: string; body?: unknown } = {})
 
 // Category color map (zero indigo/blue)
 const CATEGORY_COLORS: Record<string, string> = {
-  restaurant: 'bg-amber-500/10 text-amber-700 dark:text-amber-400',
-  hotel: 'bg-rose-500/10 text-rose-700 dark:text-rose-400',
-  hostel: 'bg-pink-500/10 text-pink-700 dark:text-pink-400',
-  hospital: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400',
-  police: 'bg-teal-500/10 text-teal-700 dark:text-teal-400',
-  metro: 'bg-violet-500/10 text-violet-700 dark:text-violet-400',
-  bus: 'bg-orange-500/10 text-orange-700 dark:text-orange-400',
-  bank: 'bg-fuchsia-500/10 text-fuchsia-700 dark:text-fuchsia-400',
-  atm: 'bg-slate-500/10 text-slate-700 dark:text-slate-400',
-  coworking: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400',
-  shopping: 'bg-rose-500/10 text-rose-700 dark:text-rose-400',
-  pharmacy: 'bg-teal-500/10 text-teal-700 dark:text-teal-400',
-  fuel: 'bg-amber-500/10 text-amber-700 dark:text-amber-400',
-  tourist: 'bg-violet-500/10 text-violet-700 dark:text-violet-400',
+  restaurant: 'bg-[#DD0200]/15 text-[#DD0200]',
+  hotel: 'bg-[#55100D]/15 text-[#55100D] dark:text-red-300',
+  hostel: 'bg-[#8B0000]/15 text-[#DD0200]',
+  hospital: 'bg-[#DD0200]/15 text-[#DD0200]',
+  police: 'bg-[#55100D]/15 text-[#55100D] dark:text-red-300',
+  metro: 'bg-[#DD0200]/15 text-[#DD0200]',
+  bus: 'bg-[#55100D]/15 text-[#55100D] dark:text-red-300',
+  bank: 'bg-[#8B0000]/15 text-[#DD0200]',
+  atm: 'bg-[#DD0200]/15 text-[#DD0200]',
+  coworking: 'bg-[#55100D]/15 text-[#55100D] dark:text-red-300',
+  shopping: 'bg-[#DD0200]/15 text-[#DD0200]',
+  pharmacy: 'bg-[#DD0200]/15 text-[#DD0200]',
+  fuel: 'bg-[#55100D]/15 text-[#55100D] dark:text-red-300',
+  tourist: 'bg-[#8B0000]/15 text-[#DD0200]',
 }
 
 function categoryColor(cat: string): string {
-  return CATEGORY_COLORS[cat] || 'bg-muted text-muted-foreground'
+  return CATEGORY_COLORS[cat] || 'bg-[#DD0200]/15 text-[#DD0200]'
 }
 
 function categoryLabel(cat: string): string {

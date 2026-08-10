@@ -198,26 +198,26 @@ export function Profile() {
         {/* Header */}
         <motion.div variants={item}>
           <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-            <User className="size-3.5 text-emerald-600" />
-            <span>Manage your account &amp; preferences in real-time</span>
+            <User className="size-3.5 text-[#DD0200]" />
+            <span className="font-semibold">Manage your account &amp; preferences in real-time</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Profile</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Profile</h1>
         </motion.div>
 
         {/* Profile header card */}
         <motion.div variants={item}>
-          <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-emerald-600 via-emerald-600 to-teal-700 text-white shadow-xl shadow-emerald-500/20">
+          <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] text-white shadow-xl shadow-[#DD0200]/20">
             <div className="absolute inset-0 mesh-bg opacity-20 pointer-events-none" />
-            <div className="absolute -right-16 -top-16 size-64 rounded-full bg-amber-400/15 blur-3xl pointer-events-none" />
+            <div className="absolute -right-16 -top-16 size-64 rounded-full bg-[#DD0200]/30 blur-3xl pointer-events-none" />
             <div className="relative p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-5">
               <div className="size-20 sm:size-24 rounded-2xl bg-white/15 backdrop-blur-md border border-white/25 flex items-center justify-center shrink-0">
-                <span className="text-2xl sm:text-3xl font-bold tracking-wider text-white">{initials}</span>
+                <span className="text-2xl sm:text-3xl font-extrabold tracking-wider text-white">{initials}</span>
               </div>
               <div className="flex-1 text-center sm:text-left">
-                <h2 className="text-xl sm:text-2xl font-bold">{profile.name}</h2>
-                <div className="flex items-center justify-center sm:justify-start gap-3 mt-1 text-sm text-white/85 flex-wrap">
-                  <span className="inline-flex items-center gap-1"><Mail className="size-3.5" />{profile.email}</span>
-                  <span className="inline-flex items-center gap-1"><Briefcase className="size-3.5" />{profile.occupation || '—'}</span>
+                <h2 className="text-xl sm:text-2xl font-extrabold">{profile.name}</h2>
+                <div className="flex items-center justify-center sm:justify-start gap-3 mt-1 text-sm text-white/90 flex-wrap">
+                  <span className="inline-flex items-center gap-1 font-medium"><Mail className="size-3.5" />{profile.email}</span>
+                  <span className="inline-flex items-center gap-1 font-medium"><Briefcase className="size-3.5" />{profile.occupation || '—'}</span>
                   <span className="inline-flex items-center gap-1"><MapPin className="size-3.5" />{profile.city || city}</span>
                 </div>
                 <div className="flex items-center justify-center sm:justify-start gap-2 mt-3 flex-wrap">

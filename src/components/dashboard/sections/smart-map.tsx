@@ -37,28 +37,28 @@ const ICONS: Record<string, React.ElementType> = {
 }
 
 const CATEGORY_COLORS: Record<string, { bg: string; pin: string; ring: string; text: string }> = {
-  restaurant: { bg: 'bg-amber-500/15', pin: 'bg-amber-500', ring: 'ring-amber-500/30', text: 'text-amber-600 dark:text-amber-400' },
-  hotel: { bg: 'bg-violet-500/15', pin: 'bg-violet-500', ring: 'ring-violet-500/30', text: 'text-violet-600 dark:text-violet-400' },
-  hostel: { bg: 'bg-fuchsia-500/15', pin: 'bg-fuchsia-500', ring: 'ring-fuchsia-500/30', text: 'text-fuchsia-600 dark:text-fuchsia-400' },
-  hospital: { bg: 'bg-rose-500/15', pin: 'bg-rose-600', ring: 'ring-rose-500/30', text: 'text-rose-600 dark:text-rose-400' },
-  metro: { bg: 'bg-emerald-500/15', pin: 'bg-emerald-600', ring: 'ring-emerald-500/30', text: 'text-emerald-600 dark:text-emerald-400' },
-  bus: { bg: 'bg-teal-500/15', pin: 'bg-teal-500', ring: 'ring-teal-500/30', text: 'text-teal-600 dark:text-teal-400' },
-  bank: { bg: 'bg-amber-600/15', pin: 'bg-amber-600', ring: 'ring-amber-600/30', text: 'text-amber-600 dark:text-amber-400' },
-  atm: { bg: 'bg-yellow-500/15', pin: 'bg-yellow-500', ring: 'ring-yellow-500/30', text: 'text-yellow-600 dark:text-yellow-400' },
-  coworking: { bg: 'bg-teal-600/15', pin: 'bg-teal-600', ring: 'ring-teal-600/30', text: 'text-teal-600 dark:text-teal-400' },
-  shopping: { bg: 'bg-pink-500/15', pin: 'bg-pink-500', ring: 'ring-pink-500/30', text: 'text-pink-600 dark:text-pink-400' },
-  pharmacy: { bg: 'bg-rose-400/15', pin: 'bg-rose-500', ring: 'ring-rose-400/30', text: 'text-rose-500 dark:text-rose-300' },
-  fuel: { bg: 'bg-orange-500/15', pin: 'bg-orange-500', ring: 'ring-orange-500/30', text: 'text-orange-600 dark:text-orange-400' },
-  tourist: { bg: 'bg-yellow-600/15', pin: 'bg-yellow-600', ring: 'ring-yellow-600/30', text: 'text-yellow-600 dark:text-yellow-400' },
-  police: { bg: 'bg-slate-500/15', pin: 'bg-slate-600', ring: 'ring-slate-500/30', text: 'text-slate-600 dark:text-slate-400' },
+  restaurant: { bg: 'bg-[#DD0200]/15', pin: 'bg-[#DD0200]', ring: 'ring-[#DD0200]/30', text: 'text-[#DD0200]' },
+  hotel: { bg: 'bg-[#55100D]/15', pin: 'bg-[#55100D]', ring: 'ring-[#55100D]/30', text: 'text-[#55100D] dark:text-red-300' },
+  hostel: { bg: 'bg-[#8B0000]/15', pin: 'bg-[#8B0000]', ring: 'ring-[#8B0000]/30', text: 'text-[#DD0200]' },
+  hospital: { bg: 'bg-[#DD0200]/15', pin: 'bg-[#DD0200]', ring: 'ring-[#DD0200]/30', text: 'text-[#DD0200]' },
+  metro: { bg: 'bg-[#DD0200]/15', pin: 'bg-[#DD0200]', ring: 'ring-[#DD0200]/30', text: 'text-[#DD0200]' },
+  bus: { bg: 'bg-[#55100D]/15', pin: 'bg-[#55100D]', ring: 'ring-[#55100D]/30', text: 'text-[#55100D] dark:text-red-300' },
+  bank: { bg: 'bg-[#8B0000]/15', pin: 'bg-[#8B0000]', ring: 'ring-[#8B0000]/30', text: 'text-[#DD0200]' },
+  atm: { bg: 'bg-[#DD0200]/15', pin: 'bg-[#DD0200]', ring: 'ring-[#DD0200]/30', text: 'text-[#DD0200]' },
+  coworking: { bg: 'bg-[#55100D]/15', pin: 'bg-[#55100D]', ring: 'ring-[#55100D]/30', text: 'text-[#55100D] dark:text-red-300' },
+  shopping: { bg: 'bg-[#DD0200]/15', pin: 'bg-[#DD0200]', ring: 'ring-[#DD0200]/30', text: 'text-[#DD0200]' },
+  pharmacy: { bg: 'bg-[#DD0200]/15', pin: 'bg-[#DD0200]', ring: 'ring-[#DD0200]/30', text: 'text-[#DD0200]' },
+  fuel: { bg: 'bg-[#55100D]/15', pin: 'bg-[#55100D]', ring: 'ring-[#55100D]/30', text: 'text-[#55100D] dark:text-red-300' },
+  tourist: { bg: 'bg-[#8B0000]/15', pin: 'bg-[#8B0000]', ring: 'ring-[#8B0000]/30', text: 'text-[#DD0200]' },
+  police: { bg: 'bg-[#55100D]/15', pin: 'bg-[#55100D]', ring: 'ring-[#55100D]/30', text: 'text-[#55100D] dark:text-red-300' },
 }
 
 function colorFor(category: string) {
   return CATEGORY_COLORS[category] || {
-    bg: 'bg-emerald-500/15',
-    pin: 'bg-emerald-600',
-    ring: 'ring-emerald-500/30',
-    text: 'text-emerald-600 dark:text-emerald-400',
+    bg: 'bg-[#DD0200]/15',
+    pin: 'bg-[#DD0200]',
+    ring: 'ring-[#DD0200]/30',
+    text: 'text-[#DD0200]',
   }
 }
 

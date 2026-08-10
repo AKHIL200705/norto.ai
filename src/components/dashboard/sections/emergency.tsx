@@ -33,12 +33,12 @@ async function api(path: string, opts: { method?: string; body?: unknown } = {})
 }
 
 const EMERGENCY_CONTACTS = [
-  { name: 'Ambulance', number: '108', icon: HeartPulse, color: 'from-rose-500 to-red-600', desc: 'Medical emergency' },
-  { name: 'Police', number: '100', icon: ShieldAlert, color: 'from-emerald-600 to-teal-700', desc: 'Crime & safety' },
-  { name: 'Fire', number: '101', icon: Flame, color: 'from-amber-500 to-orange-600', desc: 'Fire & rescue' },
-  { name: 'Women Helpline', number: '1091', icon: HeartPulse, color: 'from-pink-500 to-rose-600', desc: 'Women safety' },
-  { name: 'Blood Bank', number: '104', icon: Droplet, color: 'from-rose-600 to-red-700', desc: 'Blood & health' },
-  { name: 'Disaster Mgmt', number: '1070', icon: CloudRain, color: 'from-slate-600 to-teal-700', desc: 'Disaster response' },
+  { name: 'Ambulance', number: '108', icon: HeartPulse, color: 'from-[#DD0200] to-[#55100D]', desc: 'Medical emergency' },
+  { name: 'Police', number: '100', icon: ShieldAlert, color: 'from-[#8B0000] to-[#1A0706]', desc: 'Crime & safety' },
+  { name: 'Fire', number: '101', icon: Flame, color: 'from-[#DD0200] to-[#8B0000]', desc: 'Fire & rescue' },
+  { name: 'Women Helpline', number: '1091', icon: HeartPulse, color: 'from-[#55100D] to-[#1A0706]', desc: 'Women safety' },
+  { name: 'Blood Bank', number: '104', icon: Droplet, color: 'from-[#DD0200] to-[#55100D]', desc: 'Blood & health' },
+  { name: 'Disaster Mgmt', number: '1070', icon: CloudRain, color: 'from-[#8B0000] to-[#1A0706]', desc: 'Disaster response' },
 ]
 
 interface NearbyService {
@@ -63,10 +63,10 @@ const NEARBY_SERVICES: NearbyService[] = [
 ]
 
 const SERVICE_META: Record<NearbyService['type'], { label: string; icon: React.ElementType; color: string }> = {
-  hospital: { label: 'Hospital', icon: Cross, color: 'text-rose-600 bg-rose-500/10' },
-  police: { label: 'Police Station', icon: ShieldAlert, color: 'text-emerald-600 bg-emerald-500/10' },
-  fire: { label: 'Fire Station', icon: Flame, color: 'text-amber-600 bg-amber-500/10' },
-  blood: { label: 'Blood Bank', icon: Droplet, color: 'text-rose-500 bg-rose-500/10' },
+  hospital: { label: 'Hospital', icon: Cross, color: 'text-[#DD0200] bg-[#DD0200]/15' },
+  police: { label: 'Police Station', icon: ShieldAlert, color: 'text-[#55100D] dark:text-red-300 bg-[#55100D]/15' },
+  fire: { label: 'Fire Station', icon: Flame, color: 'text-[#DD0200] bg-[#DD0200]/15' },
+  blood: { label: 'Blood Bank', icon: Droplet, color: 'text-[#DD0200] bg-[#DD0200]/15' },
 }
 
 const SAFETY_TIPS = [
@@ -78,8 +78,8 @@ const SAFETY_TIPS = [
 ]
 
 const ALERTS = [
-  { level: 'yellow', title: 'Heavy rain warning', desc: 'Heavy rainfall expected over next 48 hours. Avoid low-lying areas.', icon: CloudRain, tint: 'border-amber-500/30 bg-amber-500/5' },
-  { level: 'orange', title: 'Traffic congestion', desc: 'Major delays expected on Hitech City Rd due to waterlogging.', icon: Truck, tint: 'border-orange-500/30 bg-orange-500/5' },
+  { level: 'yellow', title: 'Heavy rain warning', desc: 'Heavy rainfall expected over next 48 hours. Avoid low-lying areas.', icon: CloudRain, tint: 'border-[#DD0200]/30 bg-[#DD0200]/5' },
+  { level: 'orange', title: 'Traffic congestion', desc: 'Major delays expected on Hitech City Rd due to waterlogging.', icon: Truck, tint: 'border-[#55100D]/30 bg-[#55100D]/5' },
 ]
 
 const container = {
