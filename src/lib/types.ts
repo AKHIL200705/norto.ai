@@ -85,7 +85,6 @@ export const PLACE_CATEGORIES = [
   { id: 'hostel', label: 'Hostels', icon: 'BedSingle' },
   { id: 'hospital', label: 'Hospitals', icon: 'PlusSquare' },
   { id: 'police', label: 'Police', icon: 'Shield' },
-  { id: 'bus', label: 'Bus Stops', icon: 'Bus' },
   { id: 'bank', label: 'Banks', icon: 'Landmark' },
   { id: 'atm', label: 'ATMs', icon: 'CreditCard' },
   { id: 'coworking', label: 'Coworking', icon: 'Briefcase' },

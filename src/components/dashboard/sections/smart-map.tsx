@@ -261,8 +261,8 @@ export function SmartMap() {
   const detectLocation = useAppStore((s) => s.detectLocation)
   const locationStatus = useAppStore((s) => s.locationStatus)
 
-  // Categories — multi-select. Default: restaurant + hospital + bus.
-  const [selectedCats, setSelectedCats] = React.useState<string[]>(['restaurant', 'hospital', 'bus'])
+  // Categories — multi-select. Default: restaurant + hospital.
+  const [selectedCats, setSelectedCats] = React.useState<string[]>(['restaurant', 'hospital'])
 
   // Sort/filter state
   const [sortBy, setSortBy] = React.useState<SortBy>('distance')
@@ -556,7 +556,7 @@ export function SmartMap() {
                   <div className="flex flex-wrap items-center gap-2 lg:gap-3">
                     {/* Sort by */}
                     <div className="flex items-center gap-1">
-                      {(['distance', 'name', 'category'] as SortBy[]).map((s) => (
+                      {(['distance', 'name'] as SortBy[]).map((s) => (
                         <button
                           key={s}
                           onClick={() => setSortBy(s)}

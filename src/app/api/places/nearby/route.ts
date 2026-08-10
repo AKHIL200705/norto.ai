@@ -20,7 +20,6 @@ const CATEGORY_OSM: Record<string, { key: string; value: string }[]> = {
   hostel: [{ key: 'tourism', value: 'hostel' }, { key: 'tourism', value: 'guest_house' }],
   hospital: [{ key: 'amenity', value: 'hospital' }, { key: 'amenity', value: 'clinic' }],
   police: [{ key: 'amenity', value: 'police' }],
-  bus: [{ key: 'highway', value: 'bus_stop' }, { key: 'public_transport', value: 'platform' }],
   bank: [{ key: 'amenity', value: 'bank' }],
   atm: [{ key: 'amenity', value: 'atm' }],
   coworking: [{ key: 'amenity', value: 'coworking_space' }, { key: 'office', value: 'company' }],
