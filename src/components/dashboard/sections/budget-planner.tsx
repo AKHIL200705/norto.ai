@@ -528,34 +528,7 @@ export function BudgetPlanner() {
                     </Card>
                   </div>
 
-                  {/* Insights */}
-                  <Card className="p-5 gap-0">
-                    <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
-                      <Lightbulb className="size-4 text-amber-500" />
-                      AI Insights
-                      <Badge variant="secondary" className="text-[10px] bg-amber-500/10 text-amber-700 dark:text-amber-400 border-0 ml-auto">
-                        {result.analysis.insights.length} tips
-                      </Badge>
-                    </h3>
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                      {result.analysis.insights.map((insight, i) => (
-                        <motion.div
-                          key={i}
-                          initial={{ opacity: 0, y: 8 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: i * 0.08 }}
-                          className="rounded-xl border bg-gradient-to-br from-amber-500/5 to-transparent p-3"
-                        >
-                          <div className="flex items-start gap-2">
-                            <div className="size-6 rounded-md bg-amber-500/15 flex items-center justify-center shrink-0">
-                              <Lightbulb className="size-3.5 text-amber-500" />
-                            </div>
-                            <p className="text-xs leading-relaxed text-foreground/90">{insight}</p>
-                          </div>
-                        </motion.div>
-                      ))}
-                    </div>
-                  </Card>
+
 
                   {/* Better alternatives */}
                   <Card className="p-5 gap-0">
