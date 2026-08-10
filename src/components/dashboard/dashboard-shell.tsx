@@ -211,32 +211,32 @@ function LocationChip({
         <button
           onClick={() => setOpen((v) => !v)}
           title={title}
-          className="inline-flex items-center gap-1.5 h-9 px-2.5 sm:px-3 rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-xs font-medium hover:bg-emerald-500/20 transition-colors"
+          className="inline-flex items-center gap-1.5 h-9 px-2.5 sm:px-3 rounded-xl bg-[#DD0200]/15 text-[#DD0200] text-xs font-bold hover:bg-[#DD0200]/25 transition-colors border border-[#DD0200]/30 backdrop-blur-md"
         >
           <Crosshair className="size-3.5" />
           <span className="max-w-[90px] sm:max-w-[140px] truncate">{live.city}</span>
-          <span className="hidden sm:inline-flex items-center gap-0.5 text-[10px] text-emerald-600/70 dark:text-emerald-400/70">
+          <span className="hidden sm:inline-flex items-center gap-0.5 text-[10px] text-[#DD0200] font-bold">
             ±{accuracyM}m
           </span>
         </button>
         {open && (
           <>
             <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-            <div className="absolute right-0 top-11 z-50 w-72 sm:w-80 rounded-xl border bg-popover shadow-xl overflow-hidden">
-              <div className="px-3 py-2.5 bg-gradient-to-br from-emerald-600 to-teal-700 text-white">
-                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-emerald-50/80 font-bold">
+            <div className="absolute right-0 top-11 z-50 w-72 sm:w-80 rounded-xl border border-[#D9D9D9] glass-card bg-popover shadow-xl overflow-hidden">
+              <div className="px-3 py-2.5 bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] text-white">
+                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-white/90 font-extrabold">
                   <Crosshair className="size-3" />
                   Live GPS Location
                 </div>
-                <p className="text-sm font-bold mt-0.5">{live.exactAddress || live.city}</p>
-                <p className="text-[11px] text-emerald-50/85">
+                <p className="text-sm font-extrabold mt-0.5">{live.exactAddress || live.city}</p>
+                <p className="text-[11px] text-white/80">
                   {[live.region, live.country].filter(Boolean).join(', ')}
                 </p>
               </div>
               <div className="p-3 space-y-2 text-xs">
-                <div className="p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/25 text-emerald-800 dark:text-emerald-300 text-[11px] leading-tight space-y-1.5">
+                <div className="p-2.5 rounded-xl bg-[#DD0200]/10 border border-[#DD0200]/30 text-foreground text-[11px] leading-tight space-y-1.5 backdrop-blur-md">
                   <div className="flex items-center justify-between">
-                    <p className="font-bold flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400">
+                    <p className="font-extrabold flex items-center gap-1.5 text-[#DD0200]">
                       <Crosshair className="size-3.5" /> Google Maps High-Precision Location
                     </p>
                   </div>
@@ -247,38 +247,38 @@ function LocationChip({
                     href={`https://www.google.com/maps/search/?api=1&query=${live.lat},${live.lng}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400 hover:underline"
+                    className="inline-flex items-center gap-1 font-bold text-[#DD0200] hover:underline"
                   >
                     View exact pin on Google Maps ↗
                   </a>
                 </div>
                 {live.displayName && (
-                  <div className="flex flex-col gap-0.5 pb-1 border-b">
-                    <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Exact Address</span>
-                    <span className="text-xs font-medium leading-tight text-foreground/90">{live.displayName}</span>
+                  <div className="flex flex-col gap-0.5 pb-1 border-b border-[#D9D9D9]">
+                    <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">Exact Address</span>
+                    <span className="text-xs font-semibold leading-tight text-foreground/90">{live.displayName}</span>
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Latitude</span>
-                  <span className="font-mono font-semibold">{live.lat.toFixed(5)}</span>
+                  <span className="text-muted-foreground font-semibold">Latitude</span>
+                  <span className="font-mono font-bold text-[#DD0200]">{live.lat.toFixed(5)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Longitude</span>
-                  <span className="font-mono font-semibold">{live.lng.toFixed(5)}</span>
+                  <span className="text-muted-foreground font-semibold">Longitude</span>
+                  <span className="font-mono font-bold text-[#DD0200]">{live.lng.toFixed(5)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Accuracy</span>
-                  <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                  <span className="text-muted-foreground font-semibold">Accuracy</span>
+                  <span className="font-extrabold text-[#DD0200]">
                     ±{accuracyM}m · {accuracyLabel}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Detected</span>
-                  <span>{new Date(live.detectedAt).toLocaleTimeString()}</span>
+                  <span className="text-muted-foreground font-semibold">Detected</span>
+                  <span className="font-bold">{new Date(live.detectedAt).toLocaleTimeString()}</span>
                 </div>
 
-                <div className="pt-2 border-t space-y-2">
-                  <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Set Exact Location</p>
+                <div className="pt-2 border-t border-[#D9D9D9] space-y-2">
+                  <p className="text-[10px] text-muted-foreground uppercase font-extrabold tracking-wider">Set Exact Location</p>
                   <form
                     onSubmit={(e) => {
                       e.preventDefault()
@@ -294,11 +294,11 @@ function LocationChip({
                       name="town"
                       type="text"
                       placeholder="e.g. Singarayakonda"
-                      className="flex-1 h-8 px-2 rounded-md border text-xs bg-background focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                      className="flex-1 h-8 px-2 rounded-md border border-[#D9D9D9] text-xs bg-background focus:outline-none focus:ring-1 focus:ring-[#DD0200]"
                     />
                     <button
                       type="submit"
-                      className="h-8 px-2.5 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium transition-colors"
+                      className="h-8 px-2.5 rounded-md bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] hover:scale-[1.02] text-white text-xs font-bold transition-all shadow-xs"
                     >
                       Set
                     </button>
@@ -312,7 +312,7 @@ function LocationChip({
                           setExactLocation(loc)
                           setOpen(false)
                         }}
-                        className="px-2 py-0.5 rounded bg-muted hover:bg-accent text-[11px] font-medium transition-colors"
+                        className="px-2 py-0.5 rounded-lg bg-[#D9D9D9]/40 hover:bg-[#DD0200]/15 hover:text-[#DD0200] text-[11px] font-bold transition-colors cursor-pointer"
                       >
                         {loc}
                       </button>
@@ -320,10 +320,10 @@ function LocationChip({
                   </div>
                 </div>
               </div>
-              <div className="p-2 border-t">
+              <div className="p-2 border-t border-[#D9D9D9]">
                 <button
                   onClick={() => { onDetect(); setOpen(false) }}
-                  className="w-full flex items-center justify-center gap-1.5 h-8 rounded-lg text-xs font-medium hover:bg-accent transition-colors"
+                  className="w-full flex items-center justify-center gap-1.5 h-8 rounded-lg text-xs font-bold hover:bg-[#DD0200]/10 text-[#DD0200] transition-colors"
                 >
                   <LocateFixed className="size-3.5" />
                   Auto-detect location
@@ -340,7 +340,7 @@ function LocationChip({
   return (
     <button
       onClick={onDetect}
-      className="inline-flex items-center gap-1.5 h-9 px-2.5 sm:px-3 rounded-lg border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 text-xs font-medium hover:bg-emerald-500/10 transition-colors"
+      className="inline-flex items-center gap-1.5 h-9 px-2.5 sm:px-3 rounded-xl border border-[#DD0200]/30 text-[#DD0200] text-xs font-bold hover:bg-[#DD0200]/15 backdrop-blur-md transition-all shadow-xs"
     >
       <LocateFixed className="size-3.5" />
       <span className="hidden sm:inline">Detect location</span>
