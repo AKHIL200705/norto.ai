@@ -87,12 +87,13 @@ function DashboardSection() {
 }
 
 function Dashboard() {
+  const [mobileNavOpen, setMobileNavOpen] = React.useState(false)
   return (
     <div className="min-h-screen flex bg-background">
       <DashboardSidebar />
-      <MobileSidebar />
+      <MobileSidebar open={mobileNavOpen} onOpenChange={setMobileNavOpen} />
       <div className="flex-1 flex flex-col min-w-0">
-        <DashboardTopbar />
+        <DashboardTopbar onOpenMobileNav={() => setMobileNavOpen(true)} />
         <main className="flex-1 overflow-y-auto">
           <DashboardSection />
         </main>
