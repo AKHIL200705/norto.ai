@@ -235,67 +235,38 @@ export function DashboardHome() {
           </div>
         </motion.div>
 
-        {/* AI Insight + Recent activity row — glass effect */}
-        <div className="grid lg:grid-cols-3 gap-4">
-          <motion.div variants={item} className="lg:col-span-2">
-            <Card className="glass-card relative overflow-hidden border-[#DD0200]/30 bg-gradient-to-br from-[#DD0200]/5 via-[#55100D]/5 to-transparent p-5 sm:p-6 gap-0">
-              <div className="absolute -right-8 -top-8 size-32 rounded-full bg-[#DD0200]/10 blur-2xl pointer-events-none" />
-              <div className="relative flex items-start gap-3">
-                <div className="size-10 rounded-xl bg-gradient-to-br from-[#DD0200] to-[#55100D] flex items-center justify-center shadow-md shrink-0">
-                  <Lightbulb className="size-5 text-white" />
+        {/* AI Insight row — glass effect */}
+        <motion.div variants={item}>
+          <Card className="glass-card relative overflow-hidden border-[#DD0200]/30 bg-gradient-to-br from-[#DD0200]/5 via-[#55100D]/5 to-transparent p-5 sm:p-6 gap-0">
+            <div className="absolute -right-8 -top-8 size-32 rounded-full bg-[#DD0200]/10 blur-2xl pointer-events-none" />
+            <div className="relative flex items-start gap-3">
+              <div className="size-10 rounded-xl bg-gradient-to-br from-[#DD0200] to-[#55100D] flex items-center justify-center shadow-md shrink-0">
+                <Lightbulb className="size-5 text-white" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-extrabold text-sm sm:text-base tracking-tight">AI Insight of the day</h3>
+                  <Badge variant="secondary" className="text-[10px] bg-[#DD0200]/15 text-[#DD0200] border-0 font-bold">
+                    <Sparkles className="size-3 mr-1" />
+                    Tip
+                  </Badge>
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-extrabold text-sm sm:text-base tracking-tight">AI Insight of the day</h3>
-                    <Badge variant="secondary" className="text-[10px] bg-[#DD0200]/15 text-[#DD0200] border-0 font-bold">
-                      <Sparkles className="size-3 mr-1" />
-                      Tip
-                    </Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
-                    Tip: Hitech City has the best PG options under <span className="font-bold text-foreground">₹8,000</span> near metro stations. Areas like <span className="font-bold text-foreground">Madhapur</span> and <span className="font-bold text-foreground">Kondapur</span> balance commute, cost, and connectivity perfectly.
-                  </p>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="mt-3 text-[#DD0200] hover:text-[#DD0200] hover:bg-[#DD0200]/10 px-0 -ml-1 font-bold"
-                    onClick={() => setSection('assistant')}
-                  >
-                    Ask AI for more details
-                    <ArrowRight className="size-3.5" />
-                  </Button>
-                </div>
+                <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
+                  Tip: Hitech City has the best PG options under <span className="font-bold text-foreground">₹8,000</span> near metro stations. Areas like <span className="font-bold text-foreground">Madhapur</span> and <span className="font-bold text-foreground">Kondapur</span> balance commute, cost, and connectivity perfectly.
+                </p>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="mt-3 text-[#DD0200] hover:text-[#DD0200] hover:bg-[#DD0200]/10 px-0 -ml-1 font-bold"
+                  onClick={() => setSection('assistant')}
+                >
+                  Ask AI for more details
+                  <ArrowRight className="size-3.5" />
+                </Button>
               </div>
-            </Card>
-          </motion.div>
-
-          <motion.div variants={item}>
-            <Card className="glass-card p-5 gap-0 h-full">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="font-extrabold text-sm sm:text-base flex items-center gap-2 tracking-tight">
-                  <Clock className="size-4 text-[#DD0200]" />
-                  Recent activity
-                </h3>
-              </div>
-              <div className="flex flex-col gap-3">
-                {RECENT.map((r, i) => {
-                  const Icon = r.icon
-                  return (
-                    <div key={i} className="flex items-start gap-2.5">
-                      <div className={cn('size-7 rounded-lg flex items-center justify-center shrink-0', r.color)}>
-                        <Icon className="size-3.5" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-semibold leading-snug">{r.title}</p>
-                        <p className="text-[10px] text-muted-foreground mt-0.5">{r.time}</p>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            </Card>
-          </motion.div>
-        </div>
+            </div>
+          </Card>
+        </motion.div>
 
         {/* Recommended for you — glass effect */}
         <motion.div variants={item}>
