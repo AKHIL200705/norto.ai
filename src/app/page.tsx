@@ -30,10 +30,6 @@ const Translator = dynamic(
   () => import('@/components/dashboard/sections/translator').then((m) => m.Translator),
   { loading: () => <SectionSkeleton title="Translator" /> }
 )
-const Emergency = dynamic(
-  () => import('@/components/dashboard/sections/emergency').then((m) => m.Emergency),
-  { loading: () => <SectionSkeleton title="Emergency Hub" /> }
-)
 const FoodView = dynamic(
   () => import('@/components/dashboard/sections/food').then((m) => m.FoodView),
   { loading: () => <SectionSkeleton title="Food & Dining" /> }
@@ -77,7 +73,6 @@ function DashboardSection() {
     case 'map': return <SmartMap />
     case 'budget': return <BudgetPlanner />
     case 'translator': return <Translator />
-    case 'emergency': return <Emergency />
     case 'food': return <FoodView />
     case 'ocr': return <OcrScanner />
     case 'saved': return <SavedPlaces />
@@ -87,13 +82,12 @@ function DashboardSection() {
 }
 
 function Dashboard() {
-  const [mobileNavOpen, setMobileNavOpen] = React.useState(false)
   return (
     <div className="min-h-screen flex bg-background">
       <DashboardSidebar />
-      <MobileSidebar open={mobileNavOpen} onOpenChange={setMobileNavOpen} />
+      <MobileSidebar />
       <div className="flex-1 flex flex-col min-w-0">
-        <DashboardTopbar onOpenMobileNav={() => setMobileNavOpen(true)} />
+        <DashboardTopbar />
         <main className="flex-1 overflow-y-auto">
           <DashboardSection />
         </main>

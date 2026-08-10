@@ -7,7 +7,6 @@ export type DashboardSection =
   | 'budget'
   | 'weather'
   | 'translator'
-  | 'emergency'
   | 'food'
   | 'ocr'
   | 'saved'

@@ -32,12 +32,11 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { id: 'home', label: 'Home', icon: Home, group: 'main' },
-  { id: 'assistant', label: 'AI Assistant', icon: Sparkles, group: 'main' },
+  { id: 'home', label: 'Dashboard', icon: Home, group: 'main' },
+  { id: 'assistant', label: 'AI Assistant', icon: Sparkles, group: 'tools' },
   { id: 'map', label: 'Smart Map', icon: Map, group: 'tools' },
   { id: 'budget', label: 'Budget Planner', icon: Wallet, group: 'tools' },
   { id: 'translator', label: 'Translator', icon: Languages, group: 'tools' },
-  { id: 'emergency', label: 'Emergency', icon: Siren, group: 'tools' },
   { id: 'food', label: 'Food', icon: UtensilsCrossed, group: 'tools' },
   { id: 'ocr', label: 'OCR Scanner', icon: ScanText, group: 'tools' },
   { id: 'saved', label: 'Saved Places', icon: Bookmark, group: 'main' },
@@ -438,13 +437,6 @@ export function DashboardTopbar() {
       />
 
       <div className="flex items-center gap-1.5">
-        <button
-          onClick={() => setSection('emergency')}
-          className="hidden sm:flex items-center gap-1.5 h-9 px-3 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-semibold hover:bg-rose-500/20 transition-colors"
-        >
-          <Siren className="size-3.5" />
-          SOS
-        </button>
 
 
 

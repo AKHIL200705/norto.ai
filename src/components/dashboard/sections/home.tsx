@@ -42,7 +42,6 @@ const QUICK_ACTIONS: QuickAction[] = [
   { id: 'map', title: 'Smart Map', desc: 'Find nearby essentials & places', icon: Map, gradient: 'from-[#8B0000] to-[#1A0706]' },
   { id: 'budget', title: 'Budget Planner', desc: 'Track spend & get savings tips', icon: Wallet, gradient: 'from-[#DD0200] to-[#8B0000]' },
   { id: 'translator', title: 'Translator', desc: 'Local phrases & instant translation', icon: Languages, gradient: 'from-[#55100D] to-[#1A0706]' },
-  { id: 'emergency', title: 'Emergency', desc: 'SOS, hospitals & hotlines', icon: Siren, gradient: 'from-[#DD0200] to-[#55100D]' },
 ]
 
 const RECENT = [
