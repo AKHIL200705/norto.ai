@@ -36,7 +36,6 @@ const NAV_ITEMS: NavItem[] = [
   { id: 'assistant', label: 'AI Assistant', icon: Sparkles, group: 'main' },
   { id: 'map', label: 'Smart Map', icon: Map, group: 'tools' },
   { id: 'budget', label: 'Budget Planner', icon: Wallet, group: 'tools' },
-  { id: 'weather', label: 'Weather', icon: CloudSun, group: 'tools' },
   { id: 'translator', label: 'Translator', icon: Languages, group: 'tools' },
   { id: 'emergency', label: 'Emergency', icon: Siren, group: 'tools' },
   { id: 'food', label: 'Food', icon: UtensilsCrossed, group: 'tools' },
@@ -447,67 +446,7 @@ export function DashboardTopbar() {
           SOS
         </button>
 
-        {/* Notifications — responsive: bottom Drawer on mobile, dropdown on desktop */}
-        <div className="relative">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="relative"
-            onClick={() => setNotifOpen((v) => !v)}
-            aria-label="Notifications"
-          >
-            <Bell className="size-5" />
-            <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-rose-500 ring-2 ring-background" />
-          </Button>
-          {/* Desktop dropdown */}
-          {notifOpen && !isMobile && (
-            <>
-              <div className="fixed inset-0 z-40" onClick={() => setNotifOpen(false)} />
-              <div className="absolute right-0 top-12 z-50 w-80 rounded-xl border bg-popover shadow-xl overflow-hidden">
-                <div className="px-4 py-3 border-b flex items-center justify-between">
-                  <span className="font-semibold text-sm">Notifications</span>
-                  <Badge variant="secondary" className="text-[10px]">{notifications.length} new</Badge>
-                </div>
-                <div className="max-h-80 overflow-y-auto">
-                  {notifications.map((n, i) => (
-                    <NotificationItem key={i} n={n} />
-                  ))}
-                </div>
-                <button
-                  onClick={() => setNotifOpen(false)}
-                  className="w-full px-4 py-2.5 text-xs font-medium text-emerald-700 dark:text-emerald-400 hover:bg-accent border-t transition-colors"
-                >
-                  Mark all as read
-                </button>
-              </div>
-            </>
-          )}
-          {/* Mobile bottom Drawer */}
-          {isMobile && (
-            <Drawer open={notifOpen} onOpenChange={setNotifOpen}>
-              <DrawerContent>
-                <DrawerHeader className="text-center">
-                  <DrawerTitle className="flex items-center justify-center gap-2">
-                    <Bell className="size-4 text-emerald-600" />
-                    Notifications
-                    <Badge variant="secondary" className="text-[10px]">{notifications.length} new</Badge>
-                  </DrawerTitle>
-                </DrawerHeader>
-                <div className="px-4 pb-6 max-h-[60vh] overflow-y-auto">
-                  {notifications.map((n, i) => (
-                    <NotificationItem key={i} n={n} />
-                  ))}
-                  <button
-                    onClick={() => setNotifOpen(false)}
-                    className="w-full mt-3 px-4 py-2.5 text-xs font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 rounded-lg transition-colors"
-                  >
-                    Mark all as read
-                  </button>
-                </div>
-              </DrawerContent>
-            </Drawer>
-          )}
-        </div>
+
 
         <Button
           variant="ghost"

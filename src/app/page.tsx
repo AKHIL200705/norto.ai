@@ -76,7 +76,6 @@ function DashboardSection() {
     case 'assistant': return <AiAssistant />
     case 'map': return <SmartMap />
     case 'budget': return <BudgetPlanner />
-    case 'weather': return <WeatherView />
     case 'translator': return <Translator />
     case 'emergency': return <Emergency />
     case 'food': return <FoodView />

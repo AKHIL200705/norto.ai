@@ -41,7 +41,6 @@ const QUICK_ACTIONS: QuickAction[] = [
   { id: 'assistant', title: 'AI Assistant', desc: 'Ask anything about your new city', icon: Sparkles, gradient: 'from-emerald-500 to-teal-600' },
   { id: 'map', title: 'Smart Map', desc: 'Find nearby essentials & places', icon: Map, gradient: 'from-amber-500 to-orange-600' },
   { id: 'budget', title: 'Budget Planner', desc: 'Track spend & get AI savings tips', icon: Wallet, gradient: 'from-teal-500 to-emerald-600' },
-  { id: 'weather', title: 'Weather', desc: '7-day forecast & clothing tips', icon: CloudSun, gradient: 'from-rose-500 to-amber-500' },
   { id: 'translator', title: 'Translator', desc: 'Local phrases & instant translation', icon: Languages, gradient: 'from-violet-500 to-fuchsia-600' },
   { id: 'emergency', title: 'Emergency', desc: 'SOS, hospitals & hotlines', icon: Siren, gradient: 'from-rose-600 to-red-600' },
 ]
