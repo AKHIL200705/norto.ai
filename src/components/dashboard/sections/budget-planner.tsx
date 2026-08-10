@@ -183,23 +183,23 @@ export function BudgetPlanner() {
   return (
     <div className="p-4 lg:p-6 max-w-7xl mx-auto">
       <div className="mb-5">
-        <h1 className="text-xl sm:text-2xl font-bold tracking-tight flex items-center gap-2">
-          <Wallet className="size-5 text-emerald-600" />
+        <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight flex items-center gap-2">
+          <Wallet className="size-5 text-[#DD0200]" />
           Budget Planner
         </h1>
         <p className="text-sm text-muted-foreground mt-0.5">
-          Plan your monthly budget for <span className="font-medium text-foreground">{city}</span> and get AI-powered insights
+          Plan your monthly budget for <span className="font-bold text-foreground">{city}</span> and get AI-powered insights
         </p>
       </div>
 
       <div className="grid lg:grid-cols-[420px_1fr] gap-4 lg:gap-6">
         {/* Input form */}
-        <Card className="p-5 sm:p-6 gap-0 h-fit lg:sticky lg:top-20">
+        <Card className="glass-card p-5 sm:p-6 gap-0 h-fit lg:sticky lg:top-20 border-[#D9D9D9]">
           <div className="flex items-center gap-2 mb-4">
-            <div className="size-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+            <div className="size-8 rounded-lg bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] flex items-center justify-center shadow-md shadow-[#DD0200]/25">
               <Wallet className="size-4 text-white" />
             </div>
-            <h2 className="font-semibold text-sm">Your monthly finances</h2>
+            <h2 className="font-extrabold text-sm">Your monthly finances</h2>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
@@ -208,11 +208,11 @@ export function BudgetPlanner() {
               const isSalary = f.key === 'salary'
               return (
                 <div key={f.key} className={cn('flex flex-col gap-1.5', isSalary && 'col-span-2')}>
-                  <Label htmlFor={f.key} className="text-xs text-muted-foreground">
+                  <Label htmlFor={f.key} className="text-xs text-muted-foreground font-semibold">
                     {f.label}
                   </Label>
                   <div className="relative">
-                    <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground text-sm font-medium">
+                    <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground text-sm font-bold">
                       ₹
                     </span>
                     <Input
@@ -223,8 +223,8 @@ export function BudgetPlanner() {
                       value={values[f.key] === 0 ? '' : values[f.key]}
                       onChange={(e) => setField(f.key, Number(e.target.value))}
                       className={cn(
-                        'pl-7',
-                        isSalary && 'border-emerald-500/30 bg-emerald-500/5 focus-visible:border-emerald-500/60'
+                        'pl-7 font-medium border-[#D9D9D9]',
+                        isSalary && 'border-[#DD0200]/40 bg-[#DD0200]/5 focus-visible:border-[#DD0200]'
                       )}
                       placeholder="0"
                     />

@@ -311,11 +311,8 @@ export function Translator() {
       </motion.div>
     </div>
   )
-}
-
-function TranslatorCard({
-  from, to, setFrom, setTo, source, setSource, translation, loading,
-  onSwap, onTranslate, onCopy, copied, onSpeak, onSave, voiceSlot,
+}function TranslatorCard({
+  from, to, setFrom, setTo, source, setSource, translation, loading, onSwap, onTranslate, onCopy, copied, onSpeak, onSave, voiceSlot,
 }: {
   from: string; to: string
   setFrom: (s: string) => void; setTo: (s: string) => void
@@ -329,13 +326,13 @@ function TranslatorCard({
   voiceSlot: React.ReactNode
 }) {
   return (
-    <Card className="p-5 sm:p-6 gap-0">
+    <Card className="glass-card p-5 sm:p-6 gap-0 border-[#D9D9D9]">
       {/* Language selectors */}
       <div className="flex items-end gap-3">
         <div className="flex-1 space-y-1.5">
-          <Label className="text-xs text-muted-foreground">From</Label>
+          <Label className="text-xs text-muted-foreground font-semibold">From</Label>
           <Select value={from} onValueChange={setFrom}>
-            <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-full border-[#D9D9D9]"><SelectValue /></SelectTrigger>
             <SelectContent>
               {LANGUAGES.map((l) => <SelectItem key={l} value={l}>{l}</SelectItem>)}
             </SelectContent>
@@ -346,15 +343,15 @@ function TranslatorCard({
           size="icon"
           variant="outline"
           onClick={onSwap}
-          className="shrink-0 mb-0.5 rounded-full"
+          className="shrink-0 mb-0.5 rounded-full border-[#D9D9D9]"
           aria-label="Swap languages"
         >
-          <ArrowLeftRight className="size-4" />
+          <ArrowLeftRight className="size-4 text-[#DD0200]" />
         </Button>
         <div className="flex-1 space-y-1.5">
-          <Label className="text-xs text-muted-foreground">To</Label>
+          <Label className="text-xs text-muted-foreground font-semibold">To</Label>
           <Select value={to} onValueChange={setTo}>
-            <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-full border-[#D9D9D9]"><SelectValue /></SelectTrigger>
             <SelectContent>
               {LANGUAGES.map((l) => <SelectItem key={l} value={l}>{l}</SelectItem>)}
             </SelectContent>
@@ -368,20 +365,20 @@ function TranslatorCard({
       <div className="mt-4 grid md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label className="text-xs text-muted-foreground">Source ({from})</Label>
-            <span className="text-[10px] text-muted-foreground">{source.length} chars</span>
+            <Label className="text-xs text-muted-foreground font-semibold">Source ({from})</Label>
+            <span className="text-[10px] text-muted-foreground font-bold">{source.length} chars</span>
           </div>
           <Textarea
             value={source}
             onChange={(e) => setSource(e.target.value)}
             placeholder={`Type text in ${from}…`}
             rows={5}
-            className="resize-none"
+            className="resize-none font-medium border-[#D9D9D9]"
           />
         </div>
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label className="text-xs text-muted-foreground">Translation ({to})</Label>
+            <Label className="text-xs text-muted-foreground font-semibold">Translation ({to})</Label>
             <div className="flex items-center gap-1">
               <Button
                 type="button"
@@ -391,7 +388,7 @@ function TranslatorCard({
                 disabled={!translation}
                 className="h-7 px-2 text-xs"
               >
-                <Volume2 className="size-3.5" />
+                <Volume2 className="size-3.5 text-[#DD0200]" />
               </Button>
               <Button
                 type="button"
@@ -401,13 +398,13 @@ function TranslatorCard({
                 disabled={!translation}
                 className="h-7 px-2 text-xs"
               >
-                {copied ? <Check className="size-3.5 text-emerald-600" /> : <Copy className="size-3.5" />}
+                {copied ? <Check className="size-3.5 text-[#DD0200]" /> : <Copy className="size-3.5" />}
               </Button>
             </div>
           </div>
-          <div className="min-h-[124px] rounded-md border border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-950/20 p-3.5 text-base">
+          <div className="min-h-[124px] rounded-xl border border-[#DD0200]/30 bg-[#DD0200]/5 p-3.5 text-base backdrop-blur-md">
             {loading ? (
-              <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-medium">
+              <div className="flex items-center gap-2 text-[#DD0200] font-bold">
                 <Loader2 className="size-4 animate-spin" />
                 Translating…
               </div>
@@ -436,13 +433,13 @@ function TranslatorCard({
 
 function PhraseBook({ onPick }: { onPick: (p: { en: string; category: string }) => void }) {
   return (
-    <Card className="p-5 sm:p-6 gap-0">
+    <Card className="glass-card p-5 sm:p-6 gap-0 border-[#D9D9D9]">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="font-semibold text-sm sm:text-base flex items-center gap-2">
-          <Sparkles className="size-4 text-amber-500" />
+        <h3 className="font-extrabold text-sm sm:text-base flex items-center gap-2">
+          <Sparkles className="size-4 text-[#DD0200]" />
           Quick phrase book
         </h3>
-        <span className="text-xs text-muted-foreground">{PHRASE_BOOK.length} phrases</span>
+        <span className="text-xs text-muted-foreground font-bold">{PHRASE_BOOK.length} phrases</span>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
         {PHRASE_BOOK.map((p, i) => (
@@ -451,12 +448,12 @@ function PhraseBook({ onPick }: { onPick: (p: { en: string; category: string }) 
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.97 }}
             onClick={() => onPick(p)}
-            className="text-left p-3 rounded-lg border border-border/60 bg-background hover:border-emerald-500/40 hover:bg-emerald-500/5 transition-all"
+            className="text-left p-3 rounded-xl border border-[#D9D9D9] bg-card hover:border-[#DD0200] hover:bg-[#DD0200]/5 transition-all shadow-xs"
           >
-            <Badge variant="secondary" className="text-[9px] mb-1.5 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-0">
+            <Badge variant="secondary" className="text-[9px] mb-1.5 bg-[#DD0200]/15 text-[#DD0200] border-0 font-bold">
               {p.category}
             </Badge>
-            <p className="text-xs font-medium leading-snug">{p.en}</p>
+            <p className="text-xs font-semibold leading-snug">{p.en}</p>
           </motion.button>
         ))}
       </div>
@@ -466,16 +463,16 @@ function PhraseBook({ onPick }: { onPick: (p: { en: string; category: string }) 
 
 function OcrHintCard({ onClick }: { onClick: () => void }) {
   return (
-    <Card className="p-5 sm:p-6 gap-0 border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-transparent">
+    <Card className="glass-card p-5 sm:p-6 gap-0 border-[#DD0200]/30 bg-gradient-to-br from-[#DD0200]/5 to-transparent">
       <div className="flex items-center gap-4">
-        <div className="size-11 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-md shrink-0">
+        <div className="size-11 rounded-xl bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] flex items-center justify-center shadow-md shrink-0">
           <Camera className="size-5 text-white" />
         </div>
         <div className="flex-1">
-          <h3 className="font-semibold text-sm">Scan a sign, menu, or document</h3>
+          <h3 className="font-extrabold text-sm">Scan a sign, menu, or document</h3>
           <p className="text-xs text-muted-foreground mt-0.5">Use your camera to capture text — our OCR will transcribe and translate it for you.</p>
         </div>
-        <Button variant="outline" size="sm" onClick={onClick} className="shrink-0">
+        <Button variant="outline" size="sm" onClick={onClick} className="shrink-0 font-bold">
           Open OCR
           <ArrowLeftRight className="size-3.5" />
         </Button>

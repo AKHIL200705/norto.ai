@@ -36,10 +36,10 @@ interface RecentScan {
 const STORAGE_KEY = 'norto-recent-scans'
 
 const USE_CASES = [
-  { id: 'rent', title: 'Rent Agreement', desc: 'Extract terms, dates, and amounts', icon: FileText, tint: 'from-emerald-500 to-teal-600' },
-  { id: 'menu', title: 'Restaurant Menu', desc: 'Translate dishes and prices', icon: Utensils, tint: 'from-amber-500 to-orange-500' },
-  { id: 'sign', title: 'Street Sign', desc: 'Translate local language signs', icon: MapIcon, tint: 'from-rose-500 to-pink-600' },
-  { id: 'form', title: 'Government Form', desc: 'Extract fields & instructions', icon: Landmark, tint: 'from-violet-500 to-fuchsia-600' },
+  { id: 'rent', title: 'Rent Agreement', desc: 'Extract terms, dates, and amounts', icon: FileText, tint: 'from-[#DD0200] to-[#55100D]' },
+  { id: 'menu', title: 'Restaurant Menu', desc: 'Translate dishes and prices', icon: Utensils, tint: 'from-[#8B0000] to-[#1A0706]' },
+  { id: 'sign', title: 'Street Sign', desc: 'Translate local language signs', icon: MapIcon, tint: 'from-[#DD0200] to-[#8B0000]' },
+  { id: 'form', title: 'Government Form', desc: 'Extract fields & instructions', icon: Landmark, tint: 'from-[#55100D] to-[#1A0706]' },
 ]
 
 const container = {
@@ -98,61 +98,57 @@ export function OcrScanner() {
       setDataUrl(reader.result as string)
       setResult('')
     }
-    reader.onerror = () => toast.error('Failed to read file')
     reader.readAsDataURL(file)
+  }
+
+  const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleFile(e.target.files?.[0])
   }
 
   const onDrop = (e: React.DragEvent) => {
     e.preventDefault()
     setDragging(false)
-    const file = e.dataTransfer.files?.[0]
-    handleFile(file)
+    handleFile(e.dataTransfer.files?.[0])
   }
 
-  const onPick = () => inputRef.current?.click()
-
-  const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleFile(e.target.files?.[0])
+  const onPick = () => {
+    inputRef.current?.click()
   }
 
   const clearImage = () => {
     setDataUrl(null)
     setFileName('')
     setResult('')
-    if (inputRef.current) inputRef.current.value = ''
   }
 
   const extract = async () => {
     if (!dataUrl) {
-      toast.error('Please select an image first')
+      toast.error('Upload an image first')
       return
     }
     setLoading(true)
     setProgress('Uploading image…')
-    setResult('')
     try {
-      // Fake progress messages while waiting
-      const timers: number[] = []
-      timers.push(window.setTimeout(() => setProgress('Analyzing image with AI…'), 800))
-      timers.push(window.setTimeout(() => setProgress('Extracting text & structure…'), 1800))
-      timers.push(window.setTimeout(() => setProgress('Formatting Markdown output…'), 2800))
-
-      const json = await api('/api/ocr', { body: { image: dataUrl } })
-      timers.forEach((t) => clearTimeout(t))
-
-      setResult(json.result || '')
-      toast.success('Text extracted successfully')
-
-      // Save to recents
-      const entry: RecentScan = {
-        id: crypto.randomUUID(),
-        fileName: fileName || `scan-${Date.now()}.jpg`,
-        preview: dataUrl,
-        result: json.result || '',
-        context: context || 'General scan',
-        createdAt: new Date().toISOString(),
+      setProgress('Running OCR analysis…')
+      const json = await api('/api/ai/ocr', {
+        body: { image: dataUrl, context: context || undefined },
+      })
+      const text = json.extractedText || json.result || ''
+      setResult(text)
+      if (text) {
+        toast.success('Text extracted successfully')
+        const newEntry: RecentScan = {
+          id: crypto.randomUUID(),
+          fileName: fileName || 'Image scan',
+          preview: dataUrl,
+          result: text,
+          context: context || 'General',
+          createdAt: new Date().toISOString(),
+        }
+        persistRecents([newEntry, ...recents.slice(0, 9)])
+      } else {
+        toast.error('No text found in image')
       }
-      persistRecents([entry, ...recents].slice(0, 8))
     } catch (e) {
       toast.error(e instanceof Error ? e.message : 'OCR failed')
     } finally {
@@ -161,16 +157,12 @@ export function OcrScanner() {
     }
   }
 
-  const handleCopy = async () => {
+  const handleCopy = () => {
     if (!result) return
-    try {
-      await navigator.clipboard.writeText(result)
-      setCopied(true)
-      toast.success('Copied to clipboard')
-      setTimeout(() => setCopied(false), 1500)
-    } catch {
-      toast.error('Copy failed')
-    }
+    navigator.clipboard.writeText(result)
+    setCopied(true)
+    toast.success('Copied to clipboard')
+    setTimeout(() => setCopied(false), 2000)
   }
 
   const removeRecent = (id: string) => {
@@ -190,17 +182,17 @@ export function OcrScanner() {
         {/* Header */}
         <motion.div variants={item}>
           <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-            <ScanLine className="size-3.5 text-emerald-600" />
-            <span>Extract &amp; translate text from any image</span>
+            <ScanLine className="size-3.5 text-[#DD0200]" />
+            <span className="font-semibold">Extract &amp; translate text from any image</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">OCR Scanner</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">OCR Scanner</h1>
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-4">
           {/* Upload zone */}
           <motion.div variants={item}>
-            <Card className="p-5 sm:p-6 gap-0 h-full">
-              <h3 className="font-semibold text-sm sm:text-base mb-3">Upload image</h3>
+            <Card className="glass-card p-5 sm:p-6 gap-0 h-full border-[#D9D9D9]">
+              <h3 className="font-extrabold text-sm sm:text-base mb-3">Upload image</h3>
 
               <input
                 ref={inputRef}
@@ -219,13 +211,13 @@ export function OcrScanner() {
                   className={cn(
                     'relative cursor-pointer rounded-xl border-2 border-dashed p-8 sm:p-10 flex flex-col items-center justify-center gap-3 text-center transition-all',
                     dragging
-                      ? 'border-emerald-500 bg-emerald-500/10 scale-[1.01]'
-                      : 'border-border hover:border-emerald-500/50 hover:bg-emerald-500/5',
+                      ? 'border-[#DD0200] bg-[#DD0200]/10 scale-[1.01]'
+                      : 'border-[#D9D9D9] hover:border-[#DD0200]/60 hover:bg-[#DD0200]/5',
                   )}
                 >
                   <motion.div
                     animate={dragging ? { y: -4 } : { y: 0 }}
-                    className="size-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/20"
+                    className="size-16 rounded-2xl bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] flex items-center justify-center shadow-lg shadow-[#DD0200]/25"
                   >
                     <UploadCloud className="size-8 text-white" />
                   </motion.div>

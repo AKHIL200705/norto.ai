@@ -102,15 +102,16 @@ export function FoodView() {
       await api('/api/places', {
         body: {
           name: f.name,
-          category: 'restaurant',
+          category: 'Food',
+          address: `${f.type} in ${city}`,
           rating: f.rating,
           distance: f.distance,
-          notes: `${f.type} — ${f.description}`,
+          notes: f.description,
         },
       })
-      toast.success(`Saved ${f.name}`)
+      toast.success(`Saved ${f.name} to places`)
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'Failed to save')
+      toast.error(e instanceof Error ? e.message : 'Failed to save place')
     } finally {
       setSavingIdx(null)
     }
@@ -122,13 +123,13 @@ export function FoodView() {
         {/* Header */}
         <motion.div variants={item}>
           <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-            <Utensils className="size-3.5 text-amber-500" />
-            <span>AI-curated food picks in {city}</span>
+            <Utensils className="size-3.5 text-[#DD0200]" />
+            <span className="font-semibold">AI-curated food picks in {city}</span>
           </div>
           <div className="flex items-center justify-between gap-3">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Food Recommendations</h1>
-            <Button variant="outline" size="sm" onClick={surpriseMe} disabled={loading}>
-              <Dices className="size-4 text-amber-500" />
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Food Recommendations</h1>
+            <Button variant="outline" size="sm" onClick={surpriseMe} disabled={loading} className="font-bold">
+              <Dices className="size-4 text-[#DD0200]" />
               <span className="hidden sm:inline">Surprise me</span>
             </Button>
           </div>
@@ -136,7 +137,7 @@ export function FoodView() {
 
         {/* Filters */}
         <motion.div variants={item}>
-          <Card className="p-4 sm:p-5 gap-0">
+          <Card className="glass-card p-4 sm:p-5 gap-0 border-[#D9D9D9]">
             <div className="grid sm:grid-cols-2 gap-4">
               <FilterGroup label="Meal" icon={Utensils} options={MEALS} value={meal} onChange={(v) => setMeal(v as Meal)} />
               <FilterGroup label="Preference" icon={Leaf} options={PREFERENCES} value={pref} onChange={(v) => setPref(v as Preference)} />
@@ -162,17 +163,17 @@ export function FoodView() {
         {/* Empty state */}
         {!loading && !hasSearched && (
           <motion.div variants={item}>
-            <Card className="p-10 sm:p-14 flex flex-col items-center text-center gap-4 border-dashed border-emerald-500/30 bg-gradient-to-br from-emerald-500/5 via-amber-500/5 to-transparent">
+            <Card className="glass-card p-10 sm:p-14 flex flex-col items-center text-center gap-4 border-dashed border-[#DD0200]/30 bg-gradient-to-br from-[#DD0200]/5 via-[#55100D]/5 to-transparent">
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ type: 'spring', stiffness: 120, damping: 12 }}
-                className="size-20 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-xl shadow-amber-500/20"
+                className="size-20 rounded-2xl bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] flex items-center justify-center shadow-xl shadow-[#DD0200]/25"
               >
                 <UtensilsCrossed className="size-10 text-white" />
               </motion.div>
               <div>
-                <h3 className="text-lg font-semibold">Hungry? Let&apos;s find your next meal</h3>
+                <h3 className="text-lg font-extrabold">Hungry? Let&apos;s find your next meal</h3>
                 <p className="text-sm text-muted-foreground mt-1.5 max-w-md">
                   Get personalized food recommendations across {city}. Filter by meal time and preference — then tap &quot;Recommend Food&quot; to let our AI curate the best picks.
                 </p>
@@ -194,11 +195,11 @@ export function FoodView() {
         {/* No results */}
         {!loading && hasSearched && foods.length === 0 && !raw && (
           <motion.div variants={item}>
-            <Card className="p-10 flex flex-col items-center text-center gap-3">
+            <Card className="glass-card p-10 flex flex-col items-center text-center gap-3 border-[#D9D9D9]">
               <div className="size-12 rounded-full bg-muted/60 flex items-center justify-center">
                 <UtensilsCrossed className="size-6 text-muted-foreground" />
               </div>
-              <h3 className="font-semibold">No food recommendations found</h3>
+              <h3 className="font-extrabold">No food recommendations found</h3>
               <p className="text-sm text-muted-foreground max-w-sm">Try adjusting your filters or use the Surprise Me button for random picks.</p>
             </Card>
           </motion.div>
@@ -207,10 +208,10 @@ export function FoodView() {
         {/* Raw fallback */}
         {!loading && foods.length === 0 && raw && (
           <motion.div variants={item}>
-            <Card className="p-5 gap-0 border-amber-500/30 bg-amber-500/5">
+            <Card className="glass-card p-5 gap-0 border-[#DD0200]/30 bg-[#DD0200]/5">
               <div className="flex items-center gap-2 mb-2">
-                <Sparkles className="size-4 text-amber-500" />
-                <h3 className="font-semibold text-sm">AI food picks (raw)</h3>
+                <Sparkles className="size-4 text-[#DD0200]" />
+                <h3 className="font-extrabold text-sm">AI food picks (raw)</h3>
               </div>
               <pre className="text-xs whitespace-pre-wrap text-muted-foreground max-h-80 overflow-y-auto font-mono leading-relaxed">{raw}</pre>
             </Card>
@@ -221,11 +222,11 @@ export function FoodView() {
         {!loading && foods.length > 0 && (
           <motion.div variants={item}>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-base sm:text-lg font-semibold tracking-tight flex items-center gap-2">
-                <UtensilsCrossed className="size-4 text-amber-500" />
+              <h2 className="text-base sm:text-lg font-extrabold tracking-tight flex items-center gap-2">
+                <UtensilsCrossed className="size-4 text-[#DD0200]" />
                 Top picks in {city}
               </h2>
-              <span className="text-xs text-muted-foreground">{foods.length} results</span>
+              <span className="text-xs text-muted-foreground font-bold">{foods.length} results</span>
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {foods.map((f, i) => (
@@ -263,10 +264,10 @@ function FilterGroup({
             key={o}
             onClick={() => onChange(o)}
             className={cn(
-              'px-3 py-1.5 rounded-md text-xs font-medium transition-all',
+              'px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer',
               value === o
-                ? 'bg-emerald-600 text-white shadow-sm'
-                : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground',
+                ? 'bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] text-white shadow-md shadow-[#DD0200]/25'
+                : 'bg-[#D9D9D9]/30 text-foreground hover:bg-[#DD0200]/10 hover:text-[#DD0200]',
             )}
           >
             {o}
