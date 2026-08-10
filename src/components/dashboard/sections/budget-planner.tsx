@@ -70,8 +70,8 @@ const FIELDS: { key: keyof typeof DEFAULTS; label: string; icon: React.ElementTy
   { key: 'shopping', label: 'Shopping', icon: Wallet },
 ]
 
-const PIE_COLORS = ['#10b981', '#f59e0b', '#f43f5e', '#14b8a6', '#fb923c', '#a855f7']
-const BAR_COLORS = ['#10b981', '#f59e0b', '#f43f5e', '#14b8a6', '#fb923c', '#a855f7']
+const PIE_COLORS = ['#DD0200', '#55100D', '#1A0706', '#8B0000', '#D9D9D9', '#FF4D4D']
+const BAR_COLORS = ['#DD0200', '#55100D', '#1A0706', '#8B0000', '#D9D9D9', '#FF4D4D']
 
 async function api(path: string, opts: { method?: string; body?: any } = {}) {
   const res = await fetch(path, {
@@ -261,7 +261,7 @@ export function BudgetPlanner() {
           <Button
             onClick={handleAnalyze}
             disabled={loading}
-            className="mt-4 w-full bg-gradient-to-r from-emerald-600 to-teal-700 text-white shadow-md h-10"
+            className="mt-4 w-full bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] hover:opacity-95 text-white shadow-lg shadow-[#DD0200]/25 h-10 font-bold"
           >
             {loading ? (
               <>

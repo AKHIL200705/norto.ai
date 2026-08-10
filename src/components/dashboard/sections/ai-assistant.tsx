@@ -64,9 +64,9 @@ function MessageBubble({ msg }: { msg: ChatMessage }) {
       </div>
       <div
         className={cn(
-          'max-w-[85%] sm:max-w-[80%] rounded-2xl px-4 py-2.5',
+          'max-w-[85%] sm:max-w-[80%] rounded-2xl px-4 py-2.5 shadow-md',
           isUser
-            ? 'bg-gradient-to-br from-emerald-600 to-teal-700 text-white rounded-tr-sm'
+            ? 'bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] text-white rounded-tr-sm'
             : 'bg-card border rounded-tl-sm'
         )}
       >
@@ -91,7 +91,7 @@ function EmptyState() {
         transition={{ duration: 0.5 }}
         className="relative"
       >
-        <div className="size-20 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-xl shadow-emerald-500/25 animate-float">
+        <div className="size-20 rounded-2xl bg-gradient-to-br from-[#DD0200] to-[#55100D] flex items-center justify-center shadow-xl shadow-[#DD0200]/25 animate-float">
           <Sparkles className="size-10 text-white" />
         </div>
       </motion.div>

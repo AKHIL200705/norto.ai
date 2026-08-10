@@ -252,9 +252,9 @@ export function SignInDialog() {
               transition={{ duration: 0.2 }}
             >
               {/* Header band */}
-              <div className="relative bg-gradient-to-br from-emerald-600 via-emerald-600 to-teal-700 px-6 pt-7 pb-10 text-white overflow-hidden">
+              <div className="relative bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] px-6 pt-7 pb-10 text-white overflow-hidden">
                 <div className="absolute inset-0 mesh-bg opacity-25" />
-                <div className="absolute -right-10 -top-10 size-40 rounded-full bg-amber-400/20 blur-2xl" />
+                <div className="absolute -right-10 -top-10 size-40 rounded-full bg-red-400/20 blur-2xl" />
                 <button
                   onClick={() => setOpen(false)}
                   className="absolute right-4 top-4 grid size-8 place-items-center rounded-lg text-white/80 hover:text-white hover:bg-white/15 transition-colors"

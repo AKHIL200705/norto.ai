@@ -39,16 +39,16 @@ interface QuickAction {
 
 const QUICK_ACTIONS: QuickAction[] = [
   { id: 'assistant', title: 'AI Assistant', desc: 'Ask anything about your new city', icon: Sparkles, gradient: 'from-[#DD0200] to-[#55100D]' },
-  { id: 'map', title: 'Smart Map', desc: 'Find nearby essentials & places', icon: Map, gradient: 'from-[#55100D] to-[#1A0706]' },
-  { id: 'budget', title: 'Budget Planner', desc: 'Track spend & get AI savings tips', icon: Wallet, gradient: 'from-[#DD0200] to-[#8B0906]' },
-  { id: 'translator', title: 'Translator', desc: 'Local phrases & instant translation', icon: Languages, gradient: 'from-[#55100D] to-[#DD0200]' },
-  { id: 'emergency', title: 'Emergency', desc: 'SOS, hospitals & hotlines', icon: Siren, gradient: 'from-[#DD0200] to-[#1A0706]' },
+  { id: 'map', title: 'Smart Map', desc: 'Find nearby essentials & places', icon: Map, gradient: 'from-[#8B0000] to-[#1A0706]' },
+  { id: 'budget', title: 'Budget Planner', desc: 'Track spend & get savings tips', icon: Wallet, gradient: 'from-[#DD0200] to-[#8B0000]' },
+  { id: 'translator', title: 'Translator', desc: 'Local phrases & instant translation', icon: Languages, gradient: 'from-[#55100D] to-[#1A0706]' },
+  { id: 'emergency', title: 'Emergency', desc: 'SOS, hospitals & hotlines', icon: Siren, gradient: 'from-[#DD0200] to-[#55100D]' },
 ]
 
 const RECENT = [
-  { icon: Bookmark, title: 'Saved KIMS Hospital to places', time: '2 hours ago', color: 'text-[#DD0200] bg-[#DD0200]/10' },
-  { icon: WalletIcon, title: 'Budget analyzed — Savings rate 32%', time: '5 hours ago', color: 'text-[#55100D] bg-[#55100D]/10' },
-  { icon: UtensilsCrossed, title: 'Found 6 veg restaurants near Hitech City', time: 'Yesterday', color: 'text-[#DD0200] bg-[#DD0200]/10' },
+  { icon: Bookmark, title: 'Saved KIMS Hospital to places', time: '2 hours ago', color: 'text-emerald-600 bg-emerald-500/10' },
+  { icon: WalletIcon, title: 'Budget analyzed — Savings rate 32%', time: '5 hours ago', color: 'text-amber-500 bg-amber-500/10' },
+  { icon: UtensilsCrossed, title: 'Found 6 veg restaurants near Hitech City', time: 'Yesterday', color: 'text-rose-500 bg-rose-500/10' },
 ]
 
 const RECOMMENDED = [
@@ -119,29 +119,29 @@ export function DashboardHome() {
       >
         {/* Hero greeting card */}
         <motion.div variants={item}>
-          <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-[#DD0200] via-[#8B0906] to-[#55100D] text-white shadow-xl shadow-[#DD0200]/20">
+          <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-emerald-600 via-emerald-600 to-teal-700 text-white shadow-xl shadow-emerald-500/20">
             <div className="absolute inset-0 mesh-bg opacity-30 pointer-events-none" />
-            <div className="absolute -right-16 -top-16 size-64 rounded-full bg-[#DD0200]/30 blur-3xl pointer-events-none" />
-            <div className="absolute -left-12 -bottom-12 size-48 rounded-full bg-[#55100D]/30 blur-3xl pointer-events-none" />
+            <div className="absolute -right-16 -top-16 size-64 rounded-full bg-amber-400/20 blur-3xl pointer-events-none" />
+            <div className="absolute -left-12 -bottom-12 size-48 rounded-full bg-teal-300/20 blur-3xl pointer-events-none" />
             <div className="relative px-6 py-7 sm:px-8 sm:py-9 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
               <div className="flex flex-col gap-3 max-w-2xl">
                 <div className="flex items-center gap-2">
-                  <Badge className="bg-white/15 text-white border-0 hover:bg-white/20 backdrop-blur-sm font-medium">
+                  <Badge className="bg-white/15 text-white border-0 hover:bg-white/20 backdrop-blur-sm">
                     <Sparkles className="size-3 mr-1" />
                     Dashboard
                   </Badge>
-                  <span className="text-xs text-white/80">{new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
+                  <span className="text-xs text-emerald-50/80">{new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
                 </div>
                 <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight">
                   Welcome back, {firstName} 👋
                 </h1>
-                <p className="text-white/90 text-sm sm:text-base">
-                  You&apos;re all set in <span className="font-semibold text-white underline decoration-white/40 underline-offset-4">{city}</span>. Let&apos;s make your move smoother — explore essentials, plan your budget, and discover the city with AI.
+                <p className="text-emerald-50/90 text-sm sm:text-base">
+                  You&apos;re all set in <span className="font-semibold text-amber-300">{city}</span>. Let&apos;s make your move smoother — explore essentials, plan your budget, and discover the city with AI by your side.
                 </p>
                 <div className="flex flex-wrap gap-3 pt-1">
                   <Button
                     onClick={() => setSection('assistant')}
-                    className="bg-white text-[#DD0200] hover:bg-white/90 shadow-md font-bold"
+                    className="bg-white text-emerald-700 hover:bg-emerald-50 shadow-md"
                     size="lg"
                   >
                     Plan my move

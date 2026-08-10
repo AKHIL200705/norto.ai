@@ -45,67 +45,73 @@
 
 :root {
   --radius: 0.85rem;
-  /* User Custom Palette: White, Alabaster Grey (#D9D9D9), Racing Red (#DD0200), Black Cherry (#55100D), Coffee Bean (#1A0706) */
-  --background: #FFFFFF;
-  --foreground: #1A0706;
-  --card: #FFFFFF;
-  --card-foreground: #1A0706;
-  --popover: #FFFFFF;
-  --popover-foreground: #1A0706;
-  --primary: #DD0200;
-  --primary-foreground: #FFFFFF;
-  --secondary: #F7F5F5;
-  --secondary-foreground: #55100D;
-  --muted: #F3F0F0;
-  --muted-foreground: #55100D;
-  --accent: #FDF2F2;
-  --accent-foreground: #DD0200;
-  --destructive: #DD0200;
-  --border: #D9D9D9;
-  --input: #E8E5E5;
-  --ring: #DD0200;
-  --chart-1: #DD0200;
-  --chart-2: #55100D;
-  --chart-3: #1A0706;
-  --chart-4: #8B0906;
-  --chart-5: #D9D9D9;
-  --sidebar: #FAFAFA;
-  --sidebar-foreground: #1A0706;
-  --sidebar-primary: #DD0200;
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #F5F3F3;
-  --sidebar-accent-foreground: #55100D;
-  --sidebar-border: #D9D9D9;
-  --sidebar-ring: #DD0200;
+  /* Custom Redesigned Palette:
+     - Alabaster Grey: #D9D9D9
+     - Racing Red: #DD0200
+     - Black Cherry: #55100D
+     - Coffee Bean: #1A0706
+     - White Background: #FFFFFF
+  */
+  --background: #ffffff;
+  --foreground: #1a0706;
+  --card: rgba(255, 255, 255, 0.88);
+  --card-foreground: #1a0706;
+  --popover: #ffffff;
+  --popover-foreground: #1a0706;
+  --primary: #dd0200;
+  --primary-foreground: #ffffff;
+  --secondary: #f4f4f5;
+  --secondary-foreground: #1a0706;
+  --muted: #f4f4f5;
+  --muted-foreground: #55100d;
+  --accent: #f8f8f8;
+  --accent-foreground: #dd0200;
+  --destructive: #dd0200;
+  --border: #d9d9d9;
+  --input: #d9d9d9;
+  --ring: #dd0200;
+  --chart-1: #dd0200;
+  --chart-2: #55100d;
+  --chart-3: #1a0706;
+  --chart-4: #d9d9d9;
+  --chart-5: #ff4d4d;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1a0706;
+  --sidebar-primary: #dd0200;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f8f8f8;
+  --sidebar-accent-foreground: #dd0200;
+  --sidebar-border: #d9d9d9;
+  --sidebar-ring: #dd0200;
 }
 
 .dark {
-  --background: #1A0706;
-  --foreground: #FAFAFA;
-  --card: #280E0D;
-  --card-foreground: #FAFAFA;
-  --popover: #280E0D;
-  --popover-foreground: #FAFAFA;
-  --primary: #DD0200;
-  --primary-foreground: #FFFFFF;
-  --secondary: #3B1412;
-  --secondary-foreground: #FAFAFA;
-  --muted: #35110F;
-  --muted-foreground: #D9D9D9;
-  --accent: #481412;
-  --accent-foreground: #FF4D4D;
-  --destructive: #DD0200;
-  --border: #55100D;
-  --input: #55100D;
-  --ring: #DD0200;
-  --sidebar: #1A0706;
-  --sidebar-foreground: #FAFAFA;
-  --sidebar-primary: #DD0200;
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #3B1412;
-  --sidebar-accent-foreground: #FAFAFA;
-  --sidebar-border: #55100D;
-  --sidebar-ring: #DD0200;
+  --background: #1a0706;
+  --foreground: #ffffff;
+  --card: rgba(35, 12, 10, 0.85);
+  --card-foreground: #ffffff;
+  --popover: #1a0706;
+  --popover-foreground: #ffffff;
+  --primary: #dd0200;
+  --primary-foreground: #ffffff;
+  --secondary: #55100d;
+  --secondary-foreground: #ffffff;
+  --muted: #2a0c0a;
+  --muted-foreground: #d9d9d9;
+  --accent: #55100d;
+  --accent-foreground: #ffffff;
+  --destructive: #dd0200;
+  --border: rgba(217, 217, 217, 0.2);
+  --input: rgba(217, 217, 217, 0.2);
+  --ring: #dd0200;
+  --sidebar: #1a0706;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #dd0200;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #55100d;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(217, 217, 217, 0.2);
+  --sidebar-ring: #dd0200;
 }
 
 @layer base {
@@ -149,22 +155,22 @@
 
 @keyframes pulse-glow {
   0%, 100% { opacity: 0.4; filter: drop-shadow(0 0 8px rgba(221, 2, 0, 0.4)); }
-  50% { opacity: 0.9; filter: drop-shadow(0 0 16px rgba(221, 2, 0, 0.7)); }
+  50% { opacity: 0.9; filter: drop-shadow(0 0 16px rgba(221, 2, 0, 0.75)); }
 }
 .animate-pulse-glow {
   animation: pulse-glow 3s ease-in-out infinite;
 }
 
-/* Premium White Glassmorphism with Racing Red & Black Cherry accents */
+/* Redesigned Glassmorphism */
 .glass {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.82);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid #D9D9D9;
+  border: 1px solid rgba(217, 217, 217, 0.6);
 }
 .dark .glass {
-  background: rgba(26, 7, 6, 0.85);
-  border: 1px solid #55100D;
+  background: rgba(26, 7, 6, 0.82);
+  border: 1px solid rgba(217, 217, 217, 0.15);
 }
 
 .glass-card {
@@ -172,23 +178,25 @@
   border: 1px solid var(--border);
   box-shadow: 0 4px 20px -2px rgba(26, 7, 6, 0.06);
   transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 .glass-card:hover {
-  border-color: rgba(221, 2, 0, 0.4);
-  box-shadow: 0 12px 30px -4px rgba(221, 2, 0, 0.15);
+  border-color: rgba(221, 2, 0, 0.45);
+  box-shadow: 0 12px 30px -4px rgba(221, 2, 0, 0.18);
   transform: translateY(-2px);
 }
 .dark .glass-card:hover {
-  border-color: rgba(221, 2, 0, 0.5);
-  box-shadow: 0 12px 30px -4px rgba(221, 2, 0, 0.3);
+  border-color: rgba(221, 2, 0, 0.55);
+  box-shadow: 0 12px 30px -4px rgba(221, 2, 0, 0.35);
 }
 
-/* Clean White Mesh Background with Racing Red & Black Cherry Ambient Spotlights */
+/* Custom Mesh Background featuring Racing Red (#DD0200), Black Cherry (#55100D), and Alabaster Grey (#D9D9D9) */
 .mesh-bg {
   background-image:
-    radial-gradient(at 15% 15%, rgba(221, 2, 0, 0.08) 0px, transparent 55%),
-    radial-gradient(at 85% 15%, rgba(85, 16, 13, 0.07) 0px, transparent 55%),
-    radial-gradient(at 50% 85%, rgba(217, 217, 217, 0.3) 0px, transparent 55%);
+    radial-gradient(at 15% 15%, rgba(221, 2, 0, 0.12) 0px, transparent 55%),
+    radial-gradient(at 85% 15%, rgba(85, 16, 13, 0.10) 0px, transparent 55%),
+    radial-gradient(at 50% 85%, rgba(217, 217, 217, 0.25) 0px, transparent 55%);
 }
 
 /* High-visibility AI Markdown & Answer content styling */
@@ -215,25 +223,25 @@
 .prose-ll p { margin: 0.5em 0; }
 .prose-ll strong {
   font-weight: 750;
-  color: #DD0200;
+  color: #dd0200;
 }
 .dark .prose-ll strong {
-  color: #FF4D4D;
+  color: #ff4d4d;
 }
 .prose-ll code {
-  background: #F3F0F0;
-  color: #55100D;
+  background: #f4f4f5;
+  color: #1a0706;
   padding: 0.2em 0.45em;
   border-radius: 0.35em;
   font-size: 0.9em;
   font-weight: 600;
 }
 .dark .prose-ll code {
-  background: #35110F;
-  color: #FAFAFA;
+  background: #55100d;
+  color: #ffffff;
 }
 .prose-ll blockquote {
-  border-left: 4px solid #DD0200;
+  border-left: 4px solid #dd0200;
   padding-left: 1em;
   margin: 0.8em 0;
   font-weight: 500;
