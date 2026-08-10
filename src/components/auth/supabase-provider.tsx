@@ -12,37 +12,45 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
   const updateUser = useAppStore((s) => s.updateUser)
 
   React.useEffect(() => {
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session?.user) {
-        const email = session.user.email ?? ''
-        const name =
-          session.user.user_metadata?.full_name ||
-          session.user.user_metadata?.name ||
-          email.split('@')[0] ||
-          'User'
-        const avatar =
-          session.user.user_metadata?.avatar_url ||
-          session.user.user_metadata?.picture ||
-          null
-        const providerName = session.user.app_metadata?.provider === 'google' ? 'google' : 'email'
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      return
+    }
 
-        signInStore(
-          {
-            name,
-            email,
-            avatar,
-          },
-          providerName
-        )
-      } else if (event === 'SIGNED_OUT') {
-        signOutStore()
+    try {
+      const {
+        data: { subscription },
+      } = supabase.auth.onAuthStateChange(async (event, session) => {
+        if (session?.user) {
+          const email = session.user.email ?? ''
+          const name =
+            session.user.user_metadata?.full_name ||
+            session.user.user_metadata?.name ||
+            email.split('@')[0] ||
+            'User'
+          const avatar =
+            session.user.user_metadata?.avatar_url ||
+            session.user.user_metadata?.picture ||
+            null
+          const providerName = session.user.app_metadata?.provider === 'google' ? 'google' : 'email'
+
+          signInStore(
+            {
+              name,
+              email,
+              avatar,
+            },
+            providerName
+          )
+        } else if (event === 'SIGNED_OUT') {
+          signOutStore()
+        }
+      })
+
+      return () => {
+        subscription.unsubscribe()
       }
-    })
-
-    return () => {
-      subscription.unsubscribe()
+    } catch {
+      // Ignore auth subscription errors when placeholder keys are used
     }
   }, [supabase, signInStore, signOutStore])
 
