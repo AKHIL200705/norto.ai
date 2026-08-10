@@ -179,57 +179,57 @@ export function SavedPlaces() {
           <div className="flex items-center justify-between gap-3">
             <div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-                <Bookmark className="size-3.5 text-emerald-600" />
-                <span>Your bookmarked places across the city</span>
+                <Bookmark className="size-3.5 text-[#DD0200]" />
+                <span className="font-semibold">Your bookmarked places across the city</span>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Saved Places</h1>
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Saved Places</h1>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={load} disabled={loading}>
-                <RefreshCw className={cn('size-4', loading && 'animate-spin')} />
+              <Button variant="outline" size="sm" onClick={load} disabled={loading} className="font-bold border-[#D9D9D9]">
+                <RefreshCw className={cn('size-4 text-[#DD0200]', loading && 'animate-spin')} />
                 <span className="hidden sm:inline">Refresh</span>
               </Button>
               <Dialog open={addOpen} onOpenChange={setAddOpen}>
                 <DialogTrigger asChild>
-                  <Button size="sm">
+                  <Button size="sm" className="font-bold">
                     <Plus className="size-4" />
                     <span className="hidden sm:inline">Add place</span>
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="sm:max-w-md glass-card border-[#D9D9D9]">
                   <DialogHeader>
-                    <DialogTitle>Add a place manually</DialogTitle>
+                    <DialogTitle className="font-extrabold">Add a place manually</DialogTitle>
                     <DialogDescription>
                       Save a place you discovered. You can edit details later.
                     </DialogDescription>
                   </DialogHeader>
                   <div className="grid gap-3 py-2">
                     <div className="space-y-1.5">
-                      <Label htmlFor="np-name">Name *</Label>
-                      <Input id="np-name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Paradise Biryani" />
+                      <Label htmlFor="np-name" className="font-semibold">Name *</Label>
+                      <Input id="np-name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Paradise Biryani" className="border-[#D9D9D9]" />
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1.5">
-                        <Label htmlFor="np-cat">Category</Label>
+                        <Label htmlFor="np-cat" className="font-semibold">Category</Label>
                         <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>
-                          <SelectTrigger id="np-cat"><SelectValue /></SelectTrigger>
+                          <SelectTrigger id="np-cat" className="border-[#D9D9D9]"><SelectValue /></SelectTrigger>
                           <SelectContent>
                             {PLACE_CATEGORIES.map((c) => <SelectItem key={c.id} value={c.id}>{c.label}</SelectItem>)}
                           </SelectContent>
                         </Select>
                       </div>
                       <div className="space-y-1.5">
-                        <Label htmlFor="np-rating">Rating (0-5)</Label>
-                        <Input id="np-rating" type="number" min="0" max="5" step="0.1" value={form.rating} onChange={(e) => setForm({ ...form, rating: e.target.value })} placeholder="4.5" />
+                        <Label htmlFor="np-rating" className="font-semibold">Rating (0-5)</Label>
+                        <Input id="np-rating" type="number" min="0" max="5" step="0.1" value={form.rating} onChange={(e) => setForm({ ...form, rating: e.target.value })} placeholder="4.5" className="border-[#D9D9D9]" />
                       </div>
                     </div>
                     <div className="space-y-1.5">
-                      <Label htmlFor="np-addr">Address</Label>
-                      <Input id="np-addr" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="Street, area, city" />
+                      <Label htmlFor="np-addr" className="font-semibold">Address</Label>
+                      <Input id="np-addr" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="Street, area, city" className="border-[#D9D9D9]" />
                     </div>
                     <div className="space-y-1.5">
-                      <Label htmlFor="np-notes">Notes</Label>
-                      <Input id="np-notes" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Notes (optional)" />
+                      <Label htmlFor="np-notes" className="font-semibold">Notes</Label>
+                      <Input id="np-notes" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Notes (optional)" className="border-[#D9D9D9]" />
                     </div>
                   </div>
                   <DialogFooter>
@@ -245,41 +245,41 @@ export function SavedPlaces() {
         {/* Stats header */}
         <motion.div variants={item}>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <Card className="p-4 gap-0">
+            <Card className="glass-card p-4 gap-0 border-[#D9D9D9]">
               <div className="flex items-center gap-2">
-                <div className="size-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+                <div className="size-8 rounded-xl bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] flex items-center justify-center shadow-md">
                   <Bookmark className="size-4 text-white" />
                 </div>
-                <p className="text-xs text-muted-foreground">Total saved</p>
+                <p className="text-xs font-bold text-muted-foreground">Total saved</p>
               </div>
-              <p className="text-2xl font-bold mt-2">{places.length}</p>
+              <p className="text-2xl font-extrabold mt-2">{places.length}</p>
             </Card>
-            <Card className="p-4 gap-0">
+            <Card className="glass-card p-4 gap-0 border-[#D9D9D9]">
               <div className="flex items-center gap-2">
-                <div className="size-8 rounded-lg bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
+                <div className="size-8 rounded-xl bg-gradient-to-br from-[#8B0000] to-[#1A0706] flex items-center justify-center shadow-md">
                   <CheckCircle2 className="size-4 text-white" />
                 </div>
-                <p className="text-xs text-muted-foreground">Visited</p>
+                <p className="text-xs font-bold text-muted-foreground">Visited</p>
               </div>
-              <p className="text-2xl font-bold mt-2">{visitedCount}</p>
+              <p className="text-2xl font-extrabold mt-2">{visitedCount}</p>
             </Card>
-            <Card className="p-4 gap-0">
+            <Card className="glass-card p-4 gap-0 border-[#D9D9D9]">
               <div className="flex items-center gap-2">
-                <div className="size-8 rounded-lg bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center">
+                <div className="size-8 rounded-xl bg-gradient-to-br from-[#DD0200] to-[#8B0000] flex items-center justify-center shadow-md">
                   <TrendingUp className="size-4 text-white" />
                 </div>
-                <p className="text-xs text-muted-foreground">Categories</p>
+                <p className="text-xs font-bold text-muted-foreground">Categories</p>
               </div>
-              <p className="text-2xl font-bold mt-2">{Object.keys(byCategory).length}</p>
+              <p className="text-2xl font-extrabold mt-2">{Object.keys(byCategory).length}</p>
             </Card>
-            <Card className="p-4 gap-0">
+            <Card className="glass-card p-4 gap-0 border-[#D9D9D9]">
               <div className="flex items-center gap-2">
-                <div className="size-8 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-600 flex items-center justify-center">
+                <div className="size-8 rounded-xl bg-gradient-to-br from-[#55100D] to-[#1A0706] flex items-center justify-center shadow-md">
                   <MapPin className="size-4 text-white" />
                 </div>
-                <p className="text-xs text-muted-foreground">Top category</p>
+                <p className="text-xs font-bold text-muted-foreground">Top category</p>
               </div>
-              <p className="text-base font-semibold mt-2 truncate">
+              <p className="text-base font-extrabold mt-2 truncate">
                 {Object.entries(byCategory).sort((a, b) => b[1] - a[1])[0]?.[0]
                   ? categoryLabel(Object.entries(byCategory).sort((a, b) => b[1] - a[1])[0][0])
                   : '—'}
@@ -290,15 +290,15 @@ export function SavedPlaces() {
 
         {/* Search + filter chips */}
         <motion.div variants={item}>
-          <Card className="p-4 gap-0">
+          <Card className="glass-card p-4 gap-0 border-[#D9D9D9]">
             <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-[#DD0200]" />
                 <Input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search by name, address, or notes…"
-                  className="pl-9 pr-9"
+                  className="pl-9 pr-9 border-[#D9D9D9]"
                 />
                 {search && (
                   <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
@@ -313,10 +313,10 @@ export function SavedPlaces() {
                   key={c}
                   onClick={() => setFilter(c)}
                   className={cn(
-                    'px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all shrink-0',
+                    'px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all shrink-0 cursor-pointer',
                     filter === c
-                      ? 'bg-emerald-600 text-white shadow-sm'
-                      : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground',
+                      ? 'bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] text-white shadow-md shadow-[#DD0200]/25'
+                      : 'bg-[#D9D9D9]/30 text-foreground hover:bg-[#DD0200]/10 hover:text-[#DD0200]',
                   )}
                 >
                   {c === 'All' ? 'All' : categoryLabel(c)}
@@ -339,12 +339,12 @@ export function SavedPlaces() {
         {/* Empty state */}
         {!loading && places.length === 0 && (
           <motion.div variants={item}>
-            <Card className="p-10 sm:p-14 flex flex-col items-center text-center gap-4 border-dashed border-emerald-500/30 bg-gradient-to-br from-emerald-500/5 via-amber-500/5 to-transparent">
-              <div className="size-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+            <Card className="glass-card p-10 sm:p-14 flex flex-col items-center text-center gap-4 border-dashed border-[#DD0200]/30 bg-gradient-to-br from-[#DD0200]/5 via-[#55100D]/5 to-transparent">
+              <div className="size-16 rounded-2xl bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] flex items-center justify-center shadow-lg shadow-[#DD0200]/25">
                 <Bookmark className="size-8 text-white" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold">No saved places yet</h3>
+                <h3 className="text-lg font-extrabold">No saved places yet</h3>
                 <p className="text-sm text-muted-foreground mt-1.5 max-w-md">
                   Explore the smart map to discover restaurants, hospitals, metros, and more. Tap the bookmark icon on any place to save it here.
                 </p>
@@ -366,11 +366,11 @@ export function SavedPlaces() {
         {/* No matches */}
         {!loading && places.length > 0 && filtered.length === 0 && (
           <motion.div variants={item}>
-            <Card className="p-10 flex flex-col items-center text-center gap-3">
+            <Card className="glass-card p-10 flex flex-col items-center text-center gap-3 border-[#D9D9D9]">
               <div className="size-12 rounded-full bg-muted/60 flex items-center justify-center">
                 <Search className="size-6 text-muted-foreground" />
               </div>
-              <h3 className="font-semibold">No matches found</h3>
+              <h3 className="font-extrabold">No matches found</h3>
               <p className="text-sm text-muted-foreground max-w-sm">Try a different search term or category filter.</p>
               <Button variant="outline" size="sm" onClick={() => { setSearch(''); setFilter('All') }}>
                 Clear filters
@@ -392,22 +392,22 @@ export function SavedPlaces() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <Card className="p-4 sm:p-5 gap-0 h-full flex flex-col hover:shadow-md hover:border-emerald-500/30 transition-all">
+                    <Card className="glass-card p-4 sm:p-5 gap-0 h-full flex flex-col hover:shadow-md hover:border-[#DD0200]/50 transition-all border-[#D9D9D9]">
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <h3 className="font-semibold text-sm truncate">{p.name}</h3>
+                            <h3 className="font-extrabold text-sm truncate">{p.name}</h3>
                             {visited ? (
-                              <Badge variant="secondary" className="text-[9px] bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-0">
+                              <Badge variant="secondary" className="text-[9px] bg-[#DD0200]/15 text-[#DD0200] border-0 font-bold">
                                 <CheckCircle2 className="size-2.5 mr-0.5" />Visited
                               </Badge>
                             ) : (
-                              <Badge variant="secondary" className="text-[9px] bg-muted/60 text-muted-foreground border-0">
+                              <Badge variant="secondary" className="text-[9px] bg-muted/60 text-muted-foreground border-0 font-bold">
                                 <Circle className="size-2.5 mr-0.5" />To visit
                               </Badge>
                             )}
                           </div>
-                          <Badge variant="secondary" className={cn('mt-1.5 text-[10px] border-0', categoryColor(p.category))}>
+                          <Badge variant="secondary" className={cn('mt-1.5 text-[10px] border-0 font-bold', categoryColor(p.category))}>
                             {categoryLabel(p.category)}
                           </Badge>
                         </div>
@@ -417,33 +417,33 @@ export function SavedPlaces() {
                         <div className="mt-2.5 flex items-center gap-1.5">
                           <div className="flex items-center gap-0.5">
                             {[1, 2, 3, 4, 5].map((s) => (
-                              <Star key={s} className={cn('size-3', s <= Math.round(p.rating || 0) ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/30')} />
+                              <Star key={s} className={cn('size-3', s <= Math.round(p.rating || 0) ? 'fill-[#DD0200] text-[#DD0200]' : 'text-muted-foreground/30')} />
                             ))}
                           </div>
-                          <span className="text-[11px] text-muted-foreground font-medium">{p.rating?.toFixed(1)}</span>
+                          <span className="text-[11px] text-muted-foreground font-bold">{p.rating?.toFixed(1)}</span>
                         </div>
                       )}
 
                       {p.address && (
-                        <p className="text-xs text-muted-foreground mt-2 flex items-start gap-1.5">
-                          <MapPin className="size-3 mt-0.5 shrink-0" />
+                        <p className="text-xs text-muted-foreground mt-2 flex items-start gap-1.5 font-medium">
+                          <MapPin className="size-3 mt-0.5 shrink-0 text-[#DD0200]" />
                           <span className="leading-snug">{p.address}</span>
                         </p>
                       )}
 
-                      <div className="mt-2 flex items-center gap-3 text-[11px] text-muted-foreground">
-                        {p.distance && <span className="inline-flex items-center gap-0.5"><MapPin className="size-3" />{p.distance}</span>}
+                      <div className="mt-2 flex items-center gap-3 text-[11px] text-muted-foreground font-semibold">
+                        {p.distance && <span className="inline-flex items-center gap-0.5"><MapPin className="size-3 text-[#DD0200]" />{p.distance}</span>}
                       </div>
 
                       {p.notes && (
-                        <p className="text-xs text-muted-foreground mt-2 italic leading-relaxed line-clamp-2 bg-muted/30 rounded-md px-2 py-1.5">
+                        <p className="text-xs text-muted-foreground mt-2 italic leading-relaxed line-clamp-2 bg-[#DD0200]/5 border border-[#DD0200]/20 rounded-md px-2 py-1.5 font-medium">
                           &quot;{p.notes}&quot;
                         </p>
                       )}
 
                       <div className="mt-auto pt-3 flex items-center justify-between gap-2">
-                        <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground">
-                          <Calendar className="size-3" />
+                        <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground font-bold">
+                          <Calendar className="size-3 text-[#DD0200]" />
                           {new Date(p.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
                         </span>
                         <div className="flex items-center gap-1">
@@ -451,22 +451,22 @@ export function SavedPlaces() {
                             href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.name + ', ' + (p.address || ''))}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 h-7 px-2 text-xs rounded-md border border-slate-200 dark:border-slate-800 bg-background hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors"
+                            className="inline-flex items-center gap-1 h-7 px-2 text-xs rounded-md border border-[#D9D9D9] bg-background hover:bg-[#DD0200]/10 hover:text-[#DD0200] text-foreground font-bold transition-colors"
                           >
-                            <MapPin className="size-3 text-emerald-600" />
+                            <MapPin className="size-3 text-[#DD0200]" />
                             Google Maps
                           </a>
-                          <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => toggleVisited(p.id)}>
-                            {visited ? <><Circle className="size-3 mr-1" />Undo</> : <><CheckCircle2 className="size-3 mr-1" />Visited</>}
+                          <Button size="sm" variant="ghost" className="h-7 px-2 text-xs font-bold" onClick={() => toggleVisited(p.id)}>
+                            {visited ? <><Circle className="size-3 mr-1" />Undo</> : <><CheckCircle2 className="size-3 mr-1 text-[#DD0200]" />Visited</>}
                           </Button>
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="h-7 px-2 text-xs text-muted-foreground hover:text-rose-600"
+                            className="h-7 px-2 text-xs text-muted-foreground hover:text-[#DD0200]"
                             onClick={() => handleDelete(p.id)}
                             disabled={deletingId === p.id}
                           >
-                            {deletingId === p.id ? <Loader2 className="size-3.5 animate-spin" /> : <Trash2 className="size-3.5" />}
+                            {deletingId === p.id ? <Loader2 className="size-3.5 animate-spin text-[#DD0200]" /> : <Trash2 className="size-3.5" />}
                           </Button>
                         </div>
                       </div>
