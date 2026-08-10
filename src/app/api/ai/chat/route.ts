@@ -8,8 +8,8 @@ interface HistoryMsg {
 }
 
 /**
- * High-Precision ChatGPT & Gemini Style Dynamic Intelligence Engine
- * Provides detailed, specific, actionable local answers for any question, city, or topic.
+ * High-Precision Dynamic Knowledge Engine
+ * Generates accurate, structured Markdown responses for ANY topic, question, or city.
  */
 function generateChatGPTStyleAnswer(userQuery: string, city: string): string {
   const q = userQuery.toLowerCase().trim()
@@ -167,7 +167,37 @@ export async function POST(req: Request) {
     const cityName = city && typeof city === 'string' && city.trim() ? city.trim() : 'Pedakakani'
     const userMsg = message.trim()
 
-    // 1. Try ZAI LLM Chat Completion
+    // Engine 1: Official Google Gemini AI API (gemini-1.5-flash / gemini-2.0-flash)
+    const geminiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY || process.env.GOOGLE_API_KEY
+    if (geminiKey && geminiKey.trim()) {
+      try {
+        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey.trim()}`
+        const systemPrompt = `You are Norto AI, a world-class AI Assistant powered by Google Gemini AI. The user is located in or asking about **${cityName}**, India. Answer clearly, accurately, and in rich Markdown format.`
+        const gRes = await fetch(geminiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [
+              {
+                role: 'user',
+                parts: [{ text: `${systemPrompt}\n\nUser Question: ${userMsg}` }],
+              },
+            ],
+          }),
+        })
+        if (gRes.ok) {
+          const gData = await gRes.json()
+          const text = gData.candidates?.[0]?.content?.parts?.[0]?.text
+          if (text && text.trim()) {
+            return Response.json({ response: text.trim(), source: 'google_gemini' })
+          }
+        }
+      } catch (e) {
+        console.error('[Google Gemini API] Error:', e)
+      }
+    }
+
+    // Engine 2: ZAI LLM Chat Completion with Web Search
     try {
       const zai = await ZAI.create()
       let searchContext = ''
@@ -222,10 +252,10 @@ ${searchContext}`
         return Response.json({ response: responseText })
       }
     } catch {
-      // Fallback to high-precision engine
+      // Fallback
     }
 
-    // 2. High-precision ChatGPT / Gemini style engine
+    // Engine 3: High-precision Dynamic Knowledge Engine
     return Response.json({ response: generateChatGPTStyleAnswer(userMsg, cityName) })
   } catch (err) {
     console.error('[api/ai/chat] error:', err)
