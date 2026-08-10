@@ -100,11 +100,7 @@ How to travel around **${currentCity}**:
 * **Local Bus Route 116 / 118**: Connects ${currentCity} directly to Guntur RTC Bus Stand and Vijayawada Pandit Nehru Bus Station (**₹15 – ₹45**).
 * **Frequency**: Buses available every 10–15 minutes along the main road.
 
-#### 2. Railway Access
-* **${currentCity} Railway Station (PDKN)**: Local passenger train stops connecting to Guntur, Tenali, and Vijayawada.
-* **Guntur Junction (GNT)**: Main terminal 8 km away for all express trains nationwide.
-
-#### 3. Auto Rickshaws & Bike Taxis
+#### 2. Auto Rickshaws & Bike Taxis
 * **Shared Auto Rickshaws**: Available at main junctions (**₹15 – ₹30 per seat**).
 * **Rapido & Cabs**: App-based two-wheeler and taxi pickups active 24/7.
 

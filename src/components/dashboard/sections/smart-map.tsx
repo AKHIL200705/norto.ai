@@ -261,8 +261,8 @@ export function SmartMap() {
   const detectLocation = useAppStore((s) => s.detectLocation)
   const locationStatus = useAppStore((s) => s.locationStatus)
 
-  // Categories — multi-select. Default: restaurant + hospital + metro.
-  const [selectedCats, setSelectedCats] = React.useState<string[]>(['restaurant', 'hospital', 'metro'])
+  // Categories — multi-select. Default: restaurant + hospital + bus.
+  const [selectedCats, setSelectedCats] = React.useState<string[]>(['restaurant', 'hospital', 'bus'])
 
   // Sort/filter state
   const [sortBy, setSortBy] = React.useState<SortBy>('distance')
