@@ -452,177 +452,94 @@ export function SmartMap() {
         </div>
       </div>
 
-      {/* ===== Collapsible control panel: Categories (left) + Sort & filter (right) ===== */}
-      <Card className="glass-card mb-4 gap-0 overflow-hidden border-[#D9D9D9]">
-        {/* Toggle bar — always visible. Click to show/hide the filters. */}
-        <button
-          onClick={() => setShowFilters((v) => !v)}
-          className="w-full flex items-center justify-between gap-2 px-3.5 py-3 hover:bg-[#DD0200]/5 transition-colors"
-          aria-expanded={showFilters}
-          aria-controls="map-filters-panel"
-        >
-          <div className="flex items-center gap-2 min-w-0">
-            <span className="grid size-8 place-items-center rounded-xl bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] text-white shrink-0 shadow-md">
-              <Filter className="size-4" />
+      {/* ===== Myntra-Style Filter Navbar ===== */}
+      <div className="sticky top-14 z-30 mb-5 rounded-2xl glass-card border-[#D9D9D9] p-3 backdrop-blur-xl bg-background/90 shadow-lg">
+        {/* Row 1: Header summary + Quick Sort pills */}
+        <div className="flex items-center justify-between gap-3 flex-wrap pb-2 border-b border-[#D9D9D9]/60">
+          <div className="flex items-center gap-2">
+            <span className="grid size-7 place-items-center rounded-lg bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] text-white shrink-0 shadow-sm">
+              <Filter className="size-3.5" />
             </span>
-            <span className="text-sm font-extrabold tracking-tight">Categories &amp; Filters</span>
-            {/* Active-filter summary chips */}
-            <div className="hidden sm:flex items-center gap-1 ml-1 min-w-0">
-              {selectedCats.length > 0 && (
-                <Badge variant="secondary" className="text-[10px] bg-[#DD0200]/15 text-[#DD0200] border-0 font-bold">
-                  {selectedCats.length} categor{selectedCats.length === 1 ? 'y' : 'ies'}
-                </Badge>
-              )}
-              {sortBy !== 'distance' && (
-                <Badge variant="secondary" className="text-[10px] bg-muted text-muted-foreground border-0 capitalize font-bold">
-                  {sortBy}
-                </Badge>
-              )}
-              {ratingFilter !== 'all' && (
-                <Badge variant="secondary" className="text-[10px] bg-[#DD0200]/15 text-[#DD0200] border-0 font-bold">
-                  {ratingFilter}★
-                </Badge>
-              )}
-              {openOnly && (
-                <Badge variant="secondary" className="text-[10px] bg-[#DD0200]/15 text-[#DD0200] border-0 font-bold">
-                  Open
-                </Badge>
-              )}
-              {favoritesOnly && (
-                <Badge variant="secondary" className="text-[10px] bg-[#DD0200]/15 text-[#DD0200] border-0 font-bold">
-                  <Heart className="size-2.5 fill-current mr-0.5" />Fav
-                </Badge>
-              )}
+            <span className="text-xs sm:text-sm font-extrabold tracking-tight">Categories &amp; Filters</span>
+            <Badge variant="secondary" className="text-[10px] bg-[#DD0200]/15 text-[#DD0200] border-0 font-bold ml-1">
+              {selectedCats.length} categories · {loading ? 'loading…' : `${filtered.length} places`}
+            </Badge>
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Sort options */}
+            <div className="flex items-center gap-1 bg-[#D9D9D9]/30 p-0.5 rounded-lg">
+              {(['distance', 'name'] as SortBy[]).map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setSortBy(s)}
+                  className={cn(
+                    'text-[11px] px-2.5 py-1 rounded-md font-bold capitalize transition-all cursor-pointer',
+                    sortBy === s
+                      ? 'bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] text-white shadow-xs'
+                      : 'text-muted-foreground hover:text-[#DD0200]'
+                  )}
+                >
+                  {s === 'distance' ? 'Nearest' : s}
+                </button>
+              ))}
             </div>
+
+            <div className="h-4 w-px bg-[#D9D9D9]" />
+
+            {/* Rating Filter pills */}
+            <div className="flex items-center gap-1">
+              {(['all', '4+', '4.5+'] as RatingFilter[]).map((r) => (
+                <button
+                  key={r}
+                  onClick={() => setRatingFilter(r)}
+                  className={cn(
+                    'text-[11px] px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer',
+                    ratingFilter === r
+                      ? 'bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] text-white shadow-xs'
+                      : 'bg-[#D9D9D9]/30 text-muted-foreground hover:bg-[#DD0200]/10 hover:text-[#DD0200]'
+                  )}
+                >
+                  {r === 'all' ? 'All' : `${r}★`}
+                </button>
+              ))}
+            </div>
+
+            <div className="h-4 w-px bg-[#D9D9D9]" />
+
+            {/* Open Now toggle */}
+            <label className="flex items-center gap-1.5 cursor-pointer bg-[#D9D9D9]/30 px-2 py-1 rounded-lg">
+              <span className="text-[11px] font-bold text-muted-foreground">Open</span>
+              <Switch checked={openOnly} onCheckedChange={setOpenOnly} className="scale-75" />
+            </label>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <span className="text-[11px] font-bold text-muted-foreground">
-              {loading ? 'loading…' : `${filtered.length} places`}
-            </span>
-            <ChevronRight className={cn('size-4 text-muted-foreground transition-transform', showFilters && 'rotate-90')} />
+        </div>
+
+        {/* Row 2: Myntra-style Horizontal Scrollable Category Chips */}
+        <div className="pt-2.5">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar scroll-smooth">
+            {PLACE_CATEGORIES.map((c) => {
+              const Icon = ICONS[c.icon] || MapPin
+              const active = selectedCats.includes(c.id)
+              return (
+                <button
+                  key={c.id}
+                  onClick={() => toggleCat(c.id)}
+                  className={cn(
+                    'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap border transition-all cursor-pointer shrink-0',
+                    active
+                      ? 'bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] text-white border-transparent shadow-md shadow-[#DD0200]/25 scale-[1.02]'
+                      : 'bg-[#D9D9D9]/30 border-[#D9D9D9] text-foreground hover:bg-[#DD0200]/10 hover:text-[#DD0200]'
+                  )}
+                >
+                  <Icon className="size-3.5" />
+                  {c.label}
+                </button>
+              )
+            })}
           </div>
-        </button>
-
-        {/* Collapsible panel — slides out when the toggle bar is clicked */}
-        <AnimatePresence initial={false}>
-          {showFilters && (
-            <motion.div
-              id="map-filters-panel"
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.25, ease: 'easeInOut' }}
-              className="overflow-hidden"
-            >
-              <div className="px-3.5 pb-3.5 pt-1 grid lg:grid-cols-[1fr_auto] gap-3 lg:gap-4 items-start border-t border-[#D9D9D9]">
-                {/* LEFT: Category chips */}
-                <div>
-                  <div className="flex items-center gap-1.5 mb-2">
-                    <Filter className="size-3.5 text-[#DD0200]" />
-                    <span className="text-xs font-bold text-muted-foreground">Categories — click to load real places</span>
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {PLACE_CATEGORIES.map((c) => {
-                      const Icon = ICONS[c.icon] || MapPin
-                      const active = selectedCats.includes(c.id)
-                      return (
-                        <button
-                          key={c.id}
-                          onClick={() => toggleCat(c.id)}
-                          className={cn(
-                            'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer',
-                            active
-                              ? 'bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] text-white border-transparent shadow-md shadow-[#DD0200]/25'
-                              : 'bg-[#D9D9D9]/30 border-[#D9D9D9] text-foreground hover:bg-[#DD0200]/10 hover:text-[#DD0200]'
-                          )}
-                        >
-                          <Icon className="size-3.5" />
-                          {c.label}
-                        </button>
-                      )
-                    })}
-                  </div>
-                </div>
-
-                {/* Divider (desktop only) */}
-                <div className="hidden lg:block h-full w-px bg-[#D9D9D9] self-stretch" />
-
-                {/* RIGHT: Sort & filter options — side by side with categories */}
-                <div className="lg:w-auto">
-                  <div className="flex items-center gap-1.5 mb-2">
-                    <ArrowUpDown className="size-3.5 text-[#DD0200]" />
-                    <span className="text-xs font-bold text-muted-foreground">Sort &amp; filter</span>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2 lg:gap-3">
-                    {/* Sort by */}
-                    <div className="flex items-center gap-1">
-                      {(['distance', 'name'] as SortBy[]).map((s) => (
-                        <button
-                          key={s}
-                          onClick={() => setSortBy(s)}
-                          className={cn(
-                            'text-[11px] px-2.5 py-1 rounded-lg font-bold capitalize transition-all cursor-pointer',
-                            sortBy === s
-                              ? 'bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] text-white shadow-xs'
-                              : 'bg-[#D9D9D9]/40 text-muted-foreground hover:bg-[#DD0200]/10 hover:text-[#DD0200]'
-                          )}
-                        >
-                          {s === 'distance' ? 'Nearest' : s}
-                        </button>
-                      ))}
-                    </div>
-
-                    <div className="h-4 w-px bg-[#D9D9D9]" />
-
-                    {/* Rating filter */}
-                    <div className="flex items-center gap-1">
-                      {(['all', '4+', '4.5+'] as RatingFilter[]).map((r) => (
-                        <button
-                          key={r}
-                          onClick={() => setRatingFilter(r)}
-                          className={cn(
-                            'text-[11px] px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer',
-                            ratingFilter === r
-                              ? 'bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] text-white shadow-xs'
-                              : 'bg-[#D9D9D9]/40 text-muted-foreground hover:bg-[#DD0200]/10 hover:text-[#DD0200]'
-                          )}
-                        >
-                          {r === 'all' ? 'All' : `${r}★`}
-                        </button>
-                      ))}
-                    </div>
-
-                    <div className="h-4 w-px bg-border" />
-
-                    {/* Open now toggle */}
-                    <label className="flex items-center gap-1 cursor-pointer">
-                      <span className="text-[11px] text-muted-foreground">Open</span>
-                      <Switch checked={openOnly} onCheckedChange={setOpenOnly} className="scale-90" />
-                    </label>
-
-                    {/* Favorites toggle */}
-                    <label className="flex items-center gap-1 cursor-pointer">
-                      <Heart className={cn('size-3.5', favoritesOnly ? 'fill-rose-500 text-rose-500' : 'text-muted-foreground')} />
-                      <Switch checked={favoritesOnly} onCheckedChange={setFavoritesOnly} className="scale-90" />
-                    </label>
-                  </div>
-                </div>
-              </div>
-
-              {/* Count footer */}
-              <div className="px-3 pb-3 pt-2 border-t flex items-center justify-between text-[11px] text-muted-foreground">
-                <span>
-                  {selectedCats.length} categor{selectedCats.length === 1 ? 'y' : 'ies'} selected ·
-                  {' '}{loading ? 'loading…' : `${filtered.length} of ${places.length} real places`}
-                </span>
-                {liveLocation && (
-                  <span className="font-mono">{liveLocation.lat.toFixed(4)}, {liveLocation.lng.toFixed(4)}</span>
-                )}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </Card>
+        </div>
+      </div>
 
       <div className="grid lg:grid-cols-[1fr_340px] gap-4">
         {/* Map area */}
