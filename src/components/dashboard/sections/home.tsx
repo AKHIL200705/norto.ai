@@ -186,9 +186,7 @@ export function DashboardHome() {
                 onClick={() => setSection(s.section)}
                 className="text-left"
               >
-                <Card className="glass-card p-4 sm:p-5 gap-0 relative overflow-hidden h-full">
-                  {/* Top accent bar */}
-                  <div className={cn('absolute top-0 left-0 right-0 h-1 bg-gradient-to-r', s.color)} />
+                <Card className="glass-card p-4 sm:p-5 gap-0 relative overflow-hidden h-full border-[#D9D9D9]">
                   <div className="flex items-center justify-between">
                     <div className={cn('size-10 rounded-xl flex items-center justify-center bg-gradient-to-br shadow-md', s.color)}>
                       <Icon className="size-5 text-white" />
