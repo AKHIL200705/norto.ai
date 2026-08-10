@@ -186,14 +186,14 @@ export function DashboardHome() {
                 onClick={() => setSection(s.section)}
                 className="text-left"
               >
-                <Card className="glass-card p-4 sm:p-5 gap-0 relative overflow-hidden h-full border-[#D9D9D9]">
+                <Card className="glass-card p-4 sm:p-5 gap-0 relative overflow-hidden h-full border-[#D9D9D9] hover:border-[#DD0200] hover:bg-[#DD0200]/5 hover:shadow-lg hover:shadow-[#DD0200]/15 transition-all duration-300 group cursor-pointer">
                   <div className="flex items-center justify-between">
-                    <div className={cn('size-10 rounded-xl flex items-center justify-center bg-gradient-to-br shadow-md', s.color)}>
+                    <div className={cn('size-10 rounded-xl flex items-center justify-center bg-gradient-to-br shadow-md group-hover:scale-110 transition-transform', s.color)}>
                       <Icon className="size-5 text-white" />
                     </div>
-                    <ChevronRight className="size-4 text-muted-foreground/50" />
+                    <ChevronRight className="size-4 text-muted-foreground/50 group-hover:text-[#DD0200] group-hover:translate-x-1 transition-all" />
                   </div>
-                  <p className="mt-3 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">{s.label}</p>
+                  <p className="mt-3 text-[11px] font-bold uppercase tracking-wide text-muted-foreground group-hover:text-[#DD0200] transition-colors">{s.label}</p>
                   <p className="text-xl sm:text-2xl font-extrabold tracking-tight mt-0.5">{s.value}</p>
                 </Card>
               </motion.button>
