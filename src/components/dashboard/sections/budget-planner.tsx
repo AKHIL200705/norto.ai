@@ -22,8 +22,20 @@ import { cn } from '@/lib/utils'
 
 interface Analysis {
   score: number
-  emergencyFund: number
-  status: 'Excellent' | 'Good' | 'Tight' | 'Risky'
+  status: 'Healthy' | 'Moderate' | 'Critical'
+  emergencyFund: {
+    recommended: number
+    months3: number
+    months6: number
+  }
+  rule503020?: {
+    needs: number
+    needsPct: number
+    wants: number
+    wantsPct: number
+    savings: number
+    savingsPct: number
+  }
   insights: string[]
   alternatives: string[]
 }
@@ -495,7 +507,7 @@ export function BudgetPlanner() {
                           <h3 className="font-semibold text-sm">Recommended Emergency Fund</h3>
                         </div>
                         <p className="text-4xl font-bold tracking-tight bg-gradient-to-r from-emerald-600 to-teal-700 bg-clip-text text-transparent">
-                          {fmtINR(result.analysis.emergencyFund)}
+                          {fmtINR(result.analysis.emergencyFund.recommended || result.analysis.emergencyFund.months3)}
                         </p>
                         <p className="text-sm text-muted-foreground mt-1.5">
                           ≈ 3 months of expenses kept aside for unexpected situations in {city}
@@ -503,8 +515,8 @@ export function BudgetPlanner() {
                         <div className="mt-4 grid grid-cols-3 gap-2">
                           {[
                             { label: '1 month', value: result.totals.totalExpenses },
-                            { label: '3 months', value: result.analysis.emergencyFund },
-                            { label: '6 months', value: result.totals.totalExpenses * 6 },
+                            { label: '3 months', value: result.analysis.emergencyFund.months3 || result.totals.totalExpenses * 3 },
+                            { label: '6 months', value: result.analysis.emergencyFund.months6 || result.totals.totalExpenses * 6 },
                           ].map((m) => (
                             <div key={m.label} className="rounded-lg bg-background/60 backdrop-blur p-2 text-center border">
                               <p className="text-[10px] text-muted-foreground">{m.label}</p>
