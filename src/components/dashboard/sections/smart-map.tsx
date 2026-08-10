@@ -8,7 +8,7 @@ import {
   Landmark, CreditCard, Briefcase, ShoppingBag, Pill, Fuel, Camera,
   Star, MapPin, X, BookmarkPlus, Bookmark, Clock, Filter, Heart,
   Navigation, ChevronRight, Loader2, LocateFixed, AlertTriangle,
-  RefreshCw, Crosshair, ArrowUpDown,
+  RefreshCw, Crosshair, ArrowUpDown, Grid, SlidersHorizontal,
 } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
 import { PLACE_CATEGORIES } from '@/lib/types'
@@ -281,8 +281,8 @@ export function SmartMap() {
   const [hoveredId, setHoveredId] = React.useState<string | null>(null)
   const [savingId, setSavingId] = React.useState<string | null>(null)
   // View Mode: 'google-maps' (interactive Google Map embed) vs 'radar-map' (category pins)
-  const [viewMode, setViewMode] = React.useState<'google-maps' | 'radar-map'>('google-maps')
-  const [showFilters, setShowFilters] = React.useState(true)
+  const [catModalOpen, setCatModalOpen] = React.useState(false)
+  const [filterModalOpen, setFilterModalOpen] = React.useState(false)
 
   // The coordinates we query around: live location if available, else city centre.
   const queryLat = liveLocation?.lat ?? null
@@ -406,7 +406,7 @@ export function SmartMap() {
   const locating = locationStatus === 'loading'
 
   return (
-    <div className="p-4 lg:p-6 pb-28 lg:pb-32 max-w-7xl mx-auto">
+    <div className="p-4 lg:p-6 max-w-7xl mx-auto">
       {/* Header */}
       <div className="flex items-start justify-between flex-wrap gap-3 mb-4">
         <div>
@@ -452,92 +452,47 @@ export function SmartMap() {
         </div>
       </div>
 
-      {/* ===== Myntra-Style Fixed Bottom Filter Navbar ===== */}
-      <div className="fixed bottom-3 left-4 right-4 md:left-72 z-40 rounded-2xl glass-card border-[#D9D9D9] p-3 backdrop-blur-2xl bg-background/95 shadow-2xl border-t border-t-[#DD0200]/40 max-w-6xl mx-auto">
-        {/* Row 1: Header summary + Quick Sort pills */}
-        <div className="flex items-center justify-between gap-3 flex-wrap pb-2 border-b border-[#D9D9D9]/60">
+      {/* ===== Myntra-Style Category Pill Bar (Top) ===== */}
+      <div className="mb-4 rounded-2xl glass-card border-[#D9D9D9] p-3 backdrop-blur-xl bg-background/90 shadow-sm">
+        <div className="flex items-center justify-between gap-2 mb-2">
           <div className="flex items-center gap-2">
-            <span className="grid size-7 place-items-center rounded-lg bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] text-white shrink-0 shadow-sm">
-              <Filter className="size-3.5" />
+            <span className="grid size-6 place-items-center rounded-md bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] text-white text-[11px] font-extrabold">
+              <Filter className="size-3" />
             </span>
-            <span className="text-xs sm:text-sm font-extrabold tracking-tight">Categories &amp; Filters</span>
-            <Badge variant="secondary" className="text-[10px] bg-[#DD0200]/15 text-[#DD0200] border-0 font-bold ml-1">
+            <span className="text-xs font-extrabold tracking-tight">Active Categories</span>
+            <Badge variant="secondary" className="text-[10px] bg-[#DD0200]/15 text-[#DD0200] border-0 font-bold">
               {selectedCats.length} categories · {loading ? 'loading…' : `${filtered.length} places`}
             </Badge>
           </div>
-
-          <div className="flex items-center gap-2 flex-wrap">
-            {/* Sort options */}
-            <div className="flex items-center gap-1 bg-[#D9D9D9]/30 p-0.5 rounded-lg">
-              {(['distance', 'name'] as SortBy[]).map((s) => (
-                <button
-                  key={s}
-                  onClick={() => setSortBy(s)}
-                  className={cn(
-                    'text-[11px] px-2.5 py-1 rounded-md font-bold capitalize transition-all cursor-pointer',
-                    sortBy === s
-                      ? 'bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] text-white shadow-xs'
-                      : 'text-muted-foreground hover:text-[#DD0200]'
-                  )}
-                >
-                  {s === 'distance' ? 'Nearest' : s}
-                </button>
-              ))}
-            </div>
-
-            <div className="h-4 w-px bg-[#D9D9D9]" />
-
-            {/* Rating Filter pills */}
-            <div className="flex items-center gap-1">
-              {(['all', '4+', '4.5+'] as RatingFilter[]).map((r) => (
-                <button
-                  key={r}
-                  onClick={() => setRatingFilter(r)}
-                  className={cn(
-                    'text-[11px] px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer',
-                    ratingFilter === r
-                      ? 'bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] text-white shadow-xs'
-                      : 'bg-[#D9D9D9]/30 text-muted-foreground hover:bg-[#DD0200]/10 hover:text-[#DD0200]'
-                  )}
-                >
-                  {r === 'all' ? 'All' : `${r}★`}
-                </button>
-              ))}
-            </div>
-
-            <div className="h-4 w-px bg-[#D9D9D9]" />
-
-            {/* Open Now toggle */}
-            <label className="flex items-center gap-1.5 cursor-pointer bg-[#D9D9D9]/30 px-2 py-1 rounded-lg">
-              <span className="text-[11px] font-bold text-muted-foreground">Open</span>
-              <Switch checked={openOnly} onCheckedChange={setOpenOnly} className="scale-75" />
-            </label>
-          </div>
+          <button
+            onClick={() => setCatModalOpen(true)}
+            className="text-[11px] font-bold text-[#DD0200] hover:underline cursor-pointer"
+          >
+            Manage All →
+          </button>
         </div>
 
-        {/* Row 2: Myntra-style Horizontal Scrollable Category Chips */}
-        <div className="pt-2.5">
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar scroll-smooth">
-            {PLACE_CATEGORIES.map((c) => {
-              const Icon = ICONS[c.icon] || MapPin
-              const active = selectedCats.includes(c.id)
-              return (
-                <button
-                  key={c.id}
-                  onClick={() => toggleCat(c.id)}
-                  className={cn(
-                    'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap border transition-all cursor-pointer shrink-0',
-                    active
-                      ? 'bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] text-white border-transparent shadow-md shadow-[#DD0200]/25 scale-[1.02]'
-                      : 'bg-[#D9D9D9]/30 border-[#D9D9D9] text-foreground hover:bg-[#DD0200]/10 hover:text-[#DD0200]'
-                  )}
-                >
-                  <Icon className="size-3.5" />
-                  {c.label}
-                </button>
-              )
-            })}
-          </div>
+        {/* Horizontal Scrollable Category Chips */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar scroll-smooth">
+          {PLACE_CATEGORIES.map((c) => {
+            const Icon = ICONS[c.icon] || MapPin
+            const active = selectedCats.includes(c.id)
+            return (
+              <button
+                key={c.id}
+                onClick={() => toggleCat(c.id)}
+                className={cn(
+                  'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap border transition-all cursor-pointer shrink-0',
+                  active
+                    ? 'bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] text-white border-transparent shadow-md shadow-[#DD0200]/25 scale-[1.02]'
+                    : 'bg-[#D9D9D9]/30 border-[#D9D9D9] text-foreground hover:bg-[#DD0200]/10 hover:text-[#DD0200]'
+                )}
+              >
+                <Icon className="size-3.5" />
+                {c.label}
+              </button>
+            )
+          })}
         </div>
       </div>
 
@@ -690,6 +645,213 @@ export function SmartMap() {
           </Card>
         </div>
       </div>
+
+      {/* ===== Myntra-Style Floating Bottom Bar (Divided into 2 Options: Categories & Filters) ===== */}
+      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-[92%] max-w-md shadow-2xl rounded-full glass-card border-[#D9D9D9] p-1.5 backdrop-blur-xl bg-background/95 border flex items-center justify-between gap-1.5">
+        {/* Option 1: Categories */}
+        <button
+          onClick={() => setCatModalOpen(true)}
+          className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-full bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] text-white font-extrabold text-xs sm:text-sm shadow-md shadow-[#DD0200]/25 transition-all hover:scale-[1.02] cursor-pointer"
+        >
+          <Grid className="size-4" />
+          Categories
+          <span className="bg-white/20 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full backdrop-blur-xs">
+            {selectedCats.length}
+          </span>
+        </button>
+
+        {/* Divider */}
+        <div className="h-6 w-px bg-[#D9D9D9]" />
+
+        {/* Option 2: Filters */}
+        <button
+          onClick={() => setFilterModalOpen(true)}
+          className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-full bg-[#D9D9D9]/40 hover:bg-[#DD0200]/10 text-foreground hover:text-[#DD0200] font-extrabold text-xs sm:text-sm transition-all hover:scale-[1.02] cursor-pointer"
+        >
+          <SlidersHorizontal className="size-4 text-[#DD0200]" />
+          Filters &amp; Sort
+          {(sortBy !== 'distance' || ratingFilter !== 'all' || openOnly || favoritesOnly) && (
+            <span className="size-2 rounded-full bg-[#DD0200] animate-pulse" />
+          )}
+        </button>
+      </div>
+
+      {/* Categories Bottom Drawer Modal */}
+      <AnimatePresence>
+        {catModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-xs">
+            <motion.div
+              initial={{ y: '100%', opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: '100%', opacity: 0 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              className="w-full sm:max-w-lg glass-card rounded-t-3xl sm:rounded-3xl border-[#D9D9D9] bg-background/95 backdrop-blur-xl p-5 shadow-2xl overflow-hidden max-h-[85vh] flex flex-col"
+            >
+              <div className="flex items-center justify-between pb-3 border-b border-[#D9D9D9]">
+                <div className="flex items-center gap-2">
+                  <div className="size-8 rounded-xl bg-[#DD0200]/15 grid place-items-center">
+                    <Grid className="size-4 text-[#DD0200]" />
+                  </div>
+                  <div>
+                    <h3 className="font-extrabold text-base tracking-tight">Select Categories</h3>
+                    <p className="text-[11px] text-muted-foreground font-semibold">Choose categories to discover real nearby places</p>
+                  </div>
+                </div>
+                <button onClick={() => setCatModalOpen(false)} className="size-8 rounded-full bg-muted/60 grid place-items-center hover:bg-[#DD0200]/10 hover:text-[#DD0200] cursor-pointer">
+                  <X className="size-4" />
+                </button>
+              </div>
+
+              <div className="py-4 grid grid-cols-2 sm:grid-cols-3 gap-2.5 overflow-y-auto max-h-[50vh] pr-1">
+                {PLACE_CATEGORIES.map((c) => {
+                  const Icon = ICONS[c.icon] || MapPin
+                  const active = selectedCats.includes(c.id)
+                  return (
+                    <button
+                      key={c.id}
+                      onClick={() => toggleCat(c.id)}
+                      className={cn(
+                        'flex items-center gap-2.5 p-3 rounded-2xl border text-xs font-bold transition-all cursor-pointer text-left',
+                        active
+                          ? 'bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] text-white border-transparent shadow-md shadow-[#DD0200]/25'
+                          : 'bg-[#D9D9D9]/30 border-[#D9D9D9] text-foreground hover:bg-[#DD0200]/10 hover:text-[#DD0200]'
+                      )}
+                    >
+                      <div className={cn('size-7 rounded-xl grid place-items-center shrink-0', active ? 'bg-white/20 text-white' : 'bg-[#DD0200]/15 text-[#DD0200]')}>
+                        <Icon className="size-3.5" />
+                      </div>
+                      <span className="truncate flex-1">{c.label}</span>
+                    </button>
+                  )
+                })}
+              </div>
+
+              <div className="pt-3 border-t border-[#D9D9D9] flex items-center justify-between gap-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedCats(PLACE_CATEGORIES.map((c) => c.id))}
+                  className="text-xs font-bold border-[#D9D9D9]"
+                >
+                  Select All
+                </Button>
+                <Button
+                  onClick={() => setCatModalOpen(false)}
+                  className="bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] text-white font-bold text-xs px-6 shadow-md"
+                >
+                  Done ({selectedCats.length})
+                </Button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Filters & Sort Bottom Drawer Modal */}
+      <AnimatePresence>
+        {filterModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-xs">
+            <motion.div
+              initial={{ y: '100%', opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: '100%', opacity: 0 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              className="w-full sm:max-w-lg glass-card rounded-t-3xl sm:rounded-3xl border-[#D9D9D9] bg-background/95 backdrop-blur-xl p-5 shadow-2xl overflow-hidden max-h-[85vh] flex flex-col"
+            >
+              <div className="flex items-center justify-between pb-3 border-b border-[#D9D9D9]">
+                <div className="flex items-center gap-2">
+                  <div className="size-8 rounded-xl bg-[#DD0200]/15 grid place-items-center">
+                    <SlidersHorizontal className="size-4 text-[#DD0200]" />
+                  </div>
+                  <div>
+                    <h3 className="font-extrabold text-base tracking-tight">Filter &amp; Sort Places</h3>
+                    <p className="text-[11px] text-muted-foreground font-semibold">Refine places by distance, rating, and status</p>
+                  </div>
+                </div>
+                <button onClick={() => setFilterModalOpen(false)} className="size-8 rounded-full bg-muted/60 grid place-items-center hover:bg-[#DD0200]/10 hover:text-[#DD0200] cursor-pointer">
+                  <X className="size-4" />
+                </button>
+              </div>
+
+              <div className="py-4 space-y-4 overflow-y-auto max-h-[50vh]">
+                {/* Sort Section */}
+                <div>
+                  <label className="text-xs font-extrabold uppercase tracking-wider text-muted-foreground mb-2 block">Sort By</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {(['distance', 'name'] as SortBy[]).map((s) => (
+                      <button
+                        key={s}
+                        onClick={() => setSortBy(s)}
+                        className={cn(
+                          'p-3 rounded-2xl border text-xs font-bold capitalize transition-all cursor-pointer text-center',
+                          sortBy === s
+                            ? 'bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] text-white border-transparent shadow-md'
+                            : 'bg-[#D9D9D9]/30 border-[#D9D9D9] text-foreground hover:bg-[#DD0200]/10 hover:text-[#DD0200]'
+                        )}
+                      >
+                        {s === 'distance' ? 'Nearest' : s}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Rating Filter Section */}
+                <div>
+                  <label className="text-xs font-extrabold uppercase tracking-wider text-muted-foreground mb-2 block">Rating</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {(['all', '4+', '4.5+'] as RatingFilter[]).map((r) => (
+                      <button
+                        key={r}
+                        onClick={() => setRatingFilter(r)}
+                        className={cn(
+                          'p-3 rounded-2xl border text-xs font-bold transition-all cursor-pointer text-center',
+                          ratingFilter === r
+                            ? 'bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] text-white border-transparent shadow-md'
+                            : 'bg-[#D9D9D9]/30 border-[#D9D9D9] text-foreground hover:bg-[#DD0200]/10 hover:text-[#DD0200]'
+                        )}
+                      >
+                        {r === 'all' ? 'All Ratings' : `${r}★ & Above`}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Status Toggles */}
+                <div className="pt-2 border-t border-[#D9D9D9] space-y-3">
+                  <div className="flex items-center justify-between p-3 rounded-2xl bg-[#D9D9D9]/30 border border-[#D9D9D9]">
+                    <span className="text-xs font-bold">Show Open Places Only</span>
+                    <Switch checked={openOnly} onCheckedChange={setOpenOnly} />
+                  </div>
+                  <div className="flex items-center justify-between p-3 rounded-2xl bg-[#D9D9D9]/30 border border-[#D9D9D9]">
+                    <span className="text-xs font-bold flex items-center gap-1.5">
+                      <Heart className="size-3.5 fill-rose-500 text-rose-500" />
+                      Saved Favorites Only
+                    </span>
+                    <Switch checked={favoritesOnly} onCheckedChange={setFavoritesOnly} />
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-[#D9D9D9] flex items-center justify-between gap-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => { setSortBy('distance'); setRatingFilter('all'); setOpenOnly(false); setFavoritesOnly(false); }}
+                  className="text-xs font-bold border-[#D9D9D9]"
+                >
+                  Reset
+                </Button>
+                <Button
+                  onClick={() => setFilterModalOpen(false)}
+                  className="bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] text-white font-bold text-xs px-6 shadow-md"
+                >
+                  Apply Filters
+                </Button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
