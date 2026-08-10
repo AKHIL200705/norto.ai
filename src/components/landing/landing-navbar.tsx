@@ -118,7 +118,7 @@ export function LandingNavbar() {
             {theme === 'dark' ? (
               <Sun className="size-5 text-amber-400" />
             ) : (
-              <Moon className="size-5 text-emerald-600" />
+              <Moon className="size-5 text-[#DD0200]" />
             )}
           </Button>
 
@@ -127,7 +127,7 @@ export function LandingNavbar() {
           ) : (
             <Button
               onClick={openSignIn}
-              className="rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-5 text-white shadow-md shadow-emerald-500/25 hover:from-emerald-700 hover:to-teal-700"
+              className="rounded-xl bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] px-5 text-white shadow-lg shadow-[#DD0200]/25 hover:opacity-95 backdrop-blur-md font-bold"
             >
               <GoogleIcon className="size-4" />
               <span className="hidden sm:inline">Sign in with Google</span>
