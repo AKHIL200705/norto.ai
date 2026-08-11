@@ -90,37 +90,7 @@ export function LandingHero() {
             </Button>
           </div>
 
-          {/* Trust row */}
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
-            <div className="flex -space-x-2.5">
-              {[
-                'from-[#DD0200] to-[#8B0000]',
-                'from-[#8B0000] to-[#55100D]',
-                'from-rose-500 to-[#DD0200]',
-                'from-[#DD0200] to-rose-600',
-                'from-[#55100D] to-[#DD0200]',
-              ].map((g, i) => (
-                <span
-                  key={i}
-                  className={`grid size-9 place-items-center rounded-full bg-gradient-to-br ${g} text-xs font-bold text-white ring-2 ring-background`}
-                  aria-hidden
-                >
-                  {['P', 'A', 'S', 'R', 'K'][i]}
-                </span>
-              ))}
-            </div>
-            <div className="flex flex-col text-left">
-              <div className="flex items-center gap-1" aria-label="Rated 4.9 out of 5 by 2,000+ users">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className="size-4 fill-rose-500 text-rose-500" />
-                ))}
-                <span className="ml-1.5 text-sm font-bold text-foreground">4.9</span>
-              </div>
-              <span className="text-xs text-muted-foreground font-medium">
-                Loved by 2,000+ relocators across India
-              </span>
-            </div>
-          </div>
+
         </motion.div>
       </div>
     </section>
