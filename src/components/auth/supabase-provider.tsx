@@ -12,9 +12,37 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
   const updateUser = useAppStore((s) => s.updateUser)
 
   React.useEffect(() => {
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-      return
+    const initAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (session?.user) {
+          const email = session.user.email ?? ''
+          const name =
+            session.user.user_metadata?.full_name ||
+            session.user.user_metadata?.name ||
+            email.split('@')[0] ||
+            'User'
+          const avatar =
+            session.user.user_metadata?.avatar_url ||
+            session.user.user_metadata?.picture ||
+            null
+          const providerName = session.user.app_metadata?.provider === 'google' ? 'google' : 'email'
+
+          signInStore(
+            {
+              name,
+              email,
+              avatar,
+            },
+            providerName
+          )
+        }
+      } catch {
+        // Safe fallback
+      }
     }
+
+    initAuth()
 
     try {
       const {
@@ -41,7 +69,6 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
             },
             providerName
           )
-          useAppStore.setState({ view: 'dashboard', section: 'home', signInOpen: false })
         } else if (event === 'SIGNED_OUT') {
           signOutStore()
         }
@@ -51,7 +78,7 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
         subscription.unsubscribe()
       }
     } catch {
-      // Ignore auth subscription errors when placeholder keys are used
+      // Safe fallback
     }
   }, [supabase, signInStore, signOutStore])
 

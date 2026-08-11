@@ -119,6 +119,8 @@ export const useAppStore = create<AppState>()(
       signIn: (u, provider) =>
         set((state) => ({
           isAuthenticated: true,
+          view: 'dashboard',
+          section: 'home',
           authProvider: provider,
           signInOpen: false,
           user: {
