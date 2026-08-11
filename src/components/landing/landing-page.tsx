@@ -5,7 +5,6 @@ import { LandingNavbar } from './landing-navbar'
 import { LandingHero } from './landing-hero'
 import { LandingFeatures } from './landing-features'
 import { LandingHowItWorks } from './landing-how-itworks'
-import { LandingAIPreview } from './landing-ai-preview'
 
 export function LandingPage() {
   return (
@@ -15,7 +14,6 @@ export function LandingPage() {
         <LandingHero />
         <LandingFeatures />
         <LandingHowItWorks />
-        <LandingAIPreview />
       </main>
     </div>
   )

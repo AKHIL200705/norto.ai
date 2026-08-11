@@ -19,7 +19,6 @@ import { GoogleIcon } from '@/components/auth/google-icon'
 const NAV_LINKS = [
   { label: 'Features', href: '#features' },
   { label: 'How it works', href: '#how-it-works' },
-  { label: 'Try Demo', href: '#ai-preview' },
 ]
 
 function UserBadge() {
