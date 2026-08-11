@@ -32,15 +32,15 @@ function UserBadge() {
   return (
     <button
       onClick={() => setView('dashboard')}
-      className="flex items-center gap-2 h-9 pl-1 pr-3 rounded-full border bg-background/70 hover:bg-accent transition-colors"
+      className="flex items-center gap-2 h-9 pl-1 pr-3 rounded-full border border-[#D9D9D9] bg-background/80 hover:bg-[#DD0200]/10 transition-colors"
       aria-label={`Signed in as ${user.name}`}
     >
-      <Avatar className="size-7 ring-2 ring-emerald-500/20">
-        <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white text-xs font-bold">
+      <Avatar className="size-7 ring-2 ring-[#DD0200]/30">
+        <AvatarFallback className="bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] text-white text-xs font-bold">
           {initials}
         </AvatarFallback>
       </Avatar>
-      <span className="hidden sm:inline text-sm font-medium max-w-[120px] truncate">{user.name.split(' ')[0]}</span>
+      <span className="hidden sm:inline text-sm font-bold max-w-[120px] truncate">{user.name.split(' ')[0]}</span>
     </button>
   )
 }
@@ -74,22 +74,22 @@ export function LandingNavbar() {
     <header
       className={cn(
         'sticky top-0 z-50 w-full transition-all duration-300',
-        scrolled ? 'glass shadow-sm' : 'bg-transparent'
+        scrolled ? 'glass shadow-sm backdrop-blur-xl bg-background/85 border-b border-[#D9D9D9]' : 'bg-transparent'
       )}
     >
       <nav className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="group flex items-center gap-2.5 outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg"
+          className="group flex items-center gap-2.5 outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg cursor-pointer"
           aria-label="Norto home"
         >
-          <span className="relative grid size-9 place-items-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-500/30 transition-transform group-hover:scale-105">
+          <span className="relative grid size-9 place-items-center rounded-xl bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] text-white shadow-md shadow-[#DD0200]/30 transition-transform group-hover:scale-105">
             <Compass className="size-5" />
-            <span className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-amber-400 ring-2 ring-background" />
+            <span className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-white ring-2 ring-background" />
           </span>
-          <span className="text-lg font-semibold tracking-tight text-foreground">
-            Nor<span className="text-emerald-600 dark:text-emerald-400">to</span>
+          <span className="text-xl font-extrabold tracking-tight text-foreground">
+            Nor<span className="text-[#DD0200]">to</span>
           </span>
         </button>
 
@@ -99,7 +99,7 @@ export function LandingNavbar() {
             <button
               key={l.href}
               onClick={() => handleNav(l.href)}
-              className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-accent/60"
+              className="rounded-md px-3.5 py-2 text-sm font-bold text-muted-foreground transition-colors hover:text-[#DD0200] hover:bg-[#DD0200]/10 cursor-pointer"
             >
               {l.label}
             </button>
@@ -113,10 +113,10 @@ export function LandingNavbar() {
             size="icon"
             aria-label="Toggle theme"
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className="rounded-full"
+            className="rounded-full hover:bg-[#DD0200]/10"
           >
             {theme === 'dark' ? (
-              <Sun className="size-5 text-amber-400" />
+              <Sun className="size-5 text-[#DD0200]" />
             ) : (
               <Moon className="size-5 text-[#DD0200]" />
             )}
@@ -127,7 +127,7 @@ export function LandingNavbar() {
           ) : (
             <Button
               onClick={openSignIn}
-              className="rounded-xl bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] px-5 text-white shadow-lg shadow-[#DD0200]/25 hover:opacity-95 backdrop-blur-md font-bold"
+              className="rounded-xl bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] px-5 text-white shadow-lg shadow-[#DD0200]/25 hover:opacity-95 backdrop-blur-md font-extrabold cursor-pointer"
             >
               <GoogleIcon className="size-4" />
               <span className="hidden sm:inline">Sign in with Google</span>
@@ -150,16 +150,16 @@ export function LandingNavbar() {
             <SheetContent side="right" className="w-[280px] sm:w-[320px]">
               <div className="flex h-full flex-col gap-2 pt-6">
                 <div className="mb-4 flex items-center gap-2.5 px-2">
-                  <span className="grid size-9 place-items-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white">
+                  <span className="grid size-9 place-items-center rounded-xl bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] text-white">
                     <Compass className="size-5" />
                   </span>
-                  <span className="text-lg font-semibold">Norto</span>
+                  <span className="text-xl font-extrabold">Norto</span>
                 </div>
                 {NAV_LINKS.map((l) => (
                   <SheetClose asChild key={l.href}>
                     <button
                       onClick={() => handleNav(l.href)}
-                      className="rounded-lg px-3 py-3 text-left text-base font-medium text-foreground transition-colors hover:bg-accent"
+                      className="rounded-lg px-3 py-3 text-left text-base font-bold text-foreground transition-colors hover:bg-[#DD0200]/10 hover:text-[#DD0200]"
                     >
                       {l.label}
                     </button>
@@ -167,19 +167,19 @@ export function LandingNavbar() {
                 ))}
                 <div className="mt-auto px-2 pb-4 space-y-2">
                   {isAuth ? (
-                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-                      <Avatar className="size-7 ring-2 ring-emerald-500/20">
-                        <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white text-xs font-bold">
+                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#DD0200]/10 border border-[#DD0200]/20">
+                      <Avatar className="size-7 ring-2 ring-[#DD0200]/30">
+                        <AvatarFallback className="bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] text-white text-xs font-bold">
                           {userInitials}
                         </AvatarFallback>
                       </Avatar>
-                      <span className="text-sm font-medium truncate">{user?.name}</span>
+                      <span className="text-sm font-bold truncate">{user?.name}</span>
                     </div>
                   ) : (
                     <SheetClose asChild>
                       <Button
                         onClick={openSignIn}
-                        className="w-full rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white"
+                        className="w-full rounded-full bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] text-white font-bold"
                       >
                         <GoogleIcon className="size-4" />
                         Sign in with Google

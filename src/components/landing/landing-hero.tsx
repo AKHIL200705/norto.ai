@@ -88,17 +88,17 @@ export function LandingHero() {
       <motion.div
         aria-hidden
         style={{ x: orb1X, y: orb1Y }}
-        className="animate-float pointer-events-none absolute -left-20 top-10 size-72 rounded-full bg-emerald-400/30 blur-3xl dark:bg-emerald-500/20"
+        className="animate-float pointer-events-none absolute -left-20 top-10 size-72 rounded-full bg-[#DD0200]/25 blur-3xl"
       />
       <motion.div
         aria-hidden
         style={{ x: orb2X, y: orb2Y }}
-        className="animate-float pointer-events-none absolute -right-16 top-32 size-80 rounded-full bg-amber-400/30 blur-3xl dark:bg-amber-500/20"
+        className="animate-float pointer-events-none absolute -right-16 top-32 size-80 rounded-full bg-[#8B0000]/30 blur-3xl"
       />
       <motion.div
         aria-hidden
         style={{ x: orb3X, y: orb3Y }}
-        className="animate-float pointer-events-none absolute bottom-0 left-1/3 size-72 rounded-full bg-rose-400/25 blur-3xl dark:bg-rose-500/15"
+        className="animate-float pointer-events-none absolute bottom-0 left-1/3 size-72 rounded-full bg-[#DD0200]/15 blur-3xl"
       />
 
       <div className="mx-auto grid w-full max-w-7xl items-center gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:gap-8 lg:px-8">
@@ -109,14 +109,14 @@ export function LandingHero() {
           transition={{ duration: 0.6, ease: 'easeOut' }}
           className="flex flex-col items-start gap-6"
         >
-          <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1.5 text-sm font-medium text-emerald-700 dark:text-emerald-300">
+          <span className="inline-flex items-center gap-2 rounded-full border border-[#DD0200]/30 bg-[#DD0200]/10 px-4 py-1.5 text-sm font-bold text-[#DD0200]">
             <Sparkles className="size-4" />
             AI-Powered City Companion
           </span>
 
-          <h1 className="text-balance text-4xl font-bold leading-[1.1] tracking-tight sm:text-5xl lg:text-6xl">
+          <h1 className="text-balance text-4xl font-extrabold leading-[1.1] tracking-tight sm:text-5xl lg:text-6xl">
             Your{' '}
-            <span className="animate-gradient bg-gradient-to-r from-emerald-600 via-teal-500 to-amber-500 bg-clip-text text-transparent">
+            <span className="animate-gradient bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-rose-500 bg-clip-text text-transparent drop-shadow-sm">
               AI Companion
             </span>{' '}
             for Every New City
@@ -133,7 +133,7 @@ export function LandingHero() {
             <Button
               onClick={launchApp}
               size="lg"
-              className="rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-7 text-white shadow-lg shadow-emerald-500/25 hover:from-emerald-700 hover:to-teal-700"
+              className="rounded-full bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] px-7 text-white font-extrabold shadow-lg shadow-[#DD0200]/25 hover:scale-[1.02] transition-transform"
             >
               <Sparkles className="size-4" />
               Get Started
@@ -143,9 +143,9 @@ export function LandingHero() {
               onClick={scrollToDemo}
               size="lg"
               variant="outline"
-              className="rounded-full border-emerald-500/30 bg-background/60 px-7 backdrop-blur hover:bg-accent"
+              className="rounded-full border-[#D9D9D9] bg-background/60 px-7 font-bold backdrop-blur hover:bg-[#DD0200]/10 hover:text-[#DD0200]"
             >
-              <Play className="size-4" />
+              <Play className="size-4 text-[#DD0200]" />
               Watch Demo
             </Button>
           </div>
@@ -154,15 +154,15 @@ export function LandingHero() {
           <div className="mt-2 flex flex-wrap items-center gap-4">
             <div className="flex -space-x-2.5">
               {[
-                'from-emerald-500 to-teal-500',
-                'from-amber-400 to-orange-500',
-                'from-rose-400 to-pink-500',
-                'from-teal-500 to-cyan-500',
-                'from-violet-500 to-purple-500',
+                'from-[#DD0200] to-[#8B0000]',
+                'from-[#8B0000] to-[#55100D]',
+                'from-rose-500 to-[#DD0200]',
+                'from-[#DD0200] to-rose-600',
+                'from-[#55100D] to-[#DD0200]',
               ].map((g, i) => (
                 <span
                   key={i}
-                  className={`grid size-9 place-items-center rounded-full bg-gradient-to-br ${g} text-xs font-semibold text-white ring-2 ring-background`}
+                  className={`grid size-9 place-items-center rounded-full bg-gradient-to-br ${g} text-xs font-bold text-white ring-2 ring-background`}
                   aria-hidden
                 >
                   {['P', 'A', 'S', 'R', 'K'][i]}
@@ -172,11 +172,11 @@ export function LandingHero() {
             <div className="flex flex-col">
               <div className="flex items-center gap-1" aria-label="Rated 4.9 out of 5 by 2,000+ users">
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className="size-4 fill-amber-400 text-amber-400" />
+                  <Star key={i} className="size-4 fill-rose-500 text-rose-500" />
                 ))}
-                <span className="ml-1.5 text-sm font-semibold text-foreground">4.9</span>
+                <span className="ml-1.5 text-sm font-bold text-foreground">4.9</span>
               </div>
-              <span className="text-xs text-muted-foreground">
+              <span className="text-xs text-muted-foreground font-medium">
                 Loved by 2,000+ relocators across India
               </span>
             </div>
@@ -190,22 +190,22 @@ export function LandingHero() {
           transition={{ duration: 0.7, ease: 'easeOut', delay: 0.15 }}
           className="relative"
         >
-          <div className="glass relative rounded-3xl p-5 shadow-2xl shadow-emerald-900/10 sm:p-6">
+          <div className="glass relative rounded-3xl p-5 shadow-2xl shadow-[#DD0200]/10 border border-[#D9D9D9] sm:p-6">
             {/* Header */}
-            <div className="mb-4 flex items-center justify-between border-b border-border/60 pb-3">
+            <div className="mb-4 flex items-center justify-between border-b border-[#D9D9D9]/60 pb-3">
               <div className="flex items-center gap-2.5">
-                <span className="grid size-9 place-items-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-md">
+                <span className="grid size-9 place-items-center rounded-xl bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] text-white shadow-md">
                   <Bot className="size-5" />
                 </span>
                 <div>
-                  <p className="text-sm font-semibold text-foreground">Norto</p>
-                  <p className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
-                    <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <p className="text-sm font-bold text-foreground">Norto</p>
+                  <p className="flex items-center gap-1 text-xs text-[#DD0200] font-semibold">
+                    <span className="size-1.5 rounded-full bg-[#DD0200] animate-pulse" />
                     Online · Ready to help
                   </p>
                 </div>
               </div>
-              <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-300">
+              <span className="rounded-full bg-[#DD0200]/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#DD0200]">
                 Live preview
               </span>
             </div>
@@ -217,7 +217,7 @@ export function LandingHero() {
               transition={{ delay: 0.4, duration: 0.4 }}
               className="mb-4 flex justify-end"
             >
-              <div className="max-w-[80%] rounded-2xl rounded-br-md bg-gradient-to-br from-emerald-600 to-teal-600 px-4 py-2.5 text-sm text-white shadow-md">
+              <div className="max-w-[80%] rounded-2xl rounded-br-md bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] px-4 py-2.5 text-sm text-white font-medium shadow-md">
                 I&apos;m moving to Hyderabad with a ₹15,000 monthly budget. Help?
               </div>
             </motion.div>
@@ -229,13 +229,13 @@ export function LandingHero() {
               transition={{ delay: 0.6, duration: 0.4 }}
               className="flex gap-2.5"
             >
-              <span className="mt-0.5 grid size-7 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 text-white">
+              <span className="mt-0.5 grid size-7 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] text-white">
                 <Bot className="size-4" />
               </span>
-              <div className="max-w-[85%] rounded-2xl rounded-tl-md bg-muted/60 px-4 py-3 text-sm text-foreground">
+              <div className="max-w-[85%] rounded-2xl rounded-tl-md bg-muted/60 px-4 py-3 text-sm text-foreground font-medium border border-[#D9D9D9]/40">
                 <span>{typed}</span>
                 {typed.length < TYPING_TEXT.length && (
-                  <span className="ml-0.5 inline-block size-3 animate-pulse rounded-sm bg-emerald-500 align-middle" />
+                  <span className="ml-0.5 inline-block size-3 animate-pulse rounded-sm bg-[#DD0200] align-middle" />
                 )}
                 <AnimatePresence>
                   {showBullets && (
@@ -257,10 +257,10 @@ export function LandingHero() {
                           }}
                           className="flex items-start gap-2 text-sm"
                         >
-                          <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-md bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+                          <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-md bg-[#DD0200]/15 text-[#DD0200]">
                             <b.icon className="size-3.5" />
                           </span>
-                          <span className="text-foreground/90">{b.text}</span>
+                          <span className="text-foreground/90 font-medium">{b.text}</span>
                         </motion.li>
                       ))}
                     </motion.ul>
@@ -274,7 +274,7 @@ export function LandingHero() {
               {['Budget split', 'Find a PG', 'Translate to Telugu'].map((c) => (
                 <span
                   key={c}
-                  className="rounded-full border border-emerald-500/30 bg-emerald-500/5 px-3 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-300"
+                  className="rounded-full border border-[#DD0200]/30 bg-[#DD0200]/10 px-3 py-1 text-xs font-bold text-[#DD0200]"
                 >
                   {c}
                 </span>
@@ -287,14 +287,14 @@ export function LandingHero() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1.2, duration: 0.4 }}
-            className="absolute -bottom-4 -left-3 hidden items-center gap-2 rounded-2xl bg-background px-3.5 py-2.5 shadow-lg ring-1 ring-emerald-500/20 sm:flex"
+            className="absolute -bottom-4 -left-3 hidden items-center gap-2 rounded-2xl bg-background px-3.5 py-2.5 shadow-lg border border-[#D9D9D9] sm:flex"
           >
-            <span className="grid size-8 place-items-center rounded-lg bg-amber-400/20 text-amber-600 dark:text-amber-400">
+            <span className="grid size-8 place-items-center rounded-lg bg-[#DD0200]/15 text-[#DD0200]">
               <MapPin className="size-4" />
             </span>
             <div>
-              <p className="text-xs font-semibold text-foreground">12 cities live</p>
-              <p className="text-[10px] text-muted-foreground">+5 launching soon</p>
+              <p className="text-xs font-bold text-foreground">12 categories live</p>
+              <p className="text-[10px] text-muted-foreground font-semibold">Real Google Maps places</p>
             </div>
           </motion.div>
         </motion.div>
