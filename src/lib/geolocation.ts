@@ -52,28 +52,47 @@ export function getCurrentPosition(): Promise<GeoCoords> {
         })
       },
       (err) => {
-        let code: GeoErrorCode = 'unknown'
-        let message = 'Could not get your location.'
-        switch (err.code) {
-          case err.PERMISSION_DENIED:
-            code = 'permission-denied'
-            message = 'Location permission denied. Please allow location access in your browser.'
-            break
-          case err.POSITION_UNAVAILABLE:
-            code = 'position-unavailable'
-            message = 'Your position is unavailable. Check your GPS/network and try again.'
-            break
-          case err.TIMEOUT:
-            code = 'timeout'
-            message = 'Location request timed out. Please try again.'
-            break
+        if (err.code === err.PERMISSION_DENIED) {
+          reject(
+            new GeoError(
+              'permission-denied',
+              'Location permission blocked. If you see an Android overlay prompt, close floating screen bubbles (e.g. Messenger, recorder) or pick your city manually above.'
+            )
+          )
+          return
         }
-        reject(new GeoError(code, message))
+
+        // Low accuracy fallback for Android devices with strict sensor policies
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            resolve({
+              lat: pos.coords.latitude,
+              lng: pos.coords.longitude,
+              accuracy: pos.coords.accuracy,
+            })
+          },
+          (err2) => {
+            let code: GeoErrorCode = 'unknown'
+            let message = 'Could not get your location.'
+            if (err2.code === err2.PERMISSION_DENIED) {
+              code = 'permission-denied'
+              message = 'Location access blocked by browser or system settings. Select your city manually.'
+            } else if (err2.code === err2.POSITION_UNAVAILABLE) {
+              code = 'position-unavailable'
+              message = 'Position unavailable. Select your city manually.'
+            } else if (err2.code === err2.TIMEOUT) {
+              code = 'timeout'
+              message = 'Location request timed out.'
+            }
+            reject(new GeoError(code, message))
+          },
+          { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 }
+        )
       },
       {
-        enableHighAccuracy: true, // use GPS when available for the best accuracy
-        timeout: 20000,
-        maximumAge: 0, // never use a cached position
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 30000,
       }
     )
   })
