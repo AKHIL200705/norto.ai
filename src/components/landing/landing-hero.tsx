@@ -282,21 +282,7 @@ export function LandingHero() {
             </div>
           </div>
 
-          {/* Floating badge */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 1.2, duration: 0.4 }}
-            className="absolute -bottom-4 -left-3 hidden items-center gap-2 rounded-2xl bg-background px-3.5 py-2.5 shadow-lg border border-[#D9D9D9] sm:flex"
-          >
-            <span className="grid size-8 place-items-center rounded-lg bg-[#DD0200]/15 text-[#DD0200]">
-              <MapPin className="size-4" />
-            </span>
-            <div>
-              <p className="text-xs font-bold text-foreground">12 categories live</p>
-              <p className="text-[10px] text-muted-foreground font-semibold">Real Google Maps places</p>
-            </div>
-          </motion.div>
+
         </motion.div>
       </div>
     </section>
