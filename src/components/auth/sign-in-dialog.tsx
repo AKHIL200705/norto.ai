@@ -3,20 +3,13 @@
 import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
-import {
-  Compass, Mail, Lock, Loader2, X,
-  User as UserIcon, Eye, EyeOff,
-} from 'lucide-react'
+import { Compass, Loader2, X } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import {
   Dialog, DialogContent, DialogTitle, DialogDescription,
 } from '@/components/ui/dialog'
 import { GoogleIcon } from './google-icon'
 import { createClient } from '@/lib/supabase/client'
-
-type AuthAction = 'signin' | 'signup'
 
 export function SignInDialog() {
   const supabase = React.useMemo(() => createClient(), [])
@@ -25,40 +18,14 @@ export function SignInDialog() {
   const signInStore = useAppStore((s) => s.signIn)
   const setView = useAppStore((s) => s.setView)
 
-  const [authAction, setAuthAction] = React.useState<AuthAction>('signin')
-
-  // Email form state
-  const [nameInput, setNameInput] = React.useState('')
-  const [emailInput, setEmailInput] = React.useState('')
-  const [passwordInput, setPasswordInput] = React.useState('')
-  const [showPassword, setShowPassword] = React.useState(false)
   const [isLoading, setIsLoading] = React.useState(false)
-  const [emailErrors, setEmailErrors] = React.useState<{ email?: string; password?: string; name?: string }>({})
 
-  // Reset internal state whenever the dialog is (re)opened
+  // Reset loading state when dialog opens
   React.useEffect(() => {
     if (open) {
-      setAuthAction('signin')
-      setNameInput('')
-      setEmailInput('')
-      setPasswordInput('')
-      setShowPassword(false)
       setIsLoading(false)
-      setEmailErrors({})
     }
   }, [open])
-
-  const completeSignIn = React.useCallback(
-    (account: { name: string; email: string }, provider: 'google' | 'email') => {
-      signInStore(account, provider)
-      const first = account.name.split(' ')[0]
-      toast.success(`Signed in as ${first}`, {
-        description: provider === 'google' ? 'via Google' : 'via Email',
-      })
-      setView('dashboard')
-    },
-    [signInStore, setView]
-  )
 
   const handleGoogleOAuth = async () => {
     try {
@@ -81,88 +48,17 @@ export function SignInDialog() {
     }
   }
 
-  const handleEmailSubmit = async () => {
-    const errs: { email?: string; password?: string; name?: string } = {}
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput)) errs.email = 'Enter a valid email'
-    if (passwordInput.length < 6) errs.password = 'At least 6 characters'
-    if (authAction === 'signup' && !nameInput.trim()) errs.name = 'Please enter your name'
-    setEmailErrors(errs)
-    if (Object.keys(errs).length > 0) return
-
-    setIsLoading(true)
-
-    try {
-      if (authAction === 'signup') {
-        const { data, error } = await supabase.auth.signUp({
-          email: emailInput.trim(),
-          password: passwordInput,
-          options: {
-            data: {
-              name: nameInput.trim(),
-            },
-          },
-        })
-
-        if (error) {
-          if (error.message.includes('FetchError') || error.message.includes('invalid') || error.message.includes('URL')) {
-            const fallbackName = nameInput.trim() || emailInput.split('@')[0]
-            completeSignIn({ name: fallbackName, email: emailInput.trim() }, 'email')
-            return
-          }
-          toast.error(error.message)
-          return
-        }
-
-        if (data.session) {
-          const userName = data.user?.user_metadata?.name || nameInput.trim() || emailInput.split('@')[0]
-          completeSignIn({ name: userName, email: emailInput.trim() }, 'email')
-        } else {
-          toast.success('Account created! Please check your email to confirm registration.')
-          setOpen(false)
-        }
-      } else {
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: emailInput.trim(),
-          password: passwordInput,
-        })
-
-        if (error) {
-          if (error.message.includes('Invalid login credentials')) {
-            toast.error('Invalid email or password.')
-            return
-          }
-          const fallbackName = emailInput.split('@')[0]
-          completeSignIn({ name: fallbackName, email: emailInput.trim() }, 'email')
-          return
-        }
-
-        if (data.session) {
-          const userName =
-            data.user?.user_metadata?.name ||
-            data.user?.user_metadata?.full_name ||
-            emailInput.split('@')[0]
-          completeSignIn({ name: userName, email: emailInput.trim() }, 'email')
-        }
-      }
-    } catch {
-      const fallbackName = emailInput.split('@')[0]
-      completeSignIn({ name: fallbackName, email: emailInput.trim() }, 'email')
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent showCloseButton={false} className="p-0 overflow-hidden max-w-[390px] gap-0 border-[#D9D9D9] rounded-3xl">
+      <DialogContent showCloseButton={false} className="p-0 overflow-hidden max-w-[360px] gap-0 border-[#D9D9D9] rounded-3xl">
         <DialogTitle className="sr-only">Sign in to Norto</DialogTitle>
         <DialogDescription className="sr-only">
-          Sign in to Norto using Google or Email and Password.
+          Sign in to Norto with Google.
         </DialogDescription>
 
         <AnimatePresence mode="wait">
           <motion.div
-            key="choose"
+            key="google-signin"
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.96 }}
@@ -191,126 +87,32 @@ export function SignInDialog() {
 
             {/* Form Body */}
             <div className="px-5 pb-6 -mt-4">
-              <div className="rounded-2xl bg-card border border-[#D9D9D9] shadow-xl p-5 backdrop-blur-xl">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-base font-extrabold">
-                    {authAction === 'signin' ? 'Sign In' : 'Create Account'}
-                  </h2>
-                  <button
-                    onClick={() => {
-                      setAuthAction(authAction === 'signin' ? 'signup' : 'signin')
-                      setEmailErrors({})
-                    }}
-                    className="text-xs text-[#DD0200] font-bold hover:underline cursor-pointer"
-                  >
-                    {authAction === 'signin' ? 'Need an account?' : 'Already have one?'}
-                  </button>
-                </div>
+              <div className="rounded-2xl bg-card border border-[#D9D9D9] shadow-xl p-5 backdrop-blur-xl text-center">
+                <h2 className="text-base font-extrabold text-foreground mb-1">
+                  Welcome to Norto
+                </h2>
+                <p className="text-xs text-muted-foreground font-medium mb-4">
+                  Sign in with Google to access your personalized city companion.
+                </p>
 
                 {/* Google OAuth button */}
                 <button
                   onClick={handleGoogleOAuth}
                   disabled={isLoading}
-                  className="mt-4 w-full h-11 rounded-xl bg-white border border-[#D9D9D9] hover:bg-slate-50 hover:border-[#DD0200]/40 active:scale-[0.99] transition-all flex items-center justify-center gap-3 text-sm font-bold text-slate-800 disabled:opacity-50 cursor-pointer shadow-xs"
-                >
-                  <GoogleIcon className="size-5" />
-                  Sign in with Google
-                </button>
-
-                {/* Divider */}
-                <div className="flex items-center gap-3 my-4">
-                  <div className="h-px flex-1 bg-[#D9D9D9]" />
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">or email</span>
-                  <div className="h-px flex-1 bg-[#D9D9D9]" />
-                </div>
-
-                {/* Email / Password inputs */}
-                <div className="space-y-3">
-                  {authAction === 'signup' && (
-                    <div>
-                      <div className="relative">
-                        <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                        <Input
-                          type="text"
-                          placeholder="Your Full Name"
-                          value={nameInput}
-                          onChange={(e) => {
-                            setNameInput(e.target.value)
-                            if (emailErrors.name) setEmailErrors((p) => ({ ...p, name: undefined }))
-                          }}
-                          className="pl-9 h-11 rounded-xl border-[#D9D9D9]"
-                        />
-                      </div>
-                      {emailErrors.name && (
-                        <p className="text-[11px] font-bold text-destructive mt-1 ml-1">{emailErrors.name}</p>
-                      )}
-                    </div>
-                  )}
-
-                  <div>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                      <Input
-                        type="email"
-                        placeholder="Email address"
-                        value={emailInput}
-                        onChange={(e) => {
-                          setEmailInput(e.target.value)
-                          if (emailErrors.email) setEmailErrors((p) => ({ ...p, email: undefined }))
-                        }}
-                        onKeyDown={(e) => e.key === 'Enter' && handleEmailSubmit()}
-                        className="pl-9 h-11 rounded-xl border-[#D9D9D9]"
-                        aria-invalid={!!emailErrors.email}
-                      />
-                    </div>
-                    {emailErrors.email && (
-                      <p className="text-[11px] font-bold text-destructive mt-1 ml-1">{emailErrors.email}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                      <Input
-                        type={showPassword ? 'text' : 'password'}
-                        placeholder="Password"
-                        value={passwordInput}
-                        onChange={(e) => {
-                          setPasswordInput(e.target.value)
-                          if (emailErrors.password) setEmailErrors((p) => ({ ...p, password: undefined }))
-                        }}
-                        onKeyDown={(e) => e.key === 'Enter' && handleEmailSubmit()}
-                        className="pl-9 pr-9 h-11 rounded-xl border-[#D9D9D9]"
-                        aria-invalid={!!emailErrors.password}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword((v) => !v)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
-                      >
-                        {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                      </button>
-                    </div>
-                    {emailErrors.password && (
-                      <p className="text-[11px] font-bold text-destructive mt-1 ml-1">{emailErrors.password}</p>
-                    )}
-                  </div>
-                </div>
-
-                <Button
-                  onClick={handleEmailSubmit}
-                  disabled={isLoading}
-                  className="mt-4 w-full h-11 rounded-xl bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] hover:opacity-95 text-white font-extrabold flex items-center justify-center gap-2 shadow-md shadow-[#DD0200]/25 cursor-pointer"
+                  className="w-full h-12 rounded-xl bg-white border border-[#D9D9D9] hover:bg-slate-50 hover:border-[#DD0200]/40 active:scale-[0.99] transition-all flex items-center justify-center gap-3 text-sm font-extrabold text-slate-800 disabled:opacity-50 cursor-pointer shadow-sm"
                 >
                   {isLoading ? (
                     <>
-                      <Loader2 className="size-4 animate-spin" />
-                      <span>Processing…</span>
+                      <Loader2 className="size-5 animate-spin text-[#DD0200]" />
+                      <span>Connecting…</span>
                     </>
                   ) : (
-                    <span>{authAction === 'signin' ? 'Sign In' : 'Create Account'}</span>
+                    <>
+                      <GoogleIcon className="size-5" />
+                      <span>Sign in with Google</span>
+                    </>
                   )}
-                </Button>
+                </button>
               </div>
             </div>
           </motion.div>
