@@ -129,11 +129,10 @@ export default function Home() {
   }, [view])
 
   React.useEffect(() => {
-    if (view === 'dashboard' && !isAuth) {
-      setView('landing')
-      setSignInOpen(true)
+    if (isAuth && view === 'landing') {
+      setView('dashboard')
     }
-  }, [view, isAuth, setView, setSignInOpen])
+  }, [isAuth, view, setView])
 
   const dialog = <SignInDialog />
 

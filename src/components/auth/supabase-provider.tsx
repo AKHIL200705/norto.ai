@@ -41,6 +41,7 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
             },
             providerName
           )
+          useAppStore.setState({ view: 'dashboard', section: 'home', signInOpen: false })
         } else if (event === 'SIGNED_OUT') {
           signOutStore()
         }
