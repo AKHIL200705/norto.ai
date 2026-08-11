@@ -8,8 +8,6 @@ import {
   Wallet,
   Utensils,
   Languages,
-  Siren,
-  CloudSun,
   ScanText,
   Bookmark,
   type LucideIcon,
@@ -62,26 +60,11 @@ const FEATURES: Feature[] = [
     iconColor: 'text-white',
   },
   {
-    icon: Siren,
-    title: 'Emergency SOS',
-    desc: 'One tap to nearby police, hospitals, and pharmacies — with saved contacts.',
-    gradient: 'from-[#DD0200] via-[#8B0000] to-[#55100D]',
-    iconColor: 'text-white',
-  },
-  {
-    icon: CloudSun,
-    title: 'Weather Forecast',
-    desc: '7-day forecasts, clothing tips, and travel advisories for your city.',
-    gradient: 'from-[#DD0200] to-rose-600',
-    iconColor: 'text-white',
-  },
-  {
     icon: ScanText,
     title: 'OCR Scanner',
     desc: 'Snap a sign, menu, or document — get instant English translation on the spot.',
     gradient: 'from-[#8B0000] to-[#55100D]',
     iconColor: 'text-white',
-    span: 'sm:col-span-2',
   },
   {
     icon: Bookmark,
@@ -113,7 +96,7 @@ export function LandingFeatures() {
             </span>
           </h2>
           <p className="mt-4 text-pretty text-base text-muted-foreground font-medium sm:text-lg">
-            Nine powerful tools, one intelligent companion. Built for relocators,
+            Seven powerful tools, one intelligent companion. Built for relocators,
             students, and digital nomads across India.
           </p>
         </motion.div>
