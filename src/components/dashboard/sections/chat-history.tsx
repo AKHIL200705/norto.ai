@@ -7,6 +7,7 @@ import ReactMarkdown from 'react-markdown'
 import {
   History, Search, Trash2, Download, MessageSquare, ArrowRight,
   Sparkles, Calendar, Bot, User as UserIcon, Clock, Filter, HardDrive,
+  Cloud, RefreshCw, Loader2, CheckCircle2,
 } from 'lucide-react'
 import { useAppStore, useChatStore } from '@/lib/store'
 import type { ChatMessage, DashboardSection } from '@/lib/types'
@@ -29,12 +30,43 @@ export function ChatHistoryView() {
   const city = useAppStore((s) => s.city)
   const setSection = useAppStore((s) => s.setSection)
   const messagesStore = useChatStore((s) => s.messages)
+  const addMessage = useChatStore((s) => s.addMessage)
   const clearSection = useChatStore((s) => s.clearSection)
   const clearAllHistory = useChatStore((s) => s.clearAllHistory)
 
   const [searchQuery, setSearchQuery] = React.useState('')
-  const [selectedCategory, setSelectedCategory] = React.useState<string>('all')
   const [selectedSectionKey, setSelectedSectionKey] = React.useState<string | null>(null)
+  const [syncing, setSyncing] = React.useState(false)
+
+  // Fetch from Supabase PostgreSQL Database on mount
+  const syncSupabase = React.useCallback(async () => {
+    setSyncing(true)
+    try {
+      const res = await fetch('/api/chat/history')
+      if (!res.ok) return
+      const json = await res.json()
+      if (Array.isArray(json.history) && json.history.length > 0) {
+        for (const item of json.history) {
+          if (item && item.content && item.role) {
+            addMessage(item.section || 'assistant', {
+              id: item.id || crypto.randomUUID(),
+              role: item.role === 'assistant' ? 'assistant' : 'user',
+              content: item.content,
+              createdAt: item.createdAt || new Date().toISOString(),
+            })
+          }
+        }
+      }
+    } catch {
+      // offline/local mode fallback
+    } finally {
+      setSyncing(false)
+    }
+  }, [addMessage])
+
+  React.useEffect(() => {
+    syncSupabase()
+  }, [syncSupabase])
 
   const sectionKeys = React.useMemo(() => {
     return Object.keys(messagesStore).filter((k) => (messagesStore[k] || []).length > 0)
@@ -76,19 +108,33 @@ export function ChatHistoryView() {
     toast.success('Chat thread exported as Markdown!')
   }
 
-  const handleClearThread = (secKey: string) => {
+  const handleClearThread = async (secKey: string) => {
     clearSection(secKey)
     if (selectedSectionKey === secKey) {
       const remaining = sectionKeys.filter((k) => k !== secKey)
       setSelectedSectionKey(remaining[0] || null)
     }
-    toast.success('Chat thread removed')
+    try {
+      await fetch('/api/chat/history', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ section: secKey }),
+      })
+    } catch {
+      // ignore
+    }
+    toast.success('Chat thread removed from Supabase & local storage')
   }
 
-  const handleClearAll = () => {
+  const handleClearAll = async () => {
     clearAllHistory()
     setSelectedSectionKey(null)
-    toast.success('All chat history cleared')
+    try {
+      await fetch('/api/chat/history', { method: 'DELETE' })
+    } catch {
+      // ignore
+    }
+    toast.success('All chat history purged from Supabase & local storage')
   }
 
   const activeMessages = React.useMemo(() => {
@@ -107,32 +153,50 @@ export function ChatHistoryView() {
           <div>
             <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
               <History className="size-3.5 text-[#DD0200]" />
-              <span>Saved Conversations &amp; AI Intelligence</span>
+              <span className="font-semibold">Saved Conversations &amp; Supabase Database Intel</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Saved Chat History</h1>
+            <div className="flex items-center gap-3 flex-wrap">
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Saved Chat History</h1>
+              <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30 font-bold flex items-center gap-1">
+                <Cloud className="size-3 text-emerald-600" />
+                Supabase Database Synced
+              </Badge>
+            </div>
           </div>
-          {sectionKeys.length > 0 && (
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => selectedSectionKey && handleExportSection(selectedSectionKey)}
-                className="font-semibold text-foreground border-[#D9D9D9]"
-              >
-                <Download className="size-3.5" />
-                <span>Export Selected</span>
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleClearAll}
-                className="text-rose-600 border-rose-200 hover:bg-rose-50 font-semibold"
-              >
-                <Trash2 className="size-3.5" />
-                <span>Purge All</span>
-              </Button>
-            </div>
-          )}
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={syncSupabase}
+              disabled={syncing}
+              className="font-bold border-[#D9D9D9]"
+            >
+              <RefreshCw className={cn('size-3.5 text-[#DD0200]', syncing && 'animate-spin')} />
+              <span>{syncing ? 'Syncing…' : 'Sync Cloud'}</span>
+            </Button>
+            {sectionKeys.length > 0 && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => selectedSectionKey && handleExportSection(selectedSectionKey)}
+                  className="font-semibold text-foreground border-[#D9D9D9]"
+                >
+                  <Download className="size-3.5" />
+                  <span>Export Selected</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleClearAll}
+                  className="text-rose-600 border-rose-200 hover:bg-rose-50 font-semibold"
+                >
+                  <Trash2 className="size-3.5" />
+                  <span>Purge All</span>
+                </Button>
+              </>
+            )}
+          </div>
         </motion.div>
 
         {sectionKeys.length === 0 ? (
@@ -144,7 +208,7 @@ export function ChatHistoryView() {
               <div className="max-w-md space-y-1">
                 <h3 className="text-lg font-extrabold">No Saved Conversations Yet</h3>
                 <p className="text-sm text-muted-foreground">
-                  Your questions and AI responses across Norto AI Assistant, Food Intel, and City Tools will be saved here automatically.
+                  Your questions and AI responses across Norto AI Assistant, Food Intel, and City Tools will be saved in your Supabase database and local storage automatically.
                 </p>
               </div>
               <Button
@@ -233,7 +297,10 @@ export function ChatHistoryView() {
                         </div>
                         <div>
                           <h2 className="font-extrabold text-base capitalize">{selectedSectionKey} Chat Thread</h2>
-                          <p className="text-xs text-muted-foreground">Saved locally for {city}</p>
+                          <p className="text-xs text-muted-foreground flex items-center gap-1">
+                            <Cloud className="size-3 text-emerald-600" />
+                            Saved in Supabase PostgreSQL &amp; local storage for {city}
+                          </p>
                         </div>
                       </div>
 

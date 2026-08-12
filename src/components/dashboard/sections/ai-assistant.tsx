@@ -7,7 +7,7 @@ import ReactMarkdown from 'react-markdown'
 import { toast } from 'sonner'
 import {
   Sparkles, Send, Trash2, Bot, User as UserIcon, BookOpen,
-  Loader2, Download, Check,
+  Loader2, Download, Check, Cloud,
 } from 'lucide-react'
 import { useAppStore, useChatStore } from '@/lib/store'
 import type { ChatMessage } from '@/lib/types'
@@ -262,8 +262,9 @@ export function AiAssistant() {
                     <span className="size-1.5 rounded-full bg-[#DD0200] animate-pulse" />
                     City Knowledge Engine
                   </Badge>
-                  <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30 font-bold">
-                    Auto-Saved in Browser
+                  <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30 font-bold flex items-center gap-1">
+                    <Cloud className="size-3 text-emerald-600" />
+                    Saved in Supabase &amp; Browser
                   </Badge>
                 </div>
                 <p className="text-xs text-muted-foreground mt-0.5">

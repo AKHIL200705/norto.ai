@@ -1,10 +1,30 @@
 import ZAI from 'z-ai-web-dev-sdk'
+import { db } from '@/lib/db'
+import { getOrCreateDemoUser } from '@/lib/user'
 
 export const dynamic = 'force-dynamic'
 
 interface HistoryMsg {
   role: 'user' | 'assistant' | 'system'
   content: string
+}
+
+/**
+ * Saves chat prompt & response into Supabase / Postgres ChatHistory table
+ */
+async function saveChatToSupabase(userMsg: string, aiResponse: string, section = 'assistant') {
+  try {
+    const user = await getOrCreateDemoUser()
+    if (!user || !user.id) return
+    await db.chatHistory.createMany({
+      data: [
+        { userId: user.id, role: 'user', content: userMsg.trim(), section },
+        { userId: user.id, role: 'assistant', content: aiResponse.trim(), section },
+      ],
+    })
+  } catch (e) {
+    console.warn('[Supabase ChatHistory] DB save notice:', e)
+  }
 }
 
 /**
@@ -165,10 +185,11 @@ Here is specific, detailed guidance regarding **"${userQuery}"**:
 export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => ({}))
-    const { message, city, history } = body as {
+    const { message, city, history, section } = body as {
       message?: string
       city?: string
       history?: HistoryMsg[]
+      section?: string
     }
 
     if (!message || typeof message !== 'string' || !message.trim()) {
@@ -177,6 +198,7 @@ export async function POST(req: Request) {
 
     const cityName = city && typeof city === 'string' && city.trim() ? city.trim() : 'Pedakakani'
     const userMsg = message.trim()
+    const currentSection = section || 'assistant'
 
     // Engine 1: Official Google Gemini AI API (gemini-2.5-flash / gemini-2.0-flash / gemini-1.5-flash)
     const geminiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY || process.env.GOOGLE_API_KEY
@@ -215,7 +237,9 @@ export async function POST(req: Request) {
             const gData = await gRes.json()
             const text = gData.candidates?.[0]?.content?.parts?.[0]?.text
             if (text && text.trim()) {
-              return Response.json({ response: text.trim(), source: `google_gemini_${model}` })
+              const resText = text.trim()
+              void saveChatToSupabase(userMsg, resText, currentSection)
+              return Response.json({ response: resText, source: `google_gemini_${model}` })
             }
           }
         } catch (e) {
@@ -276,6 +300,7 @@ ${searchContext}`
 
       const responseText = completion.choices[0]?.message?.content?.trim()
       if (responseText && responseText.length > 15) {
+        void saveChatToSupabase(userMsg, responseText, currentSection)
         return Response.json({ response: responseText })
       }
     } catch {
@@ -283,9 +308,12 @@ ${searchContext}`
     }
 
     // Engine 3: High-precision Dynamic Knowledge Engine
-    return Response.json({ response: generateChatGPTStyleAnswer(userMsg, cityName) })
+    const fallbackAns = generateChatGPTStyleAnswer(userMsg, cityName)
+    void saveChatToSupabase(userMsg, fallbackAns, currentSection)
+    return Response.json({ response: fallbackAns })
   } catch (err) {
     console.error('[api/ai/chat] error:', err)
-    return Response.json({ response: generateChatGPTStyleAnswer('Emergency services & hospitals', 'Pedakakani') })
+    const errAns = generateChatGPTStyleAnswer('Emergency services & hospitals', 'Pedakakani')
+    return Response.json({ response: errAns })
   }
 }

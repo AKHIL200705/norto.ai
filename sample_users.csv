@@ -1,0 +1,4 @@
+name,email,city,budget,food_pref,transport_type,created_at
+Akhil Kumar,akhil@example.com,Hyderabad,25000,Veg,Public,2026-08-12
+Suresh Reddy,suresh@example.com,Guntur,30000,Non-Veg,Bike,2026-08-12
+Priya Sharma,priya@example.com,Vijayawada,20000,Veg,Car,2026-08-12
