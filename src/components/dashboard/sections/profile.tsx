@@ -59,19 +59,13 @@ export function Profile() {
   const setSignInOpen = useAppStore((s) => s.setSignInOpen)
   
   // Real-time Store States
-  const notificationPrefs = useAppStore((s) => s.notificationPrefs)
-  const setNotificationPrefs = useAppStore((s) => s.setNotificationPrefs)
-  const storeTravelHistory = useAppStore((s) => s.travelHistory)
   const addTravelCity = useAppStore((s) => s.addTravelCity)
-  const removeTravelCity = useAppStore((s) => s.removeTravelCity)
   const chatMessages = useChatStore((s) => s.messages)
 
   const profile: UserProfile = user || { ...DEFAULT_USER, city }
   const [editing, setEditing] = React.useState(false)
   const [form, setForm] = React.useState<UserProfile>(profile)
   const [realPlacesCount, setRealPlacesCount] = React.useState<number>(12)
-  const [newCityInput, setNewCityInput] = React.useState('')
-  const [showAddCity, setShowAddCity] = React.useState(false)
 
   // Fetch real saved places count
   React.useEffect(() => {
@@ -155,19 +149,6 @@ export function Profile() {
   const handleCancel = () => {
     setForm(profile)
     setEditing(false)
-  }
-
-  const handlePrefChange = (key: keyof typeof notificationPrefs, value: boolean) => {
-    setNotificationPrefs({ [key]: value })
-    toast.success(`${value ? 'Enabled' : 'Disabled'} ${key} alerts`)
-  }
-
-  const handleAddCity = () => {
-    if (!newCityInput.trim()) return
-    addTravelCity(newCityInput.trim())
-    toast.success(`Added ${newCityInput.trim()} to travel history`)
-    setNewCityInput('')
-    setShowAddCity(false)
   }
 
   const handleReset = () => {
@@ -340,125 +321,70 @@ export function Profile() {
             </Card>
           </motion.div>
         ) : (
-          <div className="grid lg:grid-cols-2 gap-4">
-            {/* Real-time Notification Preferences */}
-            <motion.div variants={item}>
-              <Card className="glass-card p-5 sm:p-6 gap-0 h-full border-[#D9D9D9]">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-extrabold text-sm sm:text-base flex items-center gap-2">
-                    <Bell className="size-4 text-[#DD0200]" />
-                    Notification preferences
-                  </h3>
-                  <Badge variant="secondary" className="text-[10px] bg-[#DD0200]/15 text-[#DD0200] border-0 font-bold">Real-time sync</Badge>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <PrefRow
-                    icon={CloudSun}
-                    title="Weather alerts"
-                    desc="Daily forecast & severe weather warnings"
-                    checked={notificationPrefs.weather}
-                    onChange={(v) => handlePrefChange('weather', v)}
-                  />
-                  <PrefRow
-                    icon={WalletIcon}
-                    title="Budget warnings"
-                    desc="Alert when you exceed spending limits"
-                    checked={notificationPrefs.budget}
-                    onChange={(v) => handlePrefChange('budget', v)}
-                  />
-                  <PrefRow
-                    icon={Sparkles}
-                    title="Festival alerts"
-                    desc="Local festivals & events in your city"
-                    checked={notificationPrefs.festival}
-                    onChange={(v) => handlePrefChange('festival', v)}
-                  />
-                  <PrefRow
-                    icon={ShieldCheck}
-                    title="Emergency alerts"
-                    desc="Critical safety notifications"
-                    checked={notificationPrefs.emergency}
-                    onChange={(v) => handlePrefChange('emergency', v)}
-                  />
-                </div>
-              </Card>
-            </motion.div>
+          <motion.div variants={item}>
+            <Card className="glass-card p-5 sm:p-6 gap-0 border-[#D9D9D9]">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-extrabold text-sm sm:text-base flex items-center gap-2">
+                  <User className="size-4 text-[#DD0200]" />
+                  Account Details
+                </h3>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setEditing(true)}
+                  className="h-8 text-xs font-bold border-[#DD0200]/30 text-[#DD0200] hover:bg-[#DD0200]/10"
+                >
+                  <Pencil className="size-3.5 mr-1" />
+                  Edit Profile
+                </Button>
+              </div>
 
-            {/* Real-time Travel history */}
-            <motion.div variants={item}>
-              <Card className="glass-card p-5 sm:p-6 gap-0 h-full border-[#D9D9D9]">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-extrabold text-sm sm:text-base flex items-center gap-2 tracking-tight">
-                    <MapPin className="size-4 text-[#DD0200]" />
-                    Travel history
-                  </h3>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => setShowAddCity(!showAddCity)}
-                    className="h-7 text-xs text-[#DD0200] hover:text-[#DD0200] hover:bg-[#DD0200]/10 font-bold"
-                  >
-                    <Plus className="size-3.5 mr-1" /> Add City
-                  </Button>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="p-3.5 rounded-xl bg-card border border-[#D9D9D9]">
+                  <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 mb-1">
+                    <Briefcase className="size-3 text-[#DD0200]" />
+                    Occupation
+                  </p>
+                  <p className="text-sm font-extrabold">{profile.occupation || '—'}</p>
                 </div>
-
-                {showAddCity && (
-                  <div className="mb-4 p-3 rounded-xl border border-[#D9D9D9] bg-card flex items-center gap-2">
-                    <Input
-                      placeholder="e.g. Autonagar, Koppuravuru"
-                      value={newCityInput}
-                      onChange={(e) => setNewCityInput(e.target.value)}
-                      className="h-8 text-xs bg-background border-[#D9D9D9]"
-                      onKeyDown={(e) => e.key === 'Enter' && handleAddCity()}
-                    />
-                    <Button size="sm" onClick={handleAddCity} className="h-8 text-xs font-bold">
-                      Add
-                    </Button>
-                  </div>
-                )}
-
-                <div className="relative pl-5">
-                  <div className="absolute left-[6px] top-1 bottom-1 w-px bg-[#D9D9D9]" />
-                  <div className="flex flex-col gap-4">
-                    {storeTravelHistory.map((t, i) => (
-                      <div key={i} className="relative group flex items-center justify-between">
-                        <div>
-                          <div
-                            className={cn(
-                              'absolute -left-5 top-1.5 size-3 rounded-full border-2 border-background',
-                              t.current ? 'bg-[#DD0200]' : 'bg-muted-foreground/40',
-                            )}
-                          />
-                          <div className="flex items-center gap-2">
-                            <p className="text-sm font-extrabold">{t.city}</p>
-                            {t.current && (
-                              <Badge variant="secondary" className="text-[9px] bg-[#DD0200]/15 text-[#DD0200] border-0 font-bold">
-                                <span className="size-1.5 rounded-full bg-[#DD0200] mr-1 animate-pulse" />
-                                Current
-                              </Badge>
-                            )}
-                          </div>
-                          <p className="text-[11px] text-muted-foreground font-semibold mt-0.5">{t.from} — {t.to}</p>
-                        </div>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => {
-                            removeTravelCity(t.city)
-                            toast.success(`Removed ${t.city} from travel history`)
-                          }}
-                          className="size-7 p-0 opacity-60 hover:opacity-100 text-muted-foreground hover:text-rose-600"
-                          title={`Remove ${t.city}`}
-                        >
-                          <Trash2 className="size-3.5" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
+                <div className="p-3.5 rounded-xl bg-card border border-[#D9D9D9]">
+                  <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 mb-1">
+                    <Languages className="size-3 text-[#DD0200]" />
+                    Language
+                  </p>
+                  <p className="text-sm font-extrabold">{profile.language || 'English'}</p>
                 </div>
-              </Card>
-            </motion.div>
-          </div>
+                <div className="p-3.5 rounded-xl bg-card border border-[#D9D9D9]">
+                  <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 mb-1">
+                    <Wallet className="size-3 text-[#DD0200]" />
+                    Monthly Budget
+                  </p>
+                  <p className="text-sm font-extrabold">₹{profile.budget?.toLocaleString('en-IN') || '25,000'}</p>
+                </div>
+                <div className="p-3.5 rounded-xl bg-card border border-[#D9D9D9]">
+                  <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 mb-1">
+                    <Utensils className="size-3 text-[#DD0200]" />
+                    Food Preference
+                  </p>
+                  <p className="text-sm font-extrabold">{profile.foodPref || 'Veg'}</p>
+                </div>
+                <div className="p-3.5 rounded-xl bg-card border border-[#D9D9D9]">
+                  <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 mb-1">
+                    <Bus className="size-3 text-[#DD0200]" />
+                    Transport Mode
+                  </p>
+                  <p className="text-sm font-extrabold">{profile.transport || 'Public'}</p>
+                </div>
+                <div className="p-3.5 rounded-xl bg-card border border-[#D9D9D9]">
+                  <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 mb-1">
+                    <MapPin className="size-3 text-[#DD0200]" />
+                    Current City
+                  </p>
+                  <p className="text-sm font-extrabold">{profile.city || city}</p>
+                </div>
+              </div>
+            </Card>
+          </motion.div>
         )}
 
         {/* Danger zone */}
@@ -574,31 +500,6 @@ function Field({ label, icon: Icon, children }: { label: string; icon: React.Ele
         {label}
       </Label>
       {children}
-    </div>
-  )
-}
-
-function PrefRow({
-  icon: Icon, title, desc, checked, onChange,
-}: {
-  icon: React.ElementType
-  title: string
-  desc: string
-  checked: boolean
-  onChange: (v: boolean) => void
-}) {
-  return (
-    <div className="flex items-center justify-between gap-3 p-2.5 rounded-xl hover:bg-[#DD0200]/5 transition-colors">
-      <div className="flex items-center gap-3">
-        <div className="size-8 rounded-lg bg-[#DD0200]/15 flex items-center justify-center shrink-0">
-          <Icon className="size-4 text-[#DD0200]" />
-        </div>
-        <div>
-          <p className="text-sm font-bold">{title}</p>
-          <p className="text-[11px] text-muted-foreground">{desc}</p>
-        </div>
-      </div>
-      <Switch checked={checked} onCheckedChange={onChange} />
     </div>
   )
 }
