@@ -6,7 +6,7 @@ import {
   Compass, Home, Sparkles, Map, Wallet, CloudSun, Languages,
   Siren, UtensilsCrossed, ScanText, Bookmark, User, Menu,
   Sun, Moon, Search, Bell, ChevronRight, LogOut, LogIn, ChevronDown,
-  LocateFixed, Loader2, AlertTriangle, Crosshair,
+  LocateFixed, Loader2, AlertTriangle, Crosshair, History,
 } from 'lucide-react'
 import { useAppStore, type LiveLocation, type LocationStatus } from '@/lib/store'
 import type { DashboardSection } from '@/lib/types'
@@ -34,6 +34,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { id: 'home', label: 'Dashboard', icon: Home, group: 'main' },
   { id: 'assistant', label: 'AI Assistant', icon: Sparkles, group: 'tools' },
+  { id: 'history', label: 'Chat History', icon: History, group: 'tools' },
   { id: 'map', label: 'Smart Map', icon: Map, group: 'tools' },
   { id: 'budget', label: 'Budget Planner', icon: Wallet, group: 'tools' },
   { id: 'translator', label: 'Translator', icon: Languages, group: 'tools' },

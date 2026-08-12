@@ -14,6 +14,10 @@ const AiAssistant = dynamic(
   () => import('@/components/dashboard/sections/ai-assistant').then((m) => m.AiAssistant),
   { loading: () => <SectionSkeleton title="AI Assistant" /> }
 )
+const ChatHistoryView = dynamic(
+  () => import('@/components/dashboard/sections/chat-history').then((m) => m.ChatHistoryView),
+  { loading: () => <SectionSkeleton title="Chat History" /> }
+)
 const SmartMap = dynamic(
   () => import('@/components/dashboard/sections/smart-map').then((m) => m.SmartMap),
   { loading: () => <SectionSkeleton title="Smart Map" /> }
@@ -70,6 +74,7 @@ function DashboardSection() {
   switch (section) {
     case 'home': return <DashboardHome />
     case 'assistant': return <AiAssistant />
+    case 'history': return <ChatHistoryView />
     case 'map': return <SmartMap />
     case 'budget': return <BudgetPlanner />
     case 'translator': return <Translator />

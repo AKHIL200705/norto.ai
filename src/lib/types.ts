@@ -3,6 +3,7 @@ export type View = 'landing' | 'dashboard'
 export type DashboardSection =
   | 'home'
   | 'assistant'
+  | 'history'
   | 'map'
   | 'budget'
   | 'weather'
