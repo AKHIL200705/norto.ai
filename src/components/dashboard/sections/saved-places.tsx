@@ -76,7 +76,6 @@ export function SavedPlaces() {
   const [loading, setLoading] = React.useState(true)
   const [filter, setFilter] = React.useState<string>('All')
   const [search, setSearch] = React.useState('')
-  const [visitedOverride, setVisitedOverride] = React.useState<Record<string, boolean>>({})
   const [deletingId, setDeletingId] = React.useState<string | null>(null)
   const [addOpen, setAddOpen] = React.useState(false)
 
@@ -126,10 +125,6 @@ export function SavedPlaces() {
     return counts
   }, [places])
 
-  const visitedCount = React.useMemo(() => {
-    return places.filter((p) => visitedOverride[p.id] ?? p.visited).length
-  }, [places, visitedOverride])
-
   const handleDelete = async (id: string) => {
     setDeletingId(id)
     try {
@@ -141,11 +136,6 @@ export function SavedPlaces() {
     } finally {
       setDeletingId(null)
     }
-  }
-
-  const toggleVisited = (id: string) => {
-    setVisitedOverride((prev) => ({ ...prev, [id]: !(prev[id] ?? places.find((p) => p.id === id)?.visited) }))
-    toast.success('Updated visited status')
   }
 
   const handleAdd = async () => {
@@ -244,7 +234,7 @@ export function SavedPlaces() {
 
         {/* Stats header */}
         <motion.div variants={item}>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <Card className="glass-card p-4 gap-0 border-[#D9D9D9]">
               <div className="flex items-center gap-2">
                 <div className="size-8 rounded-xl bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] flex items-center justify-center shadow-md">
@@ -253,15 +243,6 @@ export function SavedPlaces() {
                 <p className="text-xs font-bold text-muted-foreground">Total saved</p>
               </div>
               <p className="text-2xl font-extrabold mt-2">{places.length}</p>
-            </Card>
-            <Card className="glass-card p-4 gap-0 border-[#D9D9D9]">
-              <div className="flex items-center gap-2">
-                <div className="size-8 rounded-xl bg-gradient-to-br from-[#8B0000] to-[#1A0706] flex items-center justify-center shadow-md">
-                  <CheckCircle2 className="size-4 text-white" />
-                </div>
-                <p className="text-xs font-bold text-muted-foreground">Visited</p>
-              </div>
-              <p className="text-2xl font-extrabold mt-2">{visitedCount}</p>
             </Card>
             <Card className="glass-card p-4 gap-0 border-[#D9D9D9]">
               <div className="flex items-center gap-2">
@@ -384,7 +365,6 @@ export function SavedPlaces() {
           <motion.div variants={item}>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {filtered.map((p) => {
-                const visited = visitedOverride[p.id] ?? p.visited
                 return (
                   <motion.div
                     key={p.id}
@@ -397,15 +377,6 @@ export function SavedPlaces() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
                             <h3 className="font-extrabold text-sm truncate">{p.name}</h3>
-                            {visited ? (
-                              <Badge variant="secondary" className="text-[9px] bg-[#DD0200]/15 text-[#DD0200] border-0 font-bold">
-                                <CheckCircle2 className="size-2.5 mr-0.5" />Visited
-                              </Badge>
-                            ) : (
-                              <Badge variant="secondary" className="text-[9px] bg-muted/60 text-muted-foreground border-0 font-bold">
-                                <Circle className="size-2.5 mr-0.5" />To visit
-                              </Badge>
-                            )}
                           </div>
                           <Badge variant="secondary" className={cn('mt-1.5 text-[10px] border-0 font-bold', categoryColor(p.category))}>
                             {categoryLabel(p.category)}
@@ -456,9 +427,6 @@ export function SavedPlaces() {
                             <MapPin className="size-3 text-[#DD0200]" />
                             Google Maps
                           </a>
-                          <Button size="sm" variant="ghost" className="h-7 px-2 text-xs font-bold" onClick={() => toggleVisited(p.id)}>
-                            {visited ? <><Circle className="size-3 mr-1" />Undo</> : <><CheckCircle2 className="size-3 mr-1 text-[#DD0200]" />Visited</>}
-                          </Button>
                           <Button
                             size="sm"
                             variant="ghost"
