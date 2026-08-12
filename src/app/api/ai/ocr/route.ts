@@ -1,1 +1,2 @@
-export { POST, dynamic } from '../../ocr/route'
+export const dynamic = 'force-dynamic'
+export { POST } from '../../ocr/route'
