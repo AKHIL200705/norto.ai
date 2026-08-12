@@ -100,15 +100,25 @@ export const LANGUAGES = [
   'Urdu', 'Odia',
 ]
 
+export const SOURCE_LANGUAGES = [
+  'Auto Detect',
+  ...LANGUAGES,
+]
+
 export const PHRASE_BOOK = [
-  { en: 'Hello', category: 'Greetings' },
-  { en: 'Thank you', category: 'Greetings' },
-  { en: 'How are you?', category: 'Greetings' },
+  { en: 'Hello, nice to meet you', category: 'Greetings' },
+  { en: 'Thank you very much', category: 'Greetings' },
+  { en: 'How are you doing?', category: 'Greetings' },
   { en: 'Where is the nearest hospital?', category: 'Emergency' },
+  { en: 'I need immediate medical help', category: 'Emergency' },
   { en: 'How much does this cost?', category: 'Shopping' },
-  { en: 'Where is the bus stop?', category: 'Transport' },
-  { en: 'I need help', category: 'Emergency' },
-  { en: 'Can you help me?', category: 'General' },
-  { en: 'I am vegetarian', category: 'Food' },
+  { en: 'Can you give me a discount?', category: 'Shopping' },
+  { en: 'Where is the nearest bus stop or station?', category: 'Transport' },
+  { en: 'How do I reach the railway station?', category: 'Transport' },
+  { en: 'I am pure vegetarian', category: 'Food' },
+  { en: 'Is this food spicy?', category: 'Food' },
+  { en: 'Where is a good place to eat nearby?', category: 'Food' },
+  { en: 'Could you please help me?', category: 'General' },
+  { en: 'Where is the nearest ATM or bank?', category: 'General' },
   { en: 'What is your name?', category: 'Greetings' },
 ]

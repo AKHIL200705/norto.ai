@@ -5,21 +5,19 @@ import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 import {
   ArrowLeftRight, Copy, Loader2, Languages, Mic, MicOff, Plus,
-  Trash2, Camera, Volume2, Check, Bookmark, Sparkles, MessageSquare,
+  Trash2, Camera, Volume2, Check, Bookmark, Sparkles, MessageSquare, VolumeX,
 } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
-import { LANGUAGES, PHRASE_BOOK } from '@/lib/types'
+import { LANGUAGES, SOURCE_LANGUAGES, PHRASE_BOOK } from '@/lib/types'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 
 async function api(path: string, opts: { method?: string; body?: unknown } = {}) {
@@ -36,6 +34,7 @@ interface SavedPhrase {
   id: string
   source: string
   translation: string
+  transliteration?: string
   from: string
   to: string
   createdAt: string
@@ -54,10 +53,13 @@ const item = {
 
 export function Translator() {
   const setSection = useAppStore((s) => s.setSection)
-  const [from, setFrom] = React.useState('English')
+  const [from, setFrom] = React.useState('Auto Detect')
   const [to, setTo] = React.useState('Telugu')
   const [source, setSource] = React.useState('')
   const [translation, setTranslation] = React.useState('')
+  const [transliteration, setTransliteration] = React.useState('')
+  const [detectedLanguage, setDetectedLanguage] = React.useState('')
+  const [provider, setProvider] = React.useState('')
   const [loading, setLoading] = React.useState(false)
   const [copied, setCopied] = React.useState(false)
   const [saved, setSaved] = React.useState<SavedPhrase[]>([])
@@ -73,11 +75,22 @@ export function Translator() {
     }
   }, [])
 
-  // Load saved phrases from localStorage
+  // Load saved phrases from localStorage & check for OCR prefill
   React.useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY)
       if (raw) setSaved(JSON.parse(raw))
+    } catch {
+      // ignore
+    }
+    try {
+      const prefillRaw = localStorage.getItem('norto-translator-prefill')
+      if (prefillRaw) {
+        localStorage.removeItem('norto-translator-prefill')
+        const data = JSON.parse(prefillRaw)
+        if (data.text) setSource(data.text)
+        if (data.to) setTo(data.to)
+      }
     } catch {
       // ignore
     }
@@ -95,15 +108,24 @@ export function Translator() {
   const doTranslate = React.useCallback(async (text: string, fromLang: string, toLang: string) => {
     if (!text.trim()) {
       setTranslation('')
+      setTransliteration('')
+      setDetectedLanguage('')
+      setProvider('')
       return
     }
     setLoading(true)
     try {
       const json = await api('/api/ai/translate', { body: { text, from: fromLang, to: toLang } })
       setTranslation(json.translation || '')
+      setTransliteration(json.transliteration || '')
+      setDetectedLanguage(json.detectedLanguage || '')
+      setProvider(json.provider || '')
     } catch (e) {
       toast.error(e instanceof Error ? e.message : 'Translation failed')
       setTranslation('')
+      setTransliteration('')
+      setDetectedLanguage('')
+      setProvider('')
     } finally {
       setLoading(false)
     }
@@ -113,27 +135,34 @@ export function Translator() {
   React.useEffect(() => {
     if (!source.trim()) {
       setTranslation('')
+      setTransliteration('')
+      setDetectedLanguage('')
+      setProvider('')
       return
     }
     const timer = setTimeout(() => {
       doTranslate(source, from, to)
-    }, 350)
+    }, 400)
     return () => clearTimeout(timer)
   }, [source, from, to, doTranslate])
 
   const handleSwap = () => {
-    setFrom(to)
-    setTo(from)
+    const nextFrom = from === 'Auto Detect' ? (detectedLanguage && detectedLanguage !== 'Auto Detect' ? detectedLanguage : to) : to
+    const nextTo = from === 'Auto Detect' ? 'English' : from
+    setFrom(nextFrom)
+    setTo(nextTo)
     setSource(translation)
     setTranslation(source)
+    setTransliteration('')
   }
 
   const handleCopy = async () => {
     if (!translation) return
     try {
-      await navigator.clipboard.writeText(translation)
+      const copyText = transliteration ? `${translation}\n(${transliteration})` : translation
+      await navigator.clipboard.writeText(copyText)
       setCopied(true)
-      toast.success('Copied to clipboard')
+      toast.success('Copied translation to clipboard')
       setTimeout(() => setCopied(false), 1500)
     } catch {
       toast.error('Copy failed')
@@ -162,7 +191,7 @@ export function Translator() {
       window.speechSynthesis.cancel()
       window.speechSynthesis.speak(u)
     } catch {
-      toast.error('Speech not available')
+      toast.error('Speech synthesis not available on this browser')
     }
   }
 
@@ -180,7 +209,8 @@ export function Translator() {
       id: crypto.randomUUID(),
       source,
       translation,
-      from,
+      transliteration,
+      from: from === 'Auto Detect' && detectedLanguage ? detectedLanguage : from,
       to,
       createdAt: new Date().toISOString(),
     }
@@ -200,7 +230,20 @@ export function Translator() {
     try {
       const SR = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition
       const rec = new SR()
-      rec.lang = from === 'English' ? 'en-IN' : from === 'Hindi' ? 'hi-IN' : from === 'Telugu' ? 'te-IN' : 'en-IN'
+      const langMap: Record<string, string> = {
+        English: 'en-IN',
+        Hindi: 'hi-IN',
+        Telugu: 'te-IN',
+        Tamil: 'ta-IN',
+        Kannada: 'kn-IN',
+        Malayalam: 'ml-IN',
+        Marathi: 'mr-IN',
+        Gujarati: 'gu-IN',
+        Bengali: 'bn-IN',
+        Punjabi: 'pa-IN',
+        Urdu: 'ur-IN',
+      }
+      rec.lang = langMap[from] || 'en-IN'
       rec.interimResults = false
       rec.maxAlternatives = 1
       rec.onstart = () => setListening(true)
@@ -238,9 +281,9 @@ export function Translator() {
         <motion.div variants={item}>
           <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
             <Languages className="size-3.5 text-emerald-600" />
-            <span>Real-time translation across 10 Indian languages</span>
+            <span>High-Precision AI Translation across 10+ Indian Languages</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Translator</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">AI Multi-Lingual Translator</h1>
         </motion.div>
 
         <Tabs defaultValue="text" className="w-full">
@@ -257,7 +300,8 @@ export function Translator() {
             <TranslatorCard
               from={from} to={to} setFrom={setFrom} setTo={setTo}
               source={source} setSource={setSource}
-              translation={translation} loading={loading}
+              translation={translation} transliteration={transliteration}
+              detectedLanguage={detectedLanguage} provider={provider} loading={loading}
               onSwap={handleSwap} onTranslate={() => doTranslate(source, from, to)}
               onCopy={handleCopy} copied={copied}
               onSpeak={handleSpeak} onSave={handleSavePhrase}
@@ -271,7 +315,8 @@ export function Translator() {
             <TranslatorCard
               from={from} to={to} setFrom={setFrom} setTo={setTo}
               source={source} setSource={setSource}
-              translation={translation} loading={loading}
+              translation={translation} transliteration={transliteration}
+              detectedLanguage={detectedLanguage} provider={provider} loading={loading}
               onSwap={handleSwap} onTranslate={() => doTranslate(source, from, to)}
               onCopy={handleCopy} copied={copied}
               onSpeak={handleSpeak} onSave={handleSavePhrase}
@@ -305,19 +350,62 @@ export function Translator() {
           </TabsContent>
 
           <TabsContent value="saved" className="mt-4">
-            <SavedPhrasesTab phrases={saved} onRemove={removeSaved} onReuse={(p) => { setFrom(p.from); setTo(p.to); setSource(p.source); setTranslation(p.translation) }} />
+            <SavedPhrasesTab
+              phrases={saved}
+              onRemove={removeSaved}
+              onReuse={(p) => {
+                setFrom(p.from)
+                setTo(p.to)
+                setSource(p.source)
+                setTranslation(p.translation)
+                setTransliteration(p.transliteration || '')
+              }}
+            />
           </TabsContent>
         </Tabs>
       </motion.div>
     </div>
   )
-}function TranslatorCard({
-  from, to, setFrom, setTo, source, setSource, translation, loading, onSwap, onTranslate, onCopy, copied, onSpeak, onSave, voiceSlot,
+}
+
+function getProviderBadge(provider: string) {
+  if (!provider) return null
+  if (provider.startsWith('gemini_ai')) {
+    return (
+      <Badge variant="outline" className="text-[10px] bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 text-indigo-700 dark:text-indigo-300 border-indigo-500/30 font-semibold">
+        Gemini Neural AI
+      </Badge>
+    )
+  }
+  if (provider === 'zai_ai') {
+    return (
+      <Badge variant="outline" className="text-[10px] bg-purple-500/10 text-purple-700 dark:text-purple-300 border-purple-500/30 font-semibold">
+        ZAI LLM
+      </Badge>
+    )
+  }
+  if (provider === 'google_neural') {
+    return (
+      <Badge variant="outline" className="text-[10px] bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/30 font-semibold">
+        Google Neural
+      </Badge>
+    )
+  }
+  return (
+    <Badge variant="outline" className="text-[10px] bg-muted text-muted-foreground font-semibold">
+      Web Neural
+    </Badge>
+  )
+}
+
+function TranslatorCard({
+  from, to, setFrom, setTo, source, setSource, translation, transliteration, detectedLanguage, provider, loading, onSwap, onTranslate, onCopy, copied, onSpeak, onSave, voiceSlot,
 }: {
   from: string; to: string
   setFrom: (s: string) => void; setTo: (s: string) => void
   source: string; setSource: (s: string) => void
-  translation: string; loading: boolean
+  translation: string; transliteration: string; detectedLanguage: string; provider: string
+  loading: boolean
   onSwap: () => void
   onTranslate: () => void
   onCopy: () => void; copied: boolean
@@ -330,11 +418,18 @@ export function Translator() {
       {/* Language selectors */}
       <div className="flex items-end gap-3">
         <div className="flex-1 space-y-1.5">
-          <Label className="text-xs text-muted-foreground font-semibold">From</Label>
+          <Label className="text-xs text-muted-foreground font-semibold flex items-center justify-between">
+            <span>From</span>
+            {from === 'Auto Detect' && detectedLanguage && (
+              <span className="text-[10px] text-emerald-600 font-bold">
+                Detected: {detectedLanguage}
+              </span>
+            )}
+          </Label>
           <Select value={from} onValueChange={setFrom}>
             <SelectTrigger className="w-full border-[#D9D9D9]"><SelectValue /></SelectTrigger>
             <SelectContent>
-              {LANGUAGES.map((l) => <SelectItem key={l} value={l}>{l}</SelectItem>)}
+              {SOURCE_LANGUAGES.map((l) => <SelectItem key={l} value={l}>{l}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>
@@ -365,20 +460,25 @@ export function Translator() {
       <div className="mt-4 grid md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label className="text-xs text-muted-foreground font-semibold">Source ({from})</Label>
+            <Label className="text-xs text-muted-foreground font-semibold">
+              Source ({from === 'Auto Detect' && detectedLanguage ? `Auto: ${detectedLanguage}` : from})
+            </Label>
             <span className="text-[10px] text-muted-foreground font-bold">{source.length} chars</span>
           </div>
           <Textarea
             value={source}
             onChange={(e) => setSource(e.target.value)}
-            placeholder={`Type text in ${from}…`}
-            rows={5}
+            placeholder={`Type text to translate from ${from}…`}
+            rows={6}
             className="resize-none font-medium border-[#D9D9D9]"
           />
         </div>
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label className="text-xs text-muted-foreground font-semibold">Translation ({to})</Label>
+            <div className="flex items-center gap-2">
+              <Label className="text-xs text-muted-foreground font-semibold">Translation ({to})</Label>
+              {getProviderBadge(provider)}
+            </div>
             <div className="flex items-center gap-1">
               <Button
                 type="button"
@@ -386,6 +486,7 @@ export function Translator() {
                 size="sm"
                 onClick={() => onSpeak(translation, to)}
                 disabled={!translation}
+                title="Listen to translation"
                 className="h-7 px-2 text-xs"
               >
                 <Volume2 className="size-3.5 text-[#DD0200]" />
@@ -396,22 +497,25 @@ export function Translator() {
                 size="sm"
                 onClick={onCopy}
                 disabled={!translation}
+                title="Copy translation & phonetics"
                 className="h-7 px-2 text-xs"
               >
-                {copied ? <Check className="size-3.5 text-[#DD0200]" /> : <Copy className="size-3.5" />}
+                {copied ? <Check className="size-3.5 text-emerald-600" /> : <Copy className="size-3.5" />}
               </Button>
             </div>
           </div>
-          <div className="min-h-[124px] rounded-xl border border-[#DD0200]/30 bg-[#DD0200]/5 p-3.5 text-base backdrop-blur-md">
+          <div className="min-h-[148px] rounded-xl border border-[#DD0200]/30 bg-[#DD0200]/5 p-4 text-base backdrop-blur-md flex flex-col justify-between">
             {loading ? (
-              <div className="flex items-center gap-2 text-[#DD0200] font-bold">
+              <div className="flex items-center gap-2 text-[#DD0200] font-bold my-auto">
                 <Loader2 className="size-4 animate-spin" />
-                Translating…
+                Generating high-accuracy translation…
               </div>
             ) : translation ? (
-              <p className="text-base sm:text-lg font-extrabold text-foreground leading-relaxed whitespace-pre-wrap">{translation}</p>
+              <div className="space-y-3">
+                <p className="text-base sm:text-lg font-extrabold text-foreground leading-relaxed whitespace-pre-wrap">{translation}</p>
+              </div>
             ) : (
-              <p className="text-muted-foreground/70 italic text-sm">Translation will appear here…</p>
+              <p className="text-muted-foreground/70 italic text-sm my-auto">Translation will appear here…</p>
             )}
           </div>
         </div>
@@ -514,7 +618,7 @@ function SavedPhrasesTab({
                 </span>
               </div>
               <p className="text-sm font-medium leading-snug">{p.source}</p>
-              <p className="text-sm text-muted-foreground mt-1 leading-snug">{p.translation}</p>
+              <p className="text-sm font-semibold text-foreground mt-1 leading-snug">{p.translation}</p>
             </div>
             <div className="flex items-center gap-1 shrink-0">
               <Button variant="ghost" size="sm" onClick={() => onReuse(p)} className="h-8 px-2 text-xs">

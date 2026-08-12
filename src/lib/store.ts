@@ -260,29 +260,43 @@ export const useAppStore = create<AppState>()(
   )
 )
 
-// Chat history is kept in a separate non-persisted store per section to avoid huge localStorage
+// Chat history is persisted in localStorage per section
 interface ChatState {
   messages: Record<string, ChatMessage[]>
   addMessage: (section: string, msg: ChatMessage) => void
   clearSection: (section: string) => void
+  clearAllHistory: () => void
 }
 
-export const useChatStore = create<ChatState>((set) => ({
-  messages: {},
-  addMessage: (section, msg) =>
-    set((state) => ({
-      messages: {
-        ...state.messages,
-        [section]: [...(state.messages[section] || []), msg],
-      },
-    })),
-  clearSection: (section) =>
-    set((state) => {
-      const next = { ...state.messages }
-      delete next[section]
-      return { messages: next }
+export const useChatStore = create<ChatState>()(
+  persist(
+    (set) => ({
+      messages: {},
+      addMessage: (section, msg) =>
+        set((state) => {
+          const current = state.messages[section] || []
+          // Keep up to 50 messages per section for optimal performance
+          const nextSectionMsgs = [...current, msg].slice(-50)
+          return {
+            messages: {
+              ...state.messages,
+              [section]: nextSectionMsgs,
+            },
+          }
+        }),
+      clearSection: (section) =>
+        set((state) => {
+          const next = { ...state.messages }
+          delete next[section]
+          return { messages: next }
+        }),
+      clearAllHistory: () => set({ messages: {} }),
     }),
-}))
+    {
+      name: 'norto-chat-store',
+    }
+  )
+)
 
 /**
  * Auth-aware launcher for the dashboard.

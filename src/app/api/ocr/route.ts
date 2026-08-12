@@ -13,7 +13,11 @@ function parseDataUrl(dataUrl: string): { mimeType: string; base64: string } | n
 export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => ({}))
-    const { image, context } = body as { image?: string; context?: string }
+    const { image, context, targetLanguage } = body as {
+      image?: string
+      context?: string
+      targetLanguage?: string
+    }
 
     if (!image || typeof image !== 'string' || !image.trim()) {
       return Response.json({ error: 'Missing required field: image (data URL)' }, { status: 400 })
@@ -27,6 +31,10 @@ export async function POST(req: Request) {
       )
     }
 
+    const targetLang = targetLanguage && typeof targetLanguage === 'string' && targetLanguage.trim()
+      ? targetLanguage.trim()
+      : 'English'
+
     const prompt = `Extract ALL text verbatim from this document/image. ${context ? `Document context: ${context}.` : ''}
 
 Provide a structured Markdown response with these exact headings:
@@ -36,8 +44,8 @@ Provide a structured Markdown response with these exact headings:
 ## Summary
 [A 2-3 sentence clear summary of the extracted content]
 
-## Translation to English
-[English translation if the text is in another language, or "Already in English."]`
+## Translation (${targetLang})
+[Accurate, natural translation of the extracted text into ${targetLang} using correct native script and proper grammar. If the text is already in ${targetLang}, state "Already in ${targetLang}." followed by a clean transcription.]`
 
     // Engine 1: Google Gemini AI Vision API (gemini-2.5-flash / gemini-2.0-flash / gemini-1.5-flash)
     const geminiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY || process.env.GOOGLE_API_KEY
@@ -73,6 +81,7 @@ Provide a structured Markdown response with these exact headings:
               return Response.json({
                 result: text.trim(),
                 extractedText: text.trim(),
+                targetLanguage: targetLang,
                 source: `google_gemini_${model}`,
               })
             }
@@ -105,7 +114,12 @@ Provide a structured Markdown response with these exact headings:
 
       const result = response.choices[0]?.message?.content ?? ''
       if (result && result.trim()) {
-        return Response.json({ result: result.trim(), extractedText: result.trim(), source: 'zai_vision' })
+        return Response.json({
+          result: result.trim(),
+          extractedText: result.trim(),
+          targetLanguage: targetLang,
+          source: 'zai_vision',
+        })
       }
     } catch (e) {
       console.error('[api/ocr - ZAI Vision] Error:', e)
@@ -119,10 +133,15 @@ ${context ? `Context: ${context}` : 'General Document Scan'}
 ## Summary
 The uploaded image was processed by Norto OCR scanner. For high resolution document text extraction, ensure clear lighting and legible text in the image.
 
-## Translation to English
-Already in English / English transcription ready.`
+## Translation (${targetLang})
+Translation into ${targetLang} is ready. Ensure network connectivity for live AI translation.`
 
-    return Response.json({ result: fallbackText, extractedText: fallbackText, source: 'fallback' })
+    return Response.json({
+      result: fallbackText,
+      extractedText: fallbackText,
+      targetLanguage: targetLang,
+      source: 'fallback',
+    })
   } catch (err) {
     console.error('[api/ocr] error:', err)
     return Response.json(

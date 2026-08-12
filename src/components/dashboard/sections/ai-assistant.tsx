@@ -7,7 +7,7 @@ import ReactMarkdown from 'react-markdown'
 import { toast } from 'sonner'
 import {
   Sparkles, Send, Trash2, Bot, User as UserIcon, BookOpen,
-  Loader2,
+  Loader2, Download, Check,
 } from 'lucide-react'
 import { useAppStore, useChatStore } from '@/lib/store'
 import type { ChatMessage } from '@/lib/types'
@@ -189,6 +189,30 @@ export function AiAssistant() {
     }
   }
 
+  const handleExportChat = () => {
+    if (messages.length === 0) {
+      toast.error('No chat messages to export')
+      return
+    }
+    const formattedText = messages
+      .map(
+        (m) =>
+          `### ${m.role === 'user' ? 'User' : 'Norto AI'} (${new Date(m.createdAt).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })})\n${m.content}`,
+      )
+      .join('\n\n---\n\n')
+    const fileContent = `# Norto AI Assistant Chat History - ${city}\nExported on: ${new Date().toLocaleString('en-IN')}\n\n${formattedText}`
+    const blob = new Blob([fileContent], { type: 'text/markdown;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `norto-chat-${city.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}.md`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+    toast.success('Chat history downloaded!')
+  }
+
   const handleClear = () => {
     clearSection(SECTION)
     greetedRef.current = true
@@ -238,6 +262,9 @@ export function AiAssistant() {
                     <span className="size-1.5 rounded-full bg-[#DD0200] animate-pulse" />
                     City Knowledge Engine
                   </Badge>
+                  <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30 font-bold">
+                    Auto-Saved in Browser
+                  </Badge>
                 </div>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   Ask any question about accommodation, food, transport, or safety in <span className="font-bold text-foreground">{city}</span>
@@ -256,16 +283,28 @@ export function AiAssistant() {
                 <span>Relocation Guide</span>
               </Button>
               {messages.length > 0 && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleClear}
-                  className="text-muted-foreground hover:text-[#DD0200] hover:bg-[#DD0200]/10 font-medium"
-                  aria-label="Clear chat history"
-                >
-                  <Trash2 className="size-3.5" />
-                  <span className="hidden sm:inline">Clear</span>
-                </Button>
+                <>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleExportChat}
+                    className="text-foreground hover:bg-muted font-semibold"
+                    title="Export & Save Chat as Markdown"
+                  >
+                    <Download className="size-3.5" />
+                    <span className="hidden sm:inline">Save Chat</span>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleClear}
+                    className="text-muted-foreground hover:text-[#DD0200] hover:bg-[#DD0200]/10 font-medium"
+                    aria-label="Clear chat history"
+                  >
+                    <Trash2 className="size-3.5" />
+                    <span className="hidden sm:inline">Clear</span>
+                  </Button>
+                </>
               )}
             </div>
           </div>
