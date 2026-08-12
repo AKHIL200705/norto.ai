@@ -59,6 +59,7 @@ interface AppState {
   clearLocation: () => void
   setNotificationPrefs: (p: Partial<{ weather: boolean; budget: boolean; festival: boolean; emergency: boolean }>) => void
   addTravelCity: (city: string) => void
+  removeTravelCity: (city: string) => void
 }
 
 const GUEST_DEFAULTS: Omit<UserProfile, 'name' | 'email' | 'avatar' | 'occupation'> = {
@@ -94,7 +95,6 @@ export const useAppStore = create<AppState>()(
         { city: 'Hyderabad', from: 'Oct 2024', to: 'Present', current: false },
         { city: 'Bangalore', from: 'Jun 2024', to: 'Sep 2024', current: false },
         { city: 'Pune', from: 'Feb 2024', to: 'May 2024', current: false },
-        { city: 'Chennai', from: 'Nov 2023', to: 'Jan 2024', current: false },
       ],
 
       setView: (v) => set({ view: v }),
@@ -169,6 +169,12 @@ export const useAppStore = create<AppState>()(
           }
         })
       },
+      removeTravelCity: (c) =>
+        set((state) => ({
+          travelHistory: state.travelHistory.filter(
+            (t) => t.city.toLowerCase() !== c.toLowerCase(),
+          ),
+        })),
       detectLocation: async () => {
         if (get().locationStatus === 'loading') return
         set({ locationStatus: 'loading', locationError: null })

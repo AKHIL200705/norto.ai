@@ -63,6 +63,7 @@ export function Profile() {
   const setNotificationPrefs = useAppStore((s) => s.setNotificationPrefs)
   const storeTravelHistory = useAppStore((s) => s.travelHistory)
   const addTravelCity = useAppStore((s) => s.addTravelCity)
+  const removeTravelCity = useAppStore((s) => s.removeTravelCity)
   const chatMessages = useChatStore((s) => s.messages)
 
   const profile: UserProfile = user || { ...DEFAULT_USER, city }
@@ -420,23 +421,37 @@ export function Profile() {
                   <div className="absolute left-[6px] top-1 bottom-1 w-px bg-[#D9D9D9]" />
                   <div className="flex flex-col gap-4">
                     {storeTravelHistory.map((t, i) => (
-                      <div key={i} className="relative">
-                        <div
-                          className={cn(
-                            'absolute -left-5 top-1 size-3 rounded-full border-2 border-background',
-                            t.current ? 'bg-[#DD0200]' : 'bg-muted-foreground/40',
-                          )}
-                        />
-                        <div className="flex items-center justify-between gap-2">
-                          <p className="text-sm font-extrabold">{t.city}</p>
-                          {t.current && (
-                            <Badge variant="secondary" className="text-[9px] bg-[#DD0200]/15 text-[#DD0200] border-0 font-bold">
-                              <span className="size-1.5 rounded-full bg-[#DD0200] mr-1 animate-pulse" />
-                              Current
-                            </Badge>
-                          )}
+                      <div key={i} className="relative group flex items-center justify-between">
+                        <div>
+                          <div
+                            className={cn(
+                              'absolute -left-5 top-1.5 size-3 rounded-full border-2 border-background',
+                              t.current ? 'bg-[#DD0200]' : 'bg-muted-foreground/40',
+                            )}
+                          />
+                          <div className="flex items-center gap-2">
+                            <p className="text-sm font-extrabold">{t.city}</p>
+                            {t.current && (
+                              <Badge variant="secondary" className="text-[9px] bg-[#DD0200]/15 text-[#DD0200] border-0 font-bold">
+                                <span className="size-1.5 rounded-full bg-[#DD0200] mr-1 animate-pulse" />
+                                Current
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-[11px] text-muted-foreground font-semibold mt-0.5">{t.from} — {t.to}</p>
                         </div>
-                        <p className="text-[11px] text-muted-foreground font-semibold mt-0.5">{t.from} — {t.to}</p>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => {
+                            removeTravelCity(t.city)
+                            toast.success(`Removed ${t.city} from travel history`)
+                          }}
+                          className="size-7 p-0 opacity-60 hover:opacity-100 text-muted-foreground hover:text-rose-600"
+                          title={`Remove ${t.city}`}
+                        >
+                          <Trash2 className="size-3.5" />
+                        </Button>
                       </div>
                     ))}
                   </div>
