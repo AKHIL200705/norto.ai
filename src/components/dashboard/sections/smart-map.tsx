@@ -371,14 +371,12 @@ export function SmartMap() {
     setSavingId(place.id)
     try {
       await apiPost('/api/places', {
-        body: {
-          name: place.name,
-          category: place.category,
-          address: place.address || `${place.lat.toFixed(4)}, ${place.lng.toFixed(4)}`,
-          rating: place.rating,
-          distance: place.distance,
-          notes: `Saved from Smart Map · ${city} · real OSM place`,
-        },
+        name: place.name || 'Saved Place',
+        category: place.category || 'map',
+        address: place.address || `${place.lat.toFixed(4)}, ${place.lng.toFixed(4)}`,
+        rating: place.rating,
+        distance: place.distance,
+        notes: `Saved from Smart Map · ${city} · real OSM place`,
       })
       setSavedIds((prev) => new Set(prev).add(place.id))
       toast.success(`Saved "${place.name}" to your places`)

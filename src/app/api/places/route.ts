@@ -5,24 +5,33 @@ export const dynamic = 'force-dynamic'
 
 interface CreatePlaceBody {
   name?: string
+  title?: string
+  placeName?: string
+  label?: string
   category?: string
+  type?: string
+  tag?: string
   address?: string
   rating?: number
   price?: string
   distance?: string
   notes?: string
+  body?: CreatePlaceBody
 }
 
 // POST — create a saved place for the demo user
 export async function POST(req: Request) {
   try {
-    const body = (await req.json().catch(() => ({}))) as CreatePlaceBody
+    const rawBody = (await req.json().catch(() => ({}))) as CreatePlaceBody
 
-    if (!body.name || typeof body.name !== 'string' || !body.name.trim()) {
+    // Unwrap nested { body: { ... } } if present
+    const body = (rawBody?.body && typeof rawBody.body === 'object' ? rawBody.body : rawBody) as CreatePlaceBody
+
+    const rawName = body.name || body.title || body.placeName || body.label || ''
+    const rawCategory = body.category || body.type || body.tag || 'General'
+
+    if (!rawName || typeof rawName !== 'string' || !rawName.trim()) {
       return Response.json({ error: 'Missing required field: name' }, { status: 400 })
-    }
-    if (!body.category || typeof body.category !== 'string' || !body.category.trim()) {
-      return Response.json({ error: 'Missing required field: category' }, { status: 400 })
     }
 
     const user = await getOrCreateDemoUser()
@@ -38,8 +47,8 @@ export async function POST(req: Request) {
       notes?: string
     } = {
       userId: user.id,
-      name: body.name.trim(),
-      category: body.category.trim(),
+      name: rawName.trim(),
+      category: typeof rawCategory === 'string' && rawCategory.trim() ? rawCategory.trim() : 'General',
     }
 
     if (typeof body.address === 'string' && body.address.trim()) {
@@ -91,8 +100,9 @@ export async function GET() {
 // DELETE — delete a saved place by id (must belong to the demo user)
 export async function DELETE(req: Request) {
   try {
-    const body = await req.json().catch(() => ({}))
-    const { id } = body as { id?: string }
+    const rawBody = await req.json().catch(() => ({}))
+    const body = (rawBody?.body && typeof rawBody.body === 'object' ? rawBody.body : rawBody) as { id?: string }
+    const id = body.id || rawBody.id
 
     if (!id || typeof id !== 'string' || !id.trim()) {
       return Response.json({ error: 'Missing required field: id' }, { status: 400 })
