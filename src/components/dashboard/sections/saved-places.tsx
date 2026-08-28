@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 import {
   Bookmark, MapPin, Star, Search, Plus, Trash2, RefreshCw, Loader2,
-  Map as MapIcon, CheckCircle2, Circle, Calendar, TrendingUp, X,
+  Map as MapIcon, CheckCircle2, Circle, Calendar, TrendingUp, X, Download,
 } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
 import { PLACE_CATEGORIES, type SavedPlace } from '@/lib/types'
@@ -24,6 +24,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
+import { exportToMarkdown, generateAndDownloadICS } from '@/lib/export-utils'
 
 async function api(path: string, opts: { method?: string; body?: unknown } = {}) {
   const res = await fetch(path, {
@@ -58,7 +59,8 @@ function categoryColor(cat: string): string {
 }
 
 function categoryLabel(cat: string): string {
-  return PLACE_CATEGORIES.find((c) => c.id === cat)?.label || cat.charAt(0).toUpperCase() + cat.slice(1)
+  const found = PLACE_CATEGORIES.find((c) => c.id === cat)
+  return found ? found.label : cat
 }
 
 const container = {
@@ -71,6 +73,7 @@ const item = {
 }
 
 export function SavedPlaces() {
+  const city = useAppStore((s) => s.city)
   const setSection = useAppStore((s) => s.setSection)
   const [places, setPlaces] = React.useState<SavedPlace[]>([])
   const [loading, setLoading] = React.useState(true)
@@ -97,7 +100,16 @@ export function SavedPlaces() {
   }, [])
 
   React.useEffect(() => {
-    load()
+    let isMounted = true
+    const timer = setTimeout(() => {
+      if (isMounted) {
+        void load()
+      }
+    }, 0)
+    return () => {
+      isMounted = false
+      clearTimeout(timer)
+    }
   }, [load])
 
   // Build category list from loaded places + standard categories
@@ -161,6 +173,41 @@ export function SavedPlaces() {
     }
   }
 
+  const handleExportItinerary = () => {
+    if (places.length === 0) {
+      toast.error('No saved places to export')
+      return
+    }
+
+    const markdownText = `# Saved Places & City Itinerary — ${city}\n\n` +
+      places
+        .map(
+          (p, i) =>
+            `### ${i + 1}. ${p.name} (${categoryLabel(p.category)})\n- **Address:** ${p.address || 'N/A'}\n- **Rating:** ${p.rating ? `⭐ ${p.rating}` : 'N/A'}\n${p.notes ? `- **Notes:** ${p.notes}\n` : ''}`,
+        )
+        .join('\n\n')
+
+    exportToMarkdown(`norto-saved-places-${city.toLowerCase().replace(/\s+/g, '-')}.md`, markdownText)
+    toast.success('Exported saved places itinerary!')
+  }
+
+  const handleExportICS = () => {
+    if (places.length === 0) {
+      toast.error('No saved places to export to calendar')
+      return
+    }
+
+    const calendarEvents = places.map((p, idx) => ({
+      title: `Visit ${p.name} (${categoryLabel(p.category)})`,
+      description: `Saved place in ${city}.\nAddress: ${p.address || 'N/A'}\nNotes: ${p.notes || 'None'}`,
+      startDate: new Date(Date.now() + (idx + 1) * 86400000),
+      location: p.address || city,
+    }))
+
+    generateAndDownloadICS(`norto-places-schedule-${city.toLowerCase().replace(/\s+/g, '-')}.ics`, calendarEvents)
+    toast.success('Downloaded calendar events (.ics)!')
+  }
+
   return (
     <div className="p-4 lg:p-6 max-w-7xl mx-auto">
       <motion.div variants={container} initial="hidden" animate="show" className="flex flex-col gap-6">
@@ -174,7 +221,19 @@ export function SavedPlaces() {
               </div>
               <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Saved Places</h1>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap justify-end">
+              {places.length > 0 && (
+                <>
+                  <Button variant="outline" size="sm" onClick={handleExportItinerary} className="font-bold border-[#D9D9D9] hidden sm:inline-flex">
+                    <Download className="size-4 mr-1 text-emerald-600" />
+                    Export MD
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={handleExportICS} className="font-bold border-[#D9D9D9] hidden sm:inline-flex">
+                    <Calendar className="size-4 mr-1 text-amber-600" />
+                    Calendar .ICS
+                  </Button>
+                </>
+              )}
               <Button variant="outline" size="sm" onClick={load} disabled={loading} className="font-bold border-[#D9D9D9]">
                 <RefreshCw className={cn('size-4 text-[#DD0200]', loading && 'animate-spin')} />
                 <span className="hidden sm:inline">Refresh</span>

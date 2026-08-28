@@ -324,7 +324,16 @@ export function SmartMap() {
 
   // Fetch on mount + when deps change
   React.useEffect(() => {
-    fetchPlaces()
+    let isMounted = true
+    const timer = setTimeout(() => {
+      if (isMounted) {
+        void fetchPlaces()
+      }
+    }, 0)
+    return () => {
+      isMounted = false
+      clearTimeout(timer)
+    }
   }, [fetchPlaces])
 
   const toggleCat = (id: string) => {

@@ -62,34 +62,34 @@ export function Translator() {
   const [provider, setProvider] = React.useState('')
   const [loading, setLoading] = React.useState(false)
   const [copied, setCopied] = React.useState(false)
-  const [saved, setSaved] = React.useState<SavedPhrase[]>([])
+  const [saved, setSaved] = React.useState<SavedPhrase[]>(() => {
+    if (typeof window === 'undefined') return []
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY)
+      return raw ? JSON.parse(raw) : []
+    } catch {
+      return []
+    }
+  })
 
   // Voice
   const [listening, setListening] = React.useState(false)
-  const [voiceSupported, setVoiceSupported] = React.useState(false)
+  const [voiceSupported] = React.useState<boolean>(
+    () => typeof window !== 'undefined' && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window),
+  )
   const recognitionRef = React.useRef<any>(null)
 
+  // Check for OCR prefill on mount
   React.useEffect(() => {
-    if (typeof window !== 'undefined' && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-      setVoiceSupported(true)
-    }
-  }, [])
-
-  // Load saved phrases from localStorage & check for OCR prefill
-  React.useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY)
-      if (raw) setSaved(JSON.parse(raw))
-    } catch {
-      // ignore
-    }
     try {
       const prefillRaw = localStorage.getItem('norto-translator-prefill')
       if (prefillRaw) {
         localStorage.removeItem('norto-translator-prefill')
         const data = JSON.parse(prefillRaw)
-        if (data.text) setSource(data.text)
-        if (data.to) setTo(data.to)
+        setTimeout(() => {
+          if (data.text) setSource(data.text)
+          if (data.to) setTo(data.to)
+        }, 0)
       }
     } catch {
       // ignore
@@ -134,11 +134,13 @@ export function Translator() {
   // Live real-time translation as user types
   React.useEffect(() => {
     if (!source.trim()) {
-      setTranslation('')
-      setTransliteration('')
-      setDetectedLanguage('')
-      setProvider('')
-      return
+      const resetTimer = setTimeout(() => {
+        setTranslation('')
+        setTransliteration('')
+        setDetectedLanguage('')
+        setProvider('')
+      }, 0)
+      return () => clearTimeout(resetTimer)
     }
     const timer = setTimeout(() => {
       doTranslate(source, from, to)

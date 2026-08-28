@@ -6,6 +6,7 @@ import { useAppStore } from '@/lib/store'
 import { DashboardSidebar, DashboardTopbar, MobileSidebar } from '@/components/dashboard/dashboard-shell'
 import { DashboardHome } from '@/components/dashboard/sections/home'
 import { SignInDialog } from '@/components/auth/sign-in-dialog'
+import { OnboardingDialog } from '@/components/auth/onboarding-dialog'
 import { IntroScreen, shouldPlayIntro } from '@/components/intro/intro-screen'
 import { Skeleton } from '@/components/ui/skeleton'
 
@@ -109,8 +110,14 @@ export default function Home() {
   const [LandingPage, setLandingPage] = React.useState<React.ComponentType | null>(null)
 
   const [showIntro, setShowIntro] = React.useState(false)
+
   React.useEffect(() => {
-    setShowIntro(shouldPlayIntro())
+    if (shouldPlayIntro()) {
+      const timer = setTimeout(() => {
+        setShowIntro(true)
+      }, 0)
+      return () => clearTimeout(timer)
+    }
   }, [])
 
   // Return to home page whenever user presses browser back button from any section
@@ -139,7 +146,12 @@ export default function Home() {
     }
   }, [isAuth, view, setView])
 
-  const dialog = <SignInDialog />
+  const dialog = (
+    <>
+      <SignInDialog />
+      <OnboardingDialog />
+    </>
+  )
 
   const intro = showIntro ? (
     <IntroScreen onComplete={() => setShowIntro(false)} />

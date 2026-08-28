@@ -169,7 +169,16 @@ export function WeatherView() {
   }, [city])
 
   React.useEffect(() => {
-    load()
+    let isMounted = true
+    const timer = setTimeout(() => {
+      if (isMounted) {
+        void load()
+      }
+    }, 0)
+    return () => {
+      isMounted = false
+      clearTimeout(timer)
+    }
   }, [load])
 
   const dominant = data?.current?.condition || ''

@@ -82,12 +82,18 @@ export function Profile() {
         // use default fallback if offline
       }
     }
-    fetchPlacesCount()
+    const timer = setTimeout(() => {
+      void fetchPlacesCount()
+    }, 0)
+    return () => clearTimeout(timer)
   }, [])
 
   React.useEffect(() => {
-    setForm(profile)
-  }, [user, city])
+    const timer = setTimeout(() => {
+      setForm(profile)
+    }, 0)
+    return () => clearTimeout(timer)
+  }, [user, city, profile])
 
   // Compute real dynamic chat messages count
   const chatsCount = React.useMemo(() => {
@@ -106,7 +112,7 @@ export function Profile() {
       }
     }
     return 'Oct 2024'
-  }, [user?.createdAt])
+  }, [user])
 
   // Compute dynamic languages count
   const languagesKnown = React.useMemo(() => {

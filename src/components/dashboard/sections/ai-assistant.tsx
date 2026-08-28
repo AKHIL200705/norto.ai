@@ -7,7 +7,7 @@ import ReactMarkdown from 'react-markdown'
 import { toast } from 'sonner'
 import {
   Sparkles, Send, Trash2, Bot, User as UserIcon, BookOpen,
-  Loader2, Download, Check, Cloud,
+  Loader2, Download, Cloud, Mic, MicOff, Volume2, Calendar, FileText,
 } from 'lucide-react'
 import { useAppStore, useChatStore } from '@/lib/store'
 import type { ChatMessage } from '@/lib/types'
@@ -15,6 +15,8 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
+import { exportToMarkdown, exportToPDF, generateAndDownloadICS } from '@/lib/export-utils'
+import { speakText, startSpeechRecognition, isSpeechRecognitionSupported } from '@/lib/speech-utils'
 
 const SECTION = 'assistant'
 
@@ -43,7 +45,7 @@ function TypingDots() {
   )
 }
 
-function MessageBubble({ msg }: { msg: ChatMessage }) {
+function MessageBubble({ msg, onSpeak }: { msg: ChatMessage; onSpeak?: (text: string) => void }) {
   const isUser = msg.role === 'user'
   return (
     <motion.div
@@ -64,16 +66,25 @@ function MessageBubble({ msg }: { msg: ChatMessage }) {
       </div>
       <div
         className={cn(
-          'max-w-[85%] sm:max-w-[80%] rounded-2xl px-4 py-2.5 shadow-md backdrop-blur-md',
+          'max-w-[85%] sm:max-w-[80%] rounded-2xl px-4 py-2.5 shadow-md backdrop-blur-md relative group',
           isUser
             ? 'bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] text-white rounded-tr-sm'
             : 'bg-card border border-[#D9D9D9]/80 rounded-tl-sm text-foreground'
         )}
       >
+        {!isUser && onSpeak && (
+          <button
+            onClick={() => onSpeak(msg.content)}
+            className="absolute top-2 right-2 p-1 rounded-md text-muted-foreground hover:text-[#DD0200] hover:bg-muted opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+            title="Listen to response"
+          >
+            <Volume2 className="size-3.5" />
+          </button>
+        )}
         {isUser ? (
           <p className="text-sm leading-relaxed whitespace-pre-wrap font-medium">{msg.content}</p>
         ) : (
-          <div className="prose-ll text-sm">
+          <div className="prose-ll text-sm pr-4">
             <ReactMarkdown>{msg.content}</ReactMarkdown>
           </div>
         )}
@@ -114,9 +125,11 @@ export function AiAssistant() {
   const [input, setInput] = React.useState('')
   const [loading, setLoading] = React.useState(false)
   const [guideLoading, setGuideLoading] = React.useState(false)
+  const [listening, setListening] = React.useState(false)
   const scrollRef = React.useRef<HTMLDivElement>(null)
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
   const greetedRef = React.useRef(false)
+  const recognitionRef = React.useRef<any>(null)
 
   // Inject local greeting once when no chat history exists
   React.useEffect(() => {
@@ -189,7 +202,42 @@ export function AiAssistant() {
     }
   }
 
-  const handleExportChat = () => {
+  const handleToggleVoiceInput = () => {
+    if (listening) {
+      recognitionRef.current?.stop?.()
+      setListening(false)
+      return
+    }
+
+    if (!isSpeechRecognitionSupported()) {
+      toast.error('Voice input is not supported on this browser.')
+      return
+    }
+
+    const rec = startSpeechRecognition({
+      languageName: 'English',
+      onStart: () => setListening(true),
+      onResult: (transcript) => {
+        setInput((prev) => (prev ? `${prev} ${transcript}` : transcript))
+        setListening(false)
+      },
+      onError: (err) => {
+        toast.error(err)
+        setListening(false)
+      },
+      onEnd: () => setListening(false),
+    })
+
+    recognitionRef.current = rec
+  }
+
+  const handleSpeakResponse = (text: string) => {
+    // Strip markdown formatting for speech
+    const cleanText = text.replace(/[*_#`~]/g, '')
+    speakText(cleanText, 'English')
+  }
+
+  const handleExportChatMD = () => {
     if (messages.length === 0) {
       toast.error('No chat messages to export')
       return
@@ -201,16 +249,56 @@ export function AiAssistant() {
       )
       .join('\n\n---\n\n')
     const fileContent = `# Norto AI Assistant Chat History - ${city}\nExported on: ${new Date().toLocaleString('en-IN')}\n\n${formattedText}`
-    const blob = new Blob([fileContent], { type: 'text/markdown;charset=utf-8' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `norto-chat-${city.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}.md`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-    toast.success('Chat history downloaded!')
+    exportToMarkdown(`norto-chat-${city.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}.md`, fileContent)
+    toast.success('Chat history downloaded as Markdown!')
+  }
+
+  const handleExportPDF = () => {
+    if (messages.length === 0) {
+      toast.error('No chat messages to export')
+      return
+    }
+    const bodyHtml = messages
+      .map(
+        (m) => `
+          <div style="margin-bottom: 20px; padding: 12px 16px; border-radius: 8px; background: ${m.role === 'user' ? '#f8fafc' : '#f0fdf4'}; border: 1px solid ${m.role === 'user' ? '#e2e8f0' : '#bbf7d0'};">
+            <div style="font-weight: 700; font-size: 13px; color: ${m.role === 'user' ? '#475569' : '#166534'}; margin-bottom: 6px;">
+              ${m.role === 'user' ? '👤 User' : '🌿 Norto AI Companion'} — <span style="font-weight: 400; color: #94a3b8;">${new Date(m.createdAt).toLocaleString('en-IN')}</span>
+            </div>
+            <div style="font-size: 14px; white-space: pre-wrap;">${m.content}</div>
+          </div>
+        `,
+      )
+      .join('')
+
+    exportToPDF(`Norto AI City Guide & Chat — ${city}`, bodyHtml)
+    toast.success('Generated PDF Guide document!')
+  }
+
+  const handleExportCalendar = () => {
+    const calendarEvents = [
+      {
+        title: `Verify PG/Apartment in ${city}`,
+        description: `Check internet, water supply, security deposit details, and lease agreement.`,
+        startDate: new Date(Date.now() + 86400000), // Tomorrow
+        location: city,
+      },
+      {
+        title: `Explore Local Transport & Nearby Metro/Bus Stops in ${city}`,
+        description: `Get local travel pass and locate nearest bus/metro connection to work.`,
+        startDate: new Date(Date.now() + 2 * 86400000),
+        location: city,
+      },
+      {
+        title: `Locate Emergency Facilities & Grocery Shops in ${city}`,
+        description: `Bookmark nearest 24/7 hospital, pharmacy, and supermarket.`,
+        startDate: new Date(Date.now() + 3 * 86400000),
+        location: city,
+      },
+    ]
+
+    generateAndDownloadICS(`norto-relocation-${city.toLowerCase().replace(/\s+/g, '-')}.ics`, calendarEvents)
+    toast.success('Downloaded Relocation Schedule (.ics)!')
   }
 
   const handleClear = () => {
@@ -288,12 +376,32 @@ export function AiAssistant() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={handleExportChat}
+                    onClick={handleExportPDF}
+                    className="text-foreground hover:bg-muted font-semibold hidden md:inline-flex"
+                    title="Export Guide as PDF Document"
+                  >
+                    <FileText className="size-3.5 text-rose-600" />
+                    <span>PDF</span>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleExportCalendar}
+                    className="text-foreground hover:bg-muted font-semibold hidden md:inline-flex"
+                    title="Download Relocation Calendar (.ics)"
+                  >
+                    <Calendar className="size-3.5 text-amber-600" />
+                    <span>.ICS Calendar</span>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleExportChatMD}
                     className="text-foreground hover:bg-muted font-semibold"
-                    title="Export & Save Chat as Markdown"
+                    title="Export Chat as Markdown"
                   >
                     <Download className="size-3.5" />
-                    <span className="hidden sm:inline">Save Chat</span>
+                    <span className="hidden sm:inline">Save MD</span>
                   </Button>
                   <Button
                     variant="outline"
@@ -320,7 +428,7 @@ export function AiAssistant() {
               <div className="space-y-4">
                 <AnimatePresence initial={false}>
                   {messages.map((m) => (
-                    <MessageBubble key={m.id} msg={m} />
+                    <MessageBubble key={m.id} msg={m} onSpeak={handleSpeakResponse} />
                   ))}
                 </AnimatePresence>
                 {loading && (
@@ -357,10 +465,23 @@ export function AiAssistant() {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 rows={1}
-                placeholder={`Ask about ${city}...`}
+                placeholder={listening ? 'Listening to voice...' : `Ask about ${city}...`}
                 disabled={loading || guideLoading}
                 className="flex-1 resize-none bg-transparent px-3 py-2 text-sm outline-none placeholder:text-muted-foreground disabled:opacity-50 max-h-40 font-medium"
               />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={handleToggleVoiceInput}
+                className={cn(
+                  'rounded-xl shrink-0 h-9 w-9 transition-colors',
+                  listening ? 'bg-rose-500 text-white hover:bg-rose-600 animate-pulse' : 'text-muted-foreground hover:text-foreground',
+                )}
+                title={listening ? 'Listening... Tap to stop' : 'Voice Input (Speech-to-Text)'}
+              >
+                {listening ? <MicOff className="size-4" /> : <Mic className="size-4" />}
+              </Button>
               <Button
                 onClick={() => void send(input)}
                 disabled={!input.trim() || loading || guideLoading}
@@ -372,7 +493,7 @@ export function AiAssistant() {
               </Button>
             </div>
             <p className="text-[10px] text-muted-foreground mt-1.5 px-1 font-medium">
-              Press <kbd className="font-mono">Enter</kbd> to send · <kbd className="font-mono">Shift+Enter</kbd> for newline
+              Press <kbd className="font-mono">Enter</kbd> to send · <kbd className="font-mono">Shift+Enter</kbd> for newline · Tap Mic for Voice
             </p>
           </div>
         </Card>

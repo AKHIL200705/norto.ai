@@ -65,7 +65,16 @@ export function ChatHistoryView() {
   }, [addMessage])
 
   React.useEffect(() => {
-    syncSupabase()
+    let isMounted = true
+    const timer = setTimeout(() => {
+      if (isMounted) {
+        void syncSupabase()
+      }
+    }, 0)
+    return () => {
+      isMounted = false
+      clearTimeout(timer)
+    }
   }, [syncSupabase])
 
   const sectionKeys = React.useMemo(() => {
@@ -75,7 +84,10 @@ export function ChatHistoryView() {
   // Select first available thread if none selected
   React.useEffect(() => {
     if (!selectedSectionKey && sectionKeys.length > 0) {
-      setSelectedSectionKey(sectionKeys[0])
+      const timer = setTimeout(() => {
+        setSelectedSectionKey(sectionKeys[0])
+      }, 0)
+      return () => clearTimeout(timer)
     }
   }, [sectionKeys, selectedSectionKey])
 

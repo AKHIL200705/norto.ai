@@ -375,7 +375,7 @@ function NotificationItem({ n }: { n: { type: string; title: string; message: st
 
 export function DashboardTopbar() {
   const { theme, setTheme } = useTheme()
-  const [mounted, setMounted] = React.useState(false)
+  const [mounted] = React.useState<boolean>(() => typeof window !== 'undefined')
   const setSection = useAppStore((s) => s.setSection)
   const setSidebarOpen = useAppStore((s) => s.setSidebarOpen)
   const city = useAppStore((s) => s.city)
@@ -388,8 +388,6 @@ export function DashboardTopbar() {
   const liveLocation = useAppStore((s) => s.liveLocation)
   const locationStatus = useAppStore((s) => s.locationStatus)
   const locationError = useAppStore((s) => s.locationError)
-
-  React.useEffect(() => setMounted(true), [])
 
   const displayName = isAuth && user ? user.name : 'Explorer'
   const displayInitials = (isAuth && user

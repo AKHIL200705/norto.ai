@@ -9,7 +9,7 @@ import {
 } from 'recharts'
 import {
   Wallet, TrendingUp, TrendingDown, Lightbulb, ArrowRight,
-  ShieldCheck, PiggyBank, Loader2, Sparkles, IndianRupee, Gauge,
+  ShieldCheck, PiggyBank, Loader2, Sparkles, IndianRupee, Gauge, FileText,
 } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
 import { Card } from '@/components/ui/card'
@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
+import { exportToPDF } from '@/lib/export-utils'
 
 interface Analysis {
   score: number
@@ -165,6 +166,50 @@ export function BudgetPlanner() {
     }
   }
 
+  // Export Budget PDF Report
+  const handleExportPDF = () => {
+    const totalExp = values.rent + values.food + values.transport + values.utilities + values.entertainment + values.shopping
+    const rem = values.salary - totalExp
+    const savRate = values.salary > 0 ? ((rem / values.salary) * 100).toFixed(1) : '0'
+
+    const htmlBody = `
+      <div style="background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 24px;">
+        <h2 style="margin-top:0; color:#0f172a;">Monthly Financial Summary — ${city}</h2>
+        <table style="width:100%; border-collapse:collapse; margin-top:12px;">
+          <tr><td style="padding:6px; font-weight:600;">Monthly Income:</td><td style="padding:6px; text-align:right; font-weight:700; color:#166534;">${fmtINR(values.salary)}</td></tr>
+          <tr><td style="padding:6px; font-weight:600;">Total Expenses:</td><td style="padding:6px; text-align:right; font-weight:700; color:#991b1b;">${fmtINR(totalExp)}</td></tr>
+          <tr style="border-top:1px solid #cbd5e1;"><td style="padding:6px; font-weight:700;">Net Remaining:</td><td style="padding:6px; text-align:right; font-weight:800; font-size:16px;">${fmtINR(rem)} (${savRate}% Savings Rate)</td></tr>
+        </table>
+      </div>
+
+      <h3 style="color:#0f172a; border-bottom:2px solid #e2e8f0; padding-bottom:6px;">Expense Breakdown</h3>
+      <ul style="line-height:1.8;">
+        <li><strong>Rent / PG:</strong> ${fmtINR(values.rent)}</li>
+        <li><strong>Food & Groceries:</strong> ${fmtINR(values.food)}</li>
+        <li><strong>Transport & Commute:</strong> ${fmtINR(values.transport)}</li>
+        <li><strong>Utilities (WiFi, Bill, Water):</strong> ${fmtINR(values.utilities)}</li>
+        <li><strong>Entertainment:</strong> ${fmtINR(values.entertainment)}</li>
+        <li><strong>Shopping & Misc:</strong> ${fmtINR(values.shopping)}</li>
+      </ul>
+
+      ${result?.analysis ? `
+        <h3 style="color:#0f172a; border-bottom:2px solid #e2e8f0; padding-bottom:6px; margin-top:24px;">AI Insights & Money-Saving Recommendations</h3>
+        <ul>
+          ${result.analysis.insights.map(ins => `<li>${ins}</li>`).join('')}
+        </ul>
+        ${result.analysis.alternatives ? `
+          <h4 style="color:#0f172a; margin-top:16px;">Better Cost-Saving Alternatives:</h4>
+          <ul>
+            ${result.analysis.alternatives.map(alt => `<li>${alt}</li>`).join('')}
+          </ul>
+        ` : ''}
+      ` : ''}
+    `
+
+    exportToPDF(`Norto Financial & Relocation Budget Report — ${city}`, htmlBody)
+    toast.success('Generated PDF Budget Report!')
+  }
+
   // Local quick totals for live preview
   const liveTotal =
     values.rent + values.food + values.transport + values.utilities + values.entertainment + values.shopping
@@ -182,14 +227,24 @@ export function BudgetPlanner() {
 
   return (
     <div className="p-4 lg:p-6 max-w-7xl mx-auto">
-      <div className="mb-5">
-        <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight flex items-center gap-2">
-          <Wallet className="size-5 text-[#DD0200]" />
-          Budget Planner
-        </h1>
-        <p className="text-sm text-muted-foreground mt-0.5">
-          Plan your monthly budget for <span className="font-bold text-foreground">{city}</span> and get AI-powered insights
-        </p>
+      <div className="mb-5 flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight flex items-center gap-2">
+            <Wallet className="size-5 text-[#DD0200]" />
+            Budget Planner
+          </h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            Optimize your living expenses and savings in <span className="font-bold text-foreground">{city}</span>
+          </p>
+        </div>
+        <Button
+          variant="outline"
+          onClick={handleExportPDF}
+          className="font-bold text-foreground border-[#D9D9D9] hover:bg-muted"
+        >
+          <FileText className="size-4 text-rose-600 mr-2" />
+          Export PDF Report
+        </Button>
       </div>
 
       <div className="grid lg:grid-cols-[420px_1fr] gap-4 lg:gap-6">

@@ -36,6 +36,7 @@ interface AppState {
   isAuthenticated: boolean
   authProvider: AuthProvider
   signInOpen: boolean
+  onboardingOpen: boolean
   // live location
   liveLocation: LiveLocation | null
   locationStatus: LocationStatus
@@ -52,6 +53,7 @@ interface AppState {
   setUser: (u: UserProfile | null) => void
   updateUser: (u: Partial<UserProfile>) => void
   setSignInOpen: (v: boolean) => void
+  setOnboardingOpen: (v: boolean) => void
   signIn: (u: { name: string; email: string; avatar?: string | null; occupation?: string | null }, provider: 'google' | 'email') => void
   signOut: () => void
   detectLocation: () => Promise<void>
@@ -81,6 +83,7 @@ export const useAppStore = create<AppState>()(
       isAuthenticated: false,
       authProvider: null,
       signInOpen: false,
+      onboardingOpen: false,
       liveLocation: null,
       locationStatus: 'idle',
       locationError: null,
@@ -116,6 +119,7 @@ export const useAppStore = create<AppState>()(
       setUser: (u) => set({ user: u }),
       updateUser: (u) => set((state) => ({ user: state.user ? { ...state.user, ...u } : null })),
       setSignInOpen: (v) => set({ signInOpen: v }),
+      setOnboardingOpen: (v) => set({ onboardingOpen: v }),
       signIn: (u, provider) =>
         set((state) => ({
           isAuthenticated: true,
@@ -123,6 +127,7 @@ export const useAppStore = create<AppState>()(
           section: 'home',
           authProvider: provider,
           signInOpen: false,
+          onboardingOpen: true,
           user: {
             ...GUEST_DEFAULTS,
             city: state.city,

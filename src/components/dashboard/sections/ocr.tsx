@@ -70,18 +70,16 @@ export function OcrScanner() {
   const [result, setResult] = React.useState<string>('')
   const [copied, setCopied] = React.useState(false)
   const [dragging, setDragging] = React.useState(false)
-  const [recents, setRecents] = React.useState<RecentScan[]>([])
-  const inputRef = React.useRef<HTMLInputElement>(null)
-
-  // Load recents from localStorage
-  React.useEffect(() => {
+  const [recents, setRecents] = React.useState<RecentScan[]>(() => {
+    if (typeof window === 'undefined') return []
     try {
       const raw = localStorage.getItem(STORAGE_KEY)
-      if (raw) setRecents(JSON.parse(raw))
+      return raw ? JSON.parse(raw) : []
     } catch {
-      // ignore
+      return []
     }
-  }, [])
+  })
+  const inputRef = React.useRef<HTMLInputElement>(null)
 
   const persistRecents = (next: RecentScan[]) => {
     setRecents(next)
