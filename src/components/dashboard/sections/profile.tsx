@@ -5,18 +5,16 @@ import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 import {
   User, Mail, Briefcase, Languages, Wallet, Utensils, Bus, MapPin,
-  Pencil, Save, X, Bell, CloudSun, Wallet as WalletIcon, Calendar,
-  Sparkles, LogOut, LogIn, Trash2, Check, ShieldCheck, Map as MapIcon,
-  MessageSquare, Globe, Settings, Plus,
+  Pencil, Save, X, Sparkles, LogOut, LogIn, Trash2, Check,
+  Map as MapIcon, MessageSquare, Globe, Settings, LocateFixed, Loader2,
+  Calendar, ShieldCheck, Navigation,
 } from 'lucide-react'
 import { useAppStore, useChatStore } from '@/lib/store'
-import { LANGUAGES, type UserProfile, type SavedPlace } from '@/lib/types'
-import { Card } from '@/components/ui/card'
+import { LANGUAGES, type UserProfile } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select'
@@ -25,7 +23,6 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { cn } from '@/lib/utils'
 import { GoogleIcon } from '@/components/auth/google-icon'
 
 const DEFAULT_USER: UserProfile = {
@@ -53,6 +50,11 @@ export function Profile() {
   const updateUser = useAppStore((s) => s.updateUser)
   const setSection = useAppStore((s) => s.setSection)
   const city = useAppStore((s) => s.city)
+  const setCity = useAppStore((s) => s.setCity)
+  const liveLocation = useAppStore((s) => s.liveLocation)
+  const locationStatus = useAppStore((s) => s.locationStatus)
+  const detectLocation = useAppStore((s) => s.detectLocation)
+
   const isAuth = useAppStore((s) => s.isAuthenticated)
   const authProvider = useAppStore((s) => s.authProvider)
   const signOut = useAppStore((s) => s.signOut)
@@ -62,10 +64,31 @@ export function Profile() {
   const addTravelCity = useAppStore((s) => s.addTravelCity)
   const chatMessages = useChatStore((s) => s.messages)
 
-  const profile: UserProfile = user || { ...DEFAULT_USER, city }
+  const currentActiveCity = liveLocation?.city || user?.city || city
+
+  const profile: UserProfile = {
+    ...(user || DEFAULT_USER),
+    city: currentActiveCity,
+  }
+
   const [editing, setEditing] = React.useState(false)
   const [form, setForm] = React.useState<UserProfile>(profile)
   const [realPlacesCount, setRealPlacesCount] = React.useState<number>(12)
+
+  // Auto-detect current city on mount if location has not been fetched yet
+  React.useEffect(() => {
+    if (locationStatus === 'idle') {
+      void detectLocation()
+    }
+  }, [locationStatus, detectLocation])
+
+  // Sync form state automatically whenever active profile city or liveLocation changes
+  React.useEffect(() => {
+    setForm((prev) => ({
+      ...prev,
+      city: currentActiveCity,
+    }))
+  }, [currentActiveCity])
 
   // Fetch real saved places count
   React.useEffect(() => {
@@ -79,7 +102,7 @@ export function Profile() {
           }
         }
       } catch {
-        // use default fallback if offline
+        // fallback offline
       }
     }
     const timer = setTimeout(() => {
@@ -88,20 +111,13 @@ export function Profile() {
     return () => clearTimeout(timer)
   }, [])
 
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      setForm(profile)
-    }, 0)
-    return () => clearTimeout(timer)
-  }, [user, city, profile])
-
-  // Compute real dynamic chat messages count
+  // Dynamic chat messages count
   const chatsCount = React.useMemo(() => {
     const total = Object.values(chatMessages).reduce((acc, m) => acc + m.length, 0)
     return total > 0 ? total : 47
   }, [chatMessages])
 
-  // Compute real dynamic member since date
+  // Dynamic member since date
   const memberSince = React.useMemo(() => {
     if (user?.createdAt) {
       try {
@@ -114,7 +130,7 @@ export function Profile() {
     return 'Oct 2024'
   }, [user])
 
-  // Compute dynamic languages count
+  // Dynamic languages count
   const languagesKnown = React.useMemo(() => {
     return profile.language && profile.language !== 'English' ? 2 : 1
   }, [profile.language])
@@ -126,6 +142,25 @@ export function Profile() {
     .join('')
     .toUpperCase()
 
+  const handleAutoDetectCity = async () => {
+    toast.info('Detecting your location automatically via GPS…')
+    await detectLocation()
+    const st = useAppStore.getState().locationStatus
+    if (st === 'success') {
+      const loc = useAppStore.getState().liveLocation
+      if (loc?.city) {
+        setCity(loc.city)
+        if (user) {
+          updateUser({ city: loc.city })
+        }
+        setForm((prev) => ({ ...prev, city: loc.city }))
+        toast.success(`Current city automatically updated to ${loc.city}!`)
+      }
+    } else {
+      toast.error(useAppStore.getState().locationError || 'Failed to detect location')
+    }
+  }
+
   const handleSave = () => {
     if (!form.name.trim()) {
       toast.error('Name is required')
@@ -135,6 +170,7 @@ export function Profile() {
       toast.error('Budget must be positive')
       return
     }
+    const targetCity = (form.city || currentActiveCity).trim()
     updateUser({
       name: form.name.trim(),
       email: form.email.trim(),
@@ -143,14 +179,15 @@ export function Profile() {
       budget: Number(form.budget) || 0,
       foodPref: form.foodPref,
       transport: form.transport,
-      city: form.city || city,
+      city: targetCity,
       hasCompletedOnboarding: true,
     })
-    if (form.city && form.city !== city) {
-      addTravelCity(form.city)
+    if (targetCity && targetCity !== city) {
+      setCity(targetCity)
+      addTravelCity(targetCity)
     }
     setEditing(false)
-    toast.success('Profile updated in real-time')
+    toast.success('Profile and current city updated successfully')
   }
 
   const handleCancel = () => {
@@ -182,103 +219,116 @@ export function Profile() {
   }
 
   return (
-    <div className="p-4 lg:p-6 max-w-7xl mx-auto">
+    <div className="p-4 lg:p-6 max-w-7xl mx-auto text-[#000000]">
       <motion.div variants={container} initial="hidden" animate="show" className="flex flex-col gap-6">
         {/* Header */}
         <motion.div variants={item}>
-          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-            <User className="size-3.5 text-[#DD0200]" />
-            <span className="font-semibold">Manage your account &amp; preferences in real-time</span>
+          <div className="flex items-center gap-2 text-xs text-[#0A0A0A] mb-1 font-bold">
+            <User className="size-3.5 text-[#6C63FF]" />
+            <span>Manage your account &amp; location preferences in real-time</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Profile</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight font-display text-[#000000]">Profile</h1>
         </motion.div>
 
         {/* Profile header card */}
         <motion.div variants={item}>
-          <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] text-white shadow-xl shadow-[#DD0200]/20">
-            <div className="absolute inset-0 mesh-bg opacity-20 pointer-events-none" />
-            <div className="absolute -right-16 -top-16 size-64 rounded-full bg-[#DD0200]/30 blur-3xl pointer-events-none" />
-            <div className="relative p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-5">
-              <div className="size-20 sm:size-24 rounded-2xl bg-white/15 backdrop-blur-md border border-white/25 flex items-center justify-center shrink-0">
-                <span className="text-2xl sm:text-3xl font-extrabold tracking-wider text-white">{initials}</span>
-              </div>
-              <div className="flex-1 text-center sm:text-left">
-                <h2 className="text-xl sm:text-2xl font-extrabold">{profile.name}</h2>
-                <div className="flex items-center justify-center sm:justify-start gap-3 mt-1 text-sm text-white/90 flex-wrap">
-                  <span className="inline-flex items-center gap-1 font-medium"><Mail className="size-3.5" />{profile.email}</span>
-                  <span className="inline-flex items-center gap-1 font-medium"><Briefcase className="size-3.5" />{profile.occupation || '—'}</span>
-                  <span className="inline-flex items-center gap-1"><MapPin className="size-3.5" />{profile.city || city}</span>
-                </div>
-                <div className="flex items-center justify-center sm:justify-start gap-2 mt-3 flex-wrap">
-                  <Badge className="bg-white/15 text-white border-0 backdrop-blur-sm">
-                    <Sparkles className="size-3 mr-1" />Explorer Tier
-                  </Badge>
-                  {isAuth ? (
-                    <Badge className="bg-white/15 text-white border-0 backdrop-blur-sm inline-flex items-center gap-1">
-                      <Check className="size-3 mr-1" />Verified
-                    </Badge>
-                  ) : (
-                    <Badge className="bg-amber-400/25 text-amber-50 border-0 backdrop-blur-sm">
-                      Guest mode
-                    </Badge>
-                  )}
-                  {isAuth && authProvider && (
-                    <Badge className="bg-white/15 text-white border-0 backdrop-blur-sm inline-flex items-center gap-1">
-                      {authProvider === 'google' ? (
-                        <>
-                          <GoogleIcon className="size-3 mr-1" />
-                          Signed in with Google
-                        </>
-                      ) : (
-                        <>
-                          <Mail className="size-3 mr-1" />
-                          Signed in with email
-                        </>
-                      )}
-                    </Badge>
-                  )}
-                </div>
-              </div>
-              <Button
-                variant="outline"
-                onClick={() => (editing ? handleCancel() : setEditing(true))}
-                className="bg-white/10 text-white border-white/30 hover:bg-white/20 hover:text-white shrink-0"
-              >
-                {editing ? <><X className="size-4" />Cancel</> : <><Pencil className="size-4" />Edit Profile</>}
-              </Button>
+          <div className="relative overflow-hidden rounded-[32px] bg-[#E0E5EC] neu-extruded p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6">
+            <div className="size-20 sm:size-24 rounded-3xl bg-[#E0E5EC] neu-inset-deep flex items-center justify-center shrink-0">
+              <span className="text-2xl sm:text-3xl font-extrabold tracking-wider text-[#6C63FF]">{initials}</span>
             </div>
-          </Card>
+            <div className="flex-1 text-center sm:text-left">
+              <h2 className="text-xl sm:text-2xl font-extrabold text-[#000000] font-display">{profile.name}</h2>
+              <div className="flex items-center justify-center sm:justify-start gap-3 mt-1.5 text-sm text-[#0A0A0A] font-bold flex-wrap">
+                <span className="inline-flex items-center gap-1"><Mail className="size-3.5 text-[#6C63FF]" />{profile.email}</span>
+                <span className="inline-flex items-center gap-1"><Briefcase className="size-3.5 text-[#6C63FF]" />{profile.occupation || '—'}</span>
+                <span className="inline-flex items-center gap-1"><MapPin className="size-3.5 text-[#6C63FF]" />{currentActiveCity}</span>
+              </div>
+              <div className="flex items-center justify-center sm:justify-start gap-2 mt-3 flex-wrap">
+                <Badge className="bg-[#6C63FF]/15 text-[#6C63FF] border-0 rounded-full font-bold px-3 py-1">
+                  <Sparkles className="size-3 mr-1" />Explorer Tier
+                </Badge>
+                {isAuth ? (
+                  <Badge className="bg-[#38B2AC]/15 text-[#38B2AC] border-0 rounded-full font-bold px-3 py-1 inline-flex items-center gap-1">
+                    <Check className="size-3 mr-1" />Verified
+                  </Badge>
+                ) : (
+                  <Badge className="bg-[#6C63FF]/10 text-[#6C63FF] border-0 rounded-full font-bold px-3 py-1">
+                    Guest mode
+                  </Badge>
+                )}
+                {isAuth && authProvider && (
+                  <Badge className="bg-[#6C63FF]/15 text-[#6C63FF] border-0 rounded-full font-bold px-3 py-1 inline-flex items-center gap-1">
+                    {authProvider === 'google' ? (
+                      <>
+                        <GoogleIcon className="size-3 mr-1" />
+                        Signed in with Google
+                      </>
+                    ) : (
+                      <>
+                        <Mail className="size-3 mr-1" />
+                        Signed in with email
+                      </>
+                    )}
+                  </Badge>
+                )}
+              </div>
+            </div>
+            <Button
+              onClick={() => (editing ? handleCancel() : setEditing(true))}
+              variant="secondary"
+              className="bg-[#E0E5EC] neu-extruded text-[#000000] hover:text-[#6C63FF] rounded-2xl font-bold px-5 shrink-0"
+            >
+              {editing ? <><X className="size-4 mr-1" />Cancel</> : <><Pencil className="size-4 mr-1" />Edit Profile</>}
+            </Button>
+          </div>
         </motion.div>
 
         {/* Real-time Stats row */}
-        <motion.div variants={item} className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          <StatCard icon={Calendar} label="Member since" value={memberSince} gradient="from-[#DD0200] to-[#55100D]" />
-          <StatCard icon={MapIcon} label="Places saved" value={String(realPlacesCount)} gradient="from-[#8B0000] to-[#1A0706]" onClick={() => setSection('saved')} />
-          <StatCard icon={MessageSquare} label="AI chats" value={String(chatsCount)} gradient="from-[#DD0200] to-[#8B0000]" onClick={() => setSection('assistant')} />
-          <StatCard icon={Globe} label="Languages" value={String(languagesKnown)} gradient="from-[#55100D] to-[#1A0706]" />
+        <motion.div variants={item} className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard icon={Calendar} label="Member since" value={memberSince} />
+          <StatCard icon={MapIcon} label="Places saved" value={String(realPlacesCount)} onClick={() => setSection('saved')} />
+          <StatCard icon={MessageSquare} label="AI chats" value={String(chatsCount)} onClick={() => setSection('assistant')} />
+          <StatCard icon={Globe} label="Languages" value={String(languagesKnown)} />
         </motion.div>
 
-        {/* Edit form OR preferences + travel history */}
+        {/* Edit form OR account details */}
         {editing ? (
           <motion.div variants={item}>
-            <Card className="glass-card p-5 sm:p-6 gap-0 border-[#D9D9D9]">
-              <div className="flex items-center gap-2 mb-4">
-                <Settings className="size-4 text-[#DD0200]" />
-                <h3 className="font-extrabold text-sm sm:text-base">Edit profile</h3>
+            <div className="rounded-[32px] bg-[#E0E5EC] neu-extruded p-6 sm:p-8">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-2">
+                  <Settings className="size-5 text-[#6C63FF]" />
+                  <h3 className="font-extrabold text-base sm:text-lg text-[#000000] font-display">Edit Profile &amp; Location</h3>
+                </div>
+                <Button
+                  onClick={handleAutoDetectCity}
+                  variant="secondary"
+                  size="sm"
+                  disabled={locationStatus === 'loading'}
+                  className="bg-[#E0E5EC] neu-extruded text-[#6C63FF] hover:text-[#8B84FF] rounded-2xl font-bold px-4"
+                >
+                  {locationStatus === 'loading' ? (
+                    <Loader2 className="size-4 animate-spin mr-1.5" />
+                  ) : (
+                    <LocateFixed className="size-4 mr-1.5 text-[#6C63FF]" />
+                  )}
+                  Auto-Detect City
+                </Button>
               </div>
-              <div className="grid sm:grid-cols-2 gap-4">
+
+              <div className="grid sm:grid-cols-2 gap-5">
                 <Field label="Full name" icon={User}>
-                  <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Your name" className="border-[#D9D9D9]" />
+                  <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Your name" />
                 </Field>
                 <Field label="Email" icon={Mail}>
-                  <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="you@email.com" className="border-[#D9D9D9]" />
+                  <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="you@email.com" />
                 </Field>
                 <Field label="Occupation" icon={Briefcase}>
-                  <Input value={form.occupation || ''} onChange={(e) => setForm({ ...form, occupation: e.target.value })} placeholder="Software Engineer" className="border-[#D9D9D9]" />
+                  <Input value={form.occupation || ''} onChange={(e) => setForm({ ...form, occupation: e.target.value })} placeholder="Software Engineer" />
                 </Field>
                 <Field label="Language" icon={Languages}>
                   <Select value={form.language} onValueChange={(v) => setForm({ ...form, language: v })}>
-                    <SelectTrigger className="border-[#D9D9D9]"><SelectValue /></SelectTrigger>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       {LANGUAGES.map((l) => <SelectItem key={l} value={l}>{l}</SelectItem>)}
                     </SelectContent>
@@ -290,12 +340,11 @@ export function Profile() {
                     value={form.budget}
                     onChange={(e) => setForm({ ...form, budget: Number(e.target.value) })}
                     placeholder="25000"
-                    className="border-[#D9D9D9]"
                   />
                 </Field>
                 <Field label="Food preference" icon={Utensils}>
                   <Select value={form.foodPref} onValueChange={(v) => setForm({ ...form, foodPref: v })}>
-                    <SelectTrigger className="border-[#D9D9D9]"><SelectValue /></SelectTrigger>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Veg">Veg</SelectItem>
                       <SelectItem value="Non-Veg">Non-Veg</SelectItem>
@@ -305,7 +354,7 @@ export function Profile() {
                 </Field>
                 <Field label="Preferred transport" icon={Bus}>
                   <Select value={form.transport} onValueChange={(v) => setForm({ ...form, transport: v })}>
-                    <SelectTrigger className="border-[#D9D9D9]"><SelectValue /></SelectTrigger>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Public">Public Transport</SelectItem>
                       <SelectItem value="Own Vehicle">Own Vehicle</SelectItem>
@@ -314,170 +363,199 @@ export function Profile() {
                     </SelectContent>
                   </Select>
                 </Field>
-                <Field label="Current city" icon={MapPin}>
-                  <Input value={form.city || ''} onChange={(e) => setForm({ ...form, city: e.target.value })} placeholder="Hyderabad" className="border-[#D9D9D9]" />
+                <Field label="Current City (Auto-synced)" icon={MapPin}>
+                  <div className="flex gap-2">
+                    <Input
+                      value={form.city || ''}
+                      onChange={(e) => setForm({ ...form, city: e.target.value })}
+                      placeholder="City name"
+                      className="flex-1"
+                    />
+                    <Button
+                      type="button"
+                      onClick={handleAutoDetectCity}
+                      disabled={locationStatus === 'loading'}
+                      variant="secondary"
+                      className="bg-[#E0E5EC] neu-extruded text-[#6C63FF] rounded-2xl px-3"
+                      title="Auto-detect location"
+                    >
+                      {locationStatus === 'loading' ? <Loader2 className="size-4 animate-spin" /> : <LocateFixed className="size-4" />}
+                    </Button>
+                  </div>
                 </Field>
               </div>
-              <div className="mt-5 flex justify-end gap-2">
-                <Button variant="outline" onClick={handleCancel}>Cancel</Button>
-                <Button onClick={handleSave}>
-                  <Save className="size-4" />
+
+              <div className="mt-6 flex justify-end gap-3">
+                <Button variant="ghost" onClick={handleCancel} className="font-bold text-[#000000]">Cancel</Button>
+                <Button onClick={handleSave} className="bg-[#6C63FF] text-white hover:bg-[#8B84FF] rounded-2xl neu-extruded font-bold px-6">
+                  <Save className="size-4 mr-1.5" />
                   Save changes
                 </Button>
               </div>
-            </Card>
+            </div>
           </motion.div>
         ) : (
           <motion.div variants={item}>
-            <Card className="glass-card p-5 sm:p-6 gap-0 border-[#D9D9D9]">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-extrabold text-sm sm:text-base flex items-center gap-2">
-                  <User className="size-4 text-[#DD0200]" />
-                  Account Details
+            <div className="rounded-[32px] bg-[#E0E5EC] neu-extruded p-6 sm:p-8">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="font-extrabold text-base sm:text-lg flex items-center gap-2 text-[#000000] font-display">
+                  <User className="size-5 text-[#6C63FF]" />
+                  Account &amp; Location Details
                 </h3>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setEditing(true)}
-                  className="h-8 text-xs font-bold border-[#DD0200]/30 text-[#DD0200] hover:bg-[#DD0200]/10"
-                >
-                  <Pencil className="size-3.5 mr-1" />
-                  Edit Profile
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    onClick={handleAutoDetectCity}
+                    variant="secondary"
+                    size="sm"
+                    disabled={locationStatus === 'loading'}
+                    className="h-9 bg-[#E0E5EC] neu-extruded text-[#6C63FF] hover:text-[#8B84FF] rounded-2xl font-bold px-3.5"
+                  >
+                    {locationStatus === 'loading' ? (
+                      <Loader2 className="size-3.5 animate-spin mr-1" />
+                    ) : (
+                      <LocateFixed className="size-3.5 mr-1 text-[#6C63FF]" />
+                    )}
+                    <span>Auto-Detect City</span>
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setEditing(true)}
+                    className="h-9 bg-[#E0E5EC] neu-extruded text-[#000000] hover:text-[#6C63FF] rounded-2xl font-bold px-3.5"
+                  >
+                    <Pencil className="size-3.5 mr-1" />
+                    Edit
+                  </Button>
+                </div>
               </div>
 
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div className="p-3.5 rounded-xl bg-card border border-[#D9D9D9]">
-                  <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 mb-1">
-                    <Briefcase className="size-3 text-[#DD0200]" />
-                    Occupation
-                  </p>
-                  <p className="text-sm font-extrabold">{profile.occupation || '—'}</p>
-                </div>
-                <div className="p-3.5 rounded-xl bg-card border border-[#D9D9D9]">
-                  <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 mb-1">
-                    <Languages className="size-3 text-[#DD0200]" />
-                    Language
-                  </p>
-                  <p className="text-sm font-extrabold">{profile.language || 'English'}</p>
-                </div>
-                <div className="p-3.5 rounded-xl bg-card border border-[#D9D9D9]">
-                  <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 mb-1">
-                    <Wallet className="size-3 text-[#DD0200]" />
-                    Monthly Budget
-                  </p>
-                  <p className="text-sm font-extrabold">₹{profile.budget?.toLocaleString('en-IN') || '25,000'}</p>
-                </div>
-                <div className="p-3.5 rounded-xl bg-card border border-[#D9D9D9]">
-                  <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 mb-1">
-                    <Utensils className="size-3 text-[#DD0200]" />
-                    Food Preference
-                  </p>
-                  <p className="text-sm font-extrabold">{profile.foodPref || 'Veg'}</p>
-                </div>
-                <div className="p-3.5 rounded-xl bg-card border border-[#D9D9D9]">
-                  <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 mb-1">
-                    <Bus className="size-3 text-[#DD0200]" />
-                    Transport Mode
-                  </p>
-                  <p className="text-sm font-extrabold">{profile.transport || 'Public'}</p>
-                </div>
-                <div className="p-3.5 rounded-xl bg-card border border-[#D9D9D9]">
-                  <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 mb-1">
-                    <MapPin className="size-3 text-[#DD0200]" />
-                    Current City
-                  </p>
-                  <p className="text-sm font-extrabold">{profile.city || city}</p>
+                <DetailBox icon={Briefcase} label="Occupation" value={profile.occupation || '—'} />
+                <DetailBox icon={Languages} label="Language" value={profile.language || 'English'} />
+                <DetailBox icon={Wallet} label="Monthly Budget" value={`₹${profile.budget?.toLocaleString('en-IN') || '25,000'}`} />
+                <DetailBox icon={Utensils} label="Food Preference" value={profile.foodPref || 'Veg'} />
+                <DetailBox icon={Bus} label="Transport Mode" value={profile.transport || 'Public'} />
+                
+                {/* Auto-detected Current City Box */}
+                <div className="rounded-2xl bg-[#E0E5EC] neu-extruded p-4 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="text-[11px] font-bold text-[#0A0A0A] uppercase tracking-wider flex items-center gap-1.5">
+                        <MapPin className="size-3.5 text-[#6C63FF]" />
+                        Current City
+                      </p>
+                      {liveLocation?.city ? (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#38B2AC] bg-[#38B2AC]/15 px-2 py-0.5 rounded-full">
+                          <span className="size-1.5 rounded-full bg-[#38B2AC] animate-ping" />
+                          GPS Synced
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-bold text-[#6C63FF] bg-[#6C63FF]/15 px-2 py-0.5 rounded-full">
+                          Active
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-base font-extrabold text-[#000000] font-display mt-1">{currentActiveCity}</p>
+                    {liveLocation?.locality && (
+                      <p className="text-xs text-[#0A0A0A] font-semibold mt-0.5 truncate">{liveLocation.locality}</p>
+                    )}
+                  </div>
+                  <Button
+                    type="button"
+                    onClick={handleAutoDetectCity}
+                    variant="ghost"
+                    size="sm"
+                    disabled={locationStatus === 'loading'}
+                    className="mt-3 text-xs text-[#6C63FF] hover:text-[#8B84FF] font-bold p-0 h-auto justify-start"
+                  >
+                    <LocateFixed className="size-3 mr-1" />
+                    Update automatically via GPS
+                  </Button>
                 </div>
               </div>
-            </Card>
+            </div>
           </motion.div>
         )}
 
         {/* Danger zone */}
         <motion.div variants={item}>
-          <Card className="glass-card p-5 sm:p-6 gap-0 border-[#DD0200]/30 bg-[#DD0200]/5">
-            <h3 className="font-extrabold text-sm sm:text-base flex items-center gap-2 mb-1">
-              <AlertTriangleIcon />
-              Danger zone
+          <div className="rounded-[32px] bg-[#E0E5EC] neu-extruded p-6">
+            <h3 className="font-extrabold text-base flex items-center gap-2 mb-1 text-[#000000] font-display">
+              <ShieldCheck className="size-5 text-[#6C63FF]" />
+              Account Settings &amp; Danger Zone
             </h3>
-            <p className="text-xs text-muted-foreground mb-4">Irreversible &amp; destructive actions</p>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <div className="flex-1 p-3 rounded-xl border border-[#DD0200]/20 bg-background/50 flex items-center justify-between gap-3 backdrop-blur-md">
+            <p className="text-xs text-[#0A0A0A] font-bold mb-4">Manage account sessions &amp; browser data storage</p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex-1 p-4 rounded-2xl bg-[#E0E5EC] neu-inset-sm flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-sm font-bold">Reset all data</p>
-                  <p className="text-[11px] text-muted-foreground">Clears your profile, saved places, phrases &amp; recents</p>
+                  <p className="text-sm font-extrabold text-[#000000]">Reset local data</p>
+                  <p className="text-[11px] text-[#0A0A0A] font-semibold">Clears saved places, chat recents &amp; cache</p>
                 </div>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="outline" size="sm" className="border-[#DD0200]/30 text-[#DD0200] hover:bg-[#DD0200]/10 font-bold">
-                      <Trash2 className="size-4" />
+                    <Button variant="secondary" size="sm" className="bg-[#E0E5EC] neu-extruded text-[#000000] hover:text-red-600 font-bold rounded-2xl">
+                      <Trash2 className="size-4 mr-1" />
                       Reset
                     </Button>
                   </AlertDialogTrigger>
-                  <AlertDialogContent>
+                  <AlertDialogContent className="bg-[#E0E5EC] border-0 neu-extruded rounded-[32px]">
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Reset all data?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This will permanently delete your profile, saved places, phrases, and recent scans from this browser. This action cannot be undone.
+                      <AlertDialogTitle className="text-[#000000] font-display">Reset all data?</AlertDialogTitle>
+                      <AlertDialogDescription className="text-[#0A0A0A] font-semibold">
+                        This will permanently delete your local saved places, phrases, and recent scans from this browser. This action cannot be undone.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={handleReset} className="bg-[#DD0200] hover:bg-[#55100D] text-white font-bold">
+                      <AlertDialogCancel className="rounded-2xl font-bold">Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleReset} className="bg-[#6C63FF] hover:bg-[#8B84FF] text-white font-bold rounded-2xl">
                         Yes, reset everything
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
               </div>
-              <div className="flex-1 p-3 rounded-xl border border-[#D9D9D9] bg-background/50 flex items-center justify-between gap-3 backdrop-blur-md">
+
+              <div className="flex-1 p-4 rounded-2xl bg-[#E0E5EC] neu-inset-sm flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-sm font-bold">
+                  <p className="text-sm font-extrabold text-[#000000]">
                     {isAuth ? 'Sign out' : 'Sign in'}
                   </p>
-                  <p className="text-[11px] text-muted-foreground">
+                  <p className="text-[11px] text-[#0A0A0A] font-semibold">
                     {isAuth
                       ? 'End your session and return to landing'
                       : 'Sign in with Google to sync your data'}
                   </p>
                 </div>
                 {isAuth ? (
-                  <Button variant="outline" size="sm" onClick={handleSignOut} className="font-bold">
-                    <LogOut className="size-4" />
+                  <Button variant="secondary" size="sm" onClick={handleSignOut} className="bg-[#E0E5EC] neu-extruded text-[#000000] hover:text-[#6C63FF] font-bold rounded-2xl">
+                    <LogOut className="size-4 mr-1" />
                     Sign out
                   </Button>
                 ) : (
                   <Button
-                    variant="outline"
-                    size="sm"
                     onClick={handleSignIn}
-                    className="border-[#DD0200]/30 text-[#DD0200] hover:bg-[#DD0200]/10 font-bold"
+                    className="bg-[#6C63FF] text-white hover:bg-[#8B84FF] font-bold rounded-2xl neu-extruded"
+                    size="sm"
                   >
-                    <LogIn className="size-4" />
+                    <LogIn className="size-4 mr-1" />
                     Sign in
                   </Button>
                 )}
               </div>
             </div>
-          </Card>
+          </div>
         </motion.div>
       </motion.div>
     </div>
   )
 }
 
-function AlertTriangleIcon() {
-  return <ShieldCheck className="size-4 text-[#DD0200]" />
-}
-
 function StatCard({
-  icon: Icon, label, value, gradient, onClick,
+  icon: Icon, label, value, onClick,
 }: {
   icon: React.ElementType
   label: string
   value: string
-  gradient: string
   onClick?: () => void
 }) {
   return (
@@ -488,22 +566,34 @@ function StatCard({
       className="text-left disabled:cursor-default"
       disabled={!onClick}
     >
-      <Card className="glass-card p-4 sm:p-5 gap-0 h-full border-[#D9D9D9]">
-        <div className={cn('size-9 rounded-xl flex items-center justify-center bg-gradient-to-br shadow-md', gradient)}>
-          <Icon className="size-4 text-white" />
+      <div className="rounded-2xl bg-[#E0E5EC] neu-extruded p-5 h-full transition-all duration-300">
+        <div className="size-10 rounded-xl bg-[#E0E5EC] neu-inset-deep flex items-center justify-center">
+          <Icon className="size-5 text-[#6C63FF]" />
         </div>
-        <p className="mt-3 text-xs font-bold text-muted-foreground">{label}</p>
-        <p className="text-lg sm:text-xl font-extrabold tracking-tight mt-0.5">{value}</p>
-      </Card>
+        <p className="mt-3 text-xs font-bold uppercase tracking-wider text-[#0A0A0A]">{label}</p>
+        <p className="text-xl font-extrabold tracking-tight mt-0.5 text-[#000000] font-display">{value}</p>
+      </div>
     </motion.button>
+  )
+}
+
+function DetailBox({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) {
+  return (
+    <div className="rounded-2xl bg-[#E0E5EC] neu-extruded p-4">
+      <p className="text-[11px] font-bold text-[#0A0A0A] uppercase tracking-wider flex items-center gap-1.5 mb-1">
+        <Icon className="size-3.5 text-[#6C63FF]" />
+        {label}
+      </p>
+      <p className="text-base font-extrabold text-[#000000] font-display">{value}</p>
+    </div>
   )
 }
 
 function Field({ label, icon: Icon, children }: { label: string; icon: React.ElementType; children: React.ReactNode }) {
   return (
     <div className="space-y-1.5">
-      <Label className="text-xs text-muted-foreground font-semibold flex items-center gap-1.5">
-        <Icon className="size-3 text-[#DD0200]" />
+      <Label className="text-xs text-[#000000] font-bold flex items-center gap-1.5">
+        <Icon className="size-3.5 text-[#6C63FF]" />
         {label}
       </Label>
       {children}
