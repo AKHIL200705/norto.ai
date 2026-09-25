@@ -37,6 +37,8 @@ interface AppState {
   authProvider: AuthProvider
   signInOpen: boolean
   onboardingOpen: boolean
+  onboardedEmails: string[]
+  userProfiles: Record<string, UserProfile>
   // live location
   liveLocation: LiveLocation | null
   locationStatus: LocationStatus
@@ -84,6 +86,8 @@ export const useAppStore = create<AppState>()(
       authProvider: null,
       signInOpen: false,
       onboardingOpen: false,
+      onboardedEmails: [],
+      userProfiles: {},
       liveLocation: null,
       locationStatus: 'idle',
       locationError: null,
@@ -117,37 +121,74 @@ export const useAppStore = create<AppState>()(
       },
       setSidebarOpen: (o) => set({ sidebarOpen: o }),
       setUser: (u) => set({ user: u }),
-      updateUser: (u) => set((state) => ({ user: state.user ? { ...state.user, ...u } : null })),
+      updateUser: (u) =>
+        set((state) => {
+          if (!state.user) return { user: null }
+          const updatedUser: UserProfile = { ...state.user, ...u, hasCompletedOnboarding: true }
+          const emailKey = (updatedUser.email || '').toLowerCase().trim()
+
+          const updatedProfiles = emailKey
+            ? { ...state.userProfiles, [emailKey]: updatedUser }
+            : state.userProfiles
+
+          const updatedOnboarded = emailKey && !state.onboardedEmails.includes(emailKey)
+            ? [...state.onboardedEmails, emailKey]
+            : state.onboardedEmails
+
+          return {
+            user: updatedUser,
+            userProfiles: updatedProfiles,
+            onboardedEmails: updatedOnboarded,
+          }
+        }),
       setSignInOpen: (v) => set({ signInOpen: v }),
       setOnboardingOpen: (v) => set({ onboardingOpen: v }),
       signIn: (u, provider) =>
         set((state) => {
-          const alreadyOnboarded = Boolean(
-            state.user?.hasCompletedOnboarding ||
+          const emailKey = (u.email || '').toLowerCase().trim()
+          const savedProfile = emailKey ? state.userProfiles[emailKey] : null
+          const isAlreadyOnboarded = Boolean(
+            savedProfile?.hasCompletedOnboarding ||
+            (emailKey && state.onboardedEmails.includes(emailKey)) ||
+            (state.user?.email?.toLowerCase() === emailKey && state.user?.hasCompletedOnboarding) ||
             u.occupation ||
-            (state.user?.occupation && state.user.occupation !== 'Software Engineer')
+            savedProfile?.occupation
           )
+
+          const mergedUser: UserProfile = {
+            ...GUEST_DEFAULTS,
+            ...(savedProfile || {}),
+            city: savedProfile?.city || state.city,
+            name: u.name || savedProfile?.name || 'Explorer',
+            email: u.email || savedProfile?.email || '',
+            avatar: u.avatar ?? savedProfile?.avatar ?? null,
+            occupation: u.occupation ?? savedProfile?.occupation ?? state.user?.occupation ?? null,
+            language: savedProfile?.language ?? state.user?.language ?? GUEST_DEFAULTS.language,
+            budget: savedProfile?.budget ?? state.user?.budget ?? GUEST_DEFAULTS.budget,
+            foodPref: savedProfile?.foodPref ?? state.user?.foodPref ?? GUEST_DEFAULTS.foodPref,
+            transport: savedProfile?.transport ?? state.user?.transport ?? GUEST_DEFAULTS.transport,
+            hasCompletedOnboarding: isAlreadyOnboarded,
+            createdAt: savedProfile?.createdAt || state.user?.createdAt || new Date().toISOString(),
+          }
+
+          const updatedProfiles = emailKey
+            ? { ...state.userProfiles, [emailKey]: mergedUser }
+            : state.userProfiles
+
+          const updatedOnboarded = (emailKey && isAlreadyOnboarded && !state.onboardedEmails.includes(emailKey))
+            ? [...state.onboardedEmails, emailKey]
+            : state.onboardedEmails
+
           return {
             isAuthenticated: true,
             view: 'dashboard',
             section: 'home',
             authProvider: provider,
             signInOpen: false,
-            onboardingOpen: !alreadyOnboarded,
-            user: {
-              ...GUEST_DEFAULTS,
-              city: state.city,
-              name: u.name,
-              email: u.email,
-              avatar: u.avatar ?? null,
-              occupation: u.occupation ?? state.user?.occupation ?? null,
-              language: state.user?.language ?? GUEST_DEFAULTS.language,
-              budget: state.user?.budget ?? GUEST_DEFAULTS.budget,
-              foodPref: state.user?.foodPref ?? GUEST_DEFAULTS.foodPref,
-              transport: state.user?.transport ?? GUEST_DEFAULTS.transport,
-              hasCompletedOnboarding: alreadyOnboarded,
-              createdAt: state.user?.createdAt || new Date().toISOString(),
-            },
+            onboardingOpen: !isAlreadyOnboarded,
+            user: mergedUser,
+            userProfiles: updatedProfiles,
+            onboardedEmails: updatedOnboarded,
           }
         }),
       signOut: () =>
@@ -274,6 +315,8 @@ export const useAppStore = create<AppState>()(
         liveLocation: state.liveLocation,
         notificationPrefs: state.notificationPrefs,
         travelHistory: state.travelHistory,
+        onboardedEmails: state.onboardedEmails,
+        userProfiles: state.userProfiles,
       }),
     }
   )
