@@ -1,29 +1,29 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, DM_Sans } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SupabaseAuthProvider } from "@/components/auth/supabase-provider";
 
-const plusJakartaSans = Plus_Jakarta_Sans({
-  variable: "--font-plus-jakarta",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
+  weight: ["400", "500", "600", "700", "800"],
   display: "swap",
 });
 
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
+const mono = JetBrains_Mono({
+  variable: "--font-mono",
   subsets: ["latin"],
   weight: ["400", "500", "700"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Norto — Your AI Companion for Every New City",
+  title: "Norto — Industrial AI Companion for Every New City",
   description:
-    "Norto is an AI-powered relocation and city assistant. Get personalized recommendations, local info, navigation, budgeting, emergency support, translation, weather, and nearby services — all in one intelligent app.",
+    "Norto is an AI-powered relocation and city assistant. Get personalized recommendations, local info, navigation, budgeting, emergency support, translation, weather, and nearby services — all in one tactile, physical interface.",
   keywords: [
     "Norto",
     "relocation assistant",
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     icon: "/logo.svg",
   },
   openGraph: {
-    title: "Norto — Your AI Companion for Every New City",
+    title: "Norto — Industrial AI Companion for Every New City",
     description:
       "AI-powered relocation and city assistant with maps, budgeting, translation, weather, emergency support, and more.",
     siteName: "Norto",
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Norto",
-    description: "Your AI Companion for Every New City",
+    description: "Your Industrial AI Companion for Every New City",
   },
 };
 
@@ -61,7 +61,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         suppressHydrationWarning
-        className={`${plusJakartaSans.variable} ${dmSans.variable} font-sans antialiased bg-background text-foreground`}
+        className={`${inter.variable} ${mono.variable} font-sans antialiased bg-[#e0e5ec] text-[#2d3436]`}
       >
         <ThemeProvider
           attribute="class"

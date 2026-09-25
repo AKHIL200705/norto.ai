@@ -23,7 +23,6 @@ export function SignInDialog() {
   const [magicSent, setMagicSent] = React.useState(false)
   const [authMode, setAuthMode] = React.useState<'google' | 'magic'>('google')
 
-  // Reset loading state when dialog opens
   React.useEffect(() => {
     if (open) {
       const timer = setTimeout(() => {
@@ -46,7 +45,6 @@ export function SignInDialog() {
         },
       })
       if (error) {
-        // Fallback for testing environments / placeholder keys
         signInStore({ name: 'Google User', email: 'user@gmail.com' }, 'google')
         setOpen(false)
         setView('dashboard')
@@ -76,7 +74,6 @@ export function SignInDialog() {
         },
       })
       if (error) {
-        // Fallback for local demo environment
         signInStore({ name: email.split('@')[0], email: email.trim() }, 'email')
         setOpen(false)
         setView('dashboard')
@@ -97,7 +94,7 @@ export function SignInDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent showCloseButton={false} className="p-0 overflow-hidden max-w-[380px] gap-0 border-0 bg-[#E0E5EC] dark:bg-[#181C24] neu-extruded rounded-[32px]">
+      <DialogContent showCloseButton={false} className="p-0 overflow-hidden max-w-[400px] gap-0 border-0 bg-[#e0e5ec] dark:bg-[#1e2227] neu-floating rounded-2xl">
         <DialogTitle className="sr-only">Sign in to Norto</DialogTitle>
         <DialogDescription className="sr-only">
           Sign in to Norto with Google or Magic Email Link.
@@ -111,109 +108,110 @@ export function SignInDialog() {
             exit={{ opacity: 0, scale: 0.96 }}
             transition={{ duration: 0.2 }}
           >
-            {/* Header band */}
-            <div className="relative bg-[#6C63FF] px-6 pt-6 pb-9 text-white overflow-hidden neu-extruded">
+            {/* Dark industrial header band */}
+            <div className="relative bg-[#2d3436] px-6 pt-6 pb-8 text-white neu-sharp">
               <button
                 onClick={() => setOpen(false)}
-                className="absolute right-4 top-4 grid size-8 place-items-center rounded-xl bg-white/20 hover:bg-white/30 text-white transition-all cursor-pointer neu-extruded-sm"
+                className="absolute right-4 top-4 grid size-8 place-items-center rounded-md bg-[#ff4757]/20 hover:bg-[#ff4757] text-white transition-all cursor-pointer border-0"
                 aria-label="Close"
               >
                 <X className="size-4" />
               </button>
               <div className="relative flex items-center gap-3">
-                <div className="size-11 rounded-2xl bg-[#E0E5EC] neu-inset-deep grid place-items-center shadow-md">
-                  <Compass className="size-5 text-[#6C63FF]" />
+                <div className="size-11 rounded-xl bg-[#15181c] neu-recessed grid place-items-center">
+                  <Compass className="size-6 text-[#ff4757]" />
                 </div>
                 <div>
-                  <p className="text-lg font-extrabold leading-tight font-display">Norto</p>
-                  <p className="text-xs text-violet-100 font-medium mt-0.5">Your AI City Companion</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-lg font-extrabold leading-tight font-mono">Norto</p>
+                    <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#ff4757] text-white font-bold">AUTH</span>
+                  </div>
+                  <p className="text-xs text-[#a0aec0] font-mono mt-0.5">// SYSTEM_AUTHENTICATION</p>
                 </div>
               </div>
             </div>
 
             {/* Form Body */}
             <div className="p-6">
-              <div className="rounded-2xl bg-[#E0E5EC] dark:bg-[#181C24] neu-inset p-5 text-center">
-                <h2 className="text-base font-extrabold text-[#3D4852] dark:text-[#E2E8F0] mb-1 font-display">
-                  Welcome to Norto
+              <div className="rounded-xl bg-[#e0e5ec] dark:bg-[#1e2227] neu-recessed p-5 text-center">
+                <h2 className="text-sm font-mono font-bold text-[#2d3436] dark:text-[#f0f2f5] uppercase tracking-wider mb-1">
+                  AUTHENTICATE_USER
                 </h2>
-                <p className="text-xs text-[#6B7280] font-medium mb-5">
-                  Sign in to access your personalized city companion.
+                <p className="text-xs text-[#4a5568] font-mono mb-5">
+                  Select authentication protocol below:
                 </p>
 
                 {/* Mode toggle */}
-                <div className="grid grid-cols-2 p-1 bg-[#E0E5EC] dark:bg-[#181C24] neu-inset-sm rounded-2xl mb-5 gap-1">
+                <div className="grid grid-cols-2 p-1 bg-[#d1d9e6] dark:bg-[#15181c] neu-recessed rounded-lg mb-5 gap-1 font-mono">
                   <button
                     type="button"
                     onClick={() => setAuthMode('google')}
-                    className={`text-xs font-bold py-2 rounded-xl transition-all cursor-pointer border-0 ${
+                    className={`text-xs font-bold py-2 rounded-md transition-all cursor-pointer border-0 ${
                       authMode === 'google'
-                        ? 'bg-[#6C63FF] text-white neu-extruded'
-                        : 'text-[#6B7280] hover:text-[#3D4852] dark:hover:text-[#E2E8F0]'
+                        ? 'neu-button-primary text-white'
+                        : 'text-[#4a5568] hover:text-[#ff4757]'
                     }`}
                   >
-                    Google OAuth
+                    OAUTH 2.0
                   </button>
                   <button
                     type="button"
                     onClick={() => setAuthMode('magic')}
-                    className={`text-xs font-bold py-2 rounded-xl transition-all cursor-pointer border-0 ${
+                    className={`text-xs font-bold py-2 rounded-md transition-all cursor-pointer border-0 ${
                       authMode === 'magic'
-                        ? 'bg-[#6C63FF] text-white neu-extruded'
-                        : 'text-[#6B7280] hover:text-[#3D4852] dark:hover:text-[#E2E8F0]'
+                        ? 'neu-button-primary text-white'
+                        : 'text-[#4a5568] hover:text-[#ff4757]'
                     }`}
                   >
-                    Magic Link
+                    MAGIC LINK
                   </button>
                 </div>
 
                 {authMode === 'google' ? (
-                  /* Google OAuth button */
                   <button
                     onClick={handleGoogleOAuth}
                     disabled={isLoading}
-                    className="w-full h-12 rounded-2xl bg-[#E0E5EC] dark:bg-[#181C24] text-[#3D4852] dark:text-[#E2E8F0] neu-extruded hover:-translate-y-0.5 active:neu-inset-sm transition-all flex items-center justify-center gap-3 text-sm font-extrabold disabled:opacity-50 cursor-pointer border-0"
+                    className="w-full h-12 rounded-lg bg-[#e0e5ec] dark:bg-[#1e2227] text-[#2d3436] dark:text-[#f0f2f5] neu-card hover:neu-floating active:translate-y-[2px] transition-all flex items-center justify-center gap-3 text-xs font-mono font-bold disabled:opacity-50 cursor-pointer border-0"
                   >
                     {isLoading ? (
                       <>
-                        <Loader2 className="size-5 animate-spin text-[#6C63FF]" />
-                        <span>Connecting…</span>
+                        <Loader2 className="size-5 animate-spin text-[#ff4757]" />
+                        <span>CONNECTING…</span>
                       </>
                     ) : (
                       <>
                         <GoogleIcon className="size-5" />
-                        <span>Sign in with Google</span>
+                        <span>SIGN_IN_WITH_GOOGLE</span>
                       </>
                     )}
                   </button>
                 ) : magicSent ? (
-                  <div className="p-3.5 rounded-2xl bg-[#E0E5EC] dark:bg-[#181C24] neu-inset text-[#38B2AC] text-xs font-medium space-y-1">
-                    <p className="font-extrabold text-sm">Check your inbox!</p>
-                    <p>We sent a magic sign-in link to <strong>{email}</strong>.</p>
+                  <div className="p-4 rounded-lg bg-[#e0e5ec] dark:bg-[#15181c] neu-recessed text-[#22c55e] text-xs font-mono space-y-1">
+                    <p className="font-bold text-sm">MAGIC_LINK_DISPATCHED</p>
+                    <p className="text-[#4a5568]">Link sent to: <strong>{email}</strong></p>
                   </div>
                 ) : (
-                  /* Magic Link form */
                   <form onSubmit={handleMagicLink} className="space-y-3.5">
                     <input
                       type="email"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Enter your email address..."
-                      className="w-full h-11 px-4 rounded-2xl bg-[#E0E5EC] dark:bg-[#181C24] text-[#3D4852] dark:text-[#E2E8F0] neu-inset focus:neu-inset-deep text-sm font-medium outline-none transition-all border-0 placeholder:text-[#6B7280]"
+                      placeholder="user@example.com"
+                      className="w-full h-12 px-4 rounded-lg bg-[#e0e5ec] dark:bg-[#15181c] text-[#2d3436] dark:text-[#f0f2f5] neu-recessed focus:ring-2 focus:ring-[#ff4757] text-xs font-mono outline-none border-0 placeholder:text-[#4a5568]"
                     />
                     <button
                       type="submit"
                       disabled={isLoading || !email.trim()}
-                      className="w-full h-12 rounded-2xl bg-[#6C63FF] hover:bg-[#8B84FF] text-white font-extrabold text-sm neu-extruded hover:-translate-y-0.5 active:neu-inset-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer border-0"
+                      className="w-full h-12 rounded-lg neu-button-primary text-white font-mono font-bold text-xs flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer border-0"
                     >
                       {isLoading ? (
                         <>
                           <Loader2 className="size-4 animate-spin text-white" />
-                          <span>Sending Link…</span>
+                          <span>SENDING…</span>
                         </>
                       ) : (
-                        <span>Send Magic Link</span>
+                        <span>SEND_MAGIC_LINK</span>
                       )}
                     </button>
                   </form>

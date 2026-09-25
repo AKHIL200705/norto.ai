@@ -12,72 +12,65 @@ import {
   Bookmark,
   type LucideIcon,
 } from 'lucide-react'
+import { VentSlots } from '@/components/ui/card'
 
 interface Feature {
   icon: LucideIcon
   title: string
   desc: string
-  gradient: string
-  iconColor: string
+  code: string
   span?: string
 }
 
 const FEATURES: Feature[] = [
   {
     icon: Bot,
-    title: 'AI Assistant',
+    title: 'AI Assistant Module',
+    code: 'MOD_01',
     desc: 'Ask anything about your city — visas, transport, local quirks. Get instant, contextual answers.',
-    gradient: 'from-[#DD0200] via-[#8B0000] to-[#55100D]',
-    iconColor: 'text-white',
     span: 'sm:col-span-2',
   },
   {
     icon: Map,
-    title: 'Smart Map',
-    desc: 'Discover PGs, mess, hospitals, ATMs and more nearby — filtered by your needs.',
-    gradient: 'from-[#DD0200] to-rose-600',
-    iconColor: 'text-white',
+    title: 'Smart Map Telemetry',
+    code: 'MOD_02',
+    desc: 'Discover PGs, mess, hospitals, ATMs and more nearby — filtered by your custom specs.',
   },
   {
     icon: Wallet,
-    title: 'Budget Planner',
+    title: 'Budget Calculator',
+    code: 'MOD_03',
     desc: 'Track rent, food, transport and get AI insights on where to save every month.',
-    gradient: 'from-[#8B0000] to-[#55100D]',
-    iconColor: 'text-white',
   },
   {
     icon: Utensils,
-    title: 'Food Recommendations',
+    title: 'Food Recommendation Engine',
+    code: 'MOD_04',
     desc: 'Veg, non-veg, Jain, vegan — curated local eats that fit your taste and wallet.',
-    gradient: 'from-[#DD0200] to-rose-500',
-    iconColor: 'text-white',
   },
   {
     icon: Languages,
-    title: 'Translator (10 languages)',
+    title: 'Multi-Lingual Translator',
+    code: 'MOD_05',
     desc: 'Hindi, Telugu, Tamil, Kannada and more — speak like a local from day one.',
-    gradient: 'from-[#8B0000] to-[#DD0200]',
-    iconColor: 'text-white',
   },
   {
     icon: ScanText,
-    title: 'OCR Scanner',
+    title: 'OCR Scanner Protocol',
+    code: 'MOD_06',
     desc: 'Snap a sign, menu, or document — get instant English translation on the spot.',
-    gradient: 'from-[#8B0000] to-[#55100D]',
-    iconColor: 'text-white',
   },
   {
     icon: Bookmark,
-    title: 'Saved Places',
+    title: 'Saved Places Vault',
+    code: 'MOD_07',
     desc: 'Bookmark the spots you love — build your personal city guide over time.',
-    gradient: 'from-[#DD0200] to-[#8B0000]',
-    iconColor: 'text-white',
   },
 ]
 
 export function LandingFeatures() {
   return (
-    <section id="features" className="relative py-24 sm:py-32 bg-[#E0E5EC] dark:bg-[#181C24]">
+    <section id="features" className="relative py-24 sm:py-32 bg-[#e0e5ec] dark:bg-[#1e2227]">
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -86,18 +79,14 @@ export function LandingFeatures() {
           transition={{ duration: 0.5 }}
           className="mx-auto mb-16 max-w-2xl text-center"
         >
-          <span className="inline-flex items-center gap-2 rounded-full bg-[#E0E5EC] dark:bg-[#181C24] neu-inset px-5 py-2 text-xs font-bold text-[#6C63FF]">
-            Features
+          <span className="inline-flex items-center gap-2 rounded-md bg-[#e0e5ec] dark:bg-[#1e2227] neu-recessed px-4 py-1.5 text-xs font-mono font-bold text-[#ff4757]">
+            // SYSTEM_FEATURES
           </span>
-          <h2 className="mt-5 text-balance text-3xl font-extrabold tracking-tight text-[#3D4852] dark:text-[#E2E8F0] sm:text-4xl lg:text-5xl font-display">
-            Everything you need to{' '}
-            <span className="text-[#6C63FF]">
-              settle in
-            </span>
+          <h2 className="mt-5 text-balance text-3xl font-extrabold tracking-tight text-[#2d3436] dark:text-[#f0f2f5] sm:text-4xl lg:text-5xl font-sans drop-shadow-[0_1px_0_#ffffff]">
+            Seven Modules Built for <span className="text-[#ff4757]">Relocation Precision</span>
           </h2>
-          <p className="mt-4 text-pretty text-base text-[#6B7280] dark:text-[#94A3B8] font-medium sm:text-lg">
-            Seven powerful tools, one intelligent companion. Built for relocators,
-            students, and digital nomads across India.
+          <p className="mt-4 text-pretty text-base text-[#4a5568] dark:text-[#a0aec0] font-medium sm:text-lg">
+            Engineered for relocators, students, and digital nomads across India.
           </p>
         </motion.div>
 
@@ -119,16 +108,26 @@ export function LandingFeatures() {
                 visible: { opacity: 1, y: 0 },
               }}
               transition={{ duration: 0.45, ease: 'easeOut' }}
-              className={`group relative flex flex-col gap-5 overflow-hidden rounded-[32px] bg-[#E0E5EC] dark:bg-[#181C24] neu-extruded p-8 transition-all duration-300 hover:-translate-y-1 hover:neu-extruded-hover border-0 ${f.span ?? ''}`}
+              className={`group relative flex flex-col gap-5 overflow-hidden rounded-2xl bg-[#e0e5ec] dark:bg-[#1e2227] neu-card p-8 transition-all duration-300 hover:-translate-y-1 hover:neu-floating border-0 screw-corners ${f.span ?? ''}`}
             >
-              <span
-                className="grid size-14 place-items-center rounded-2xl bg-[#E0E5EC] dark:bg-[#181C24] neu-inset-deep text-[#6C63FF] transition-all duration-300 group-hover:scale-105"
-              >
-                <f.icon className="size-6 text-[#6C63FF]" />
-              </span>
+              {/* Header with Vent Slots and Module Code */}
+              <div className="flex items-center justify-between">
+                <span
+                  className="grid size-14 place-items-center rounded-xl bg-[#e0e5ec] dark:bg-[#1e2227] neu-recessed text-[#ff4757] transition-all duration-300 group-hover:scale-110"
+                >
+                  <f.icon className="size-6 text-[#ff4757]" />
+                </span>
+                <div className="flex items-center gap-3">
+                  <span className="font-mono text-[10px] font-bold text-[#ff4757] bg-[#ff4757]/10 px-2 py-1 rounded">
+                    {f.code}
+                  </span>
+                  <VentSlots />
+                </div>
+              </div>
+
               <div>
-                <h3 className="text-xl font-bold text-[#3D4852] dark:text-[#E2E8F0] font-display">{f.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-[#6B7280] dark:text-[#94A3B8] font-medium">
+                <h3 className="text-lg font-bold text-[#2d3436] dark:text-[#f0f2f5] font-sans">{f.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-[#4a5568] dark:text-[#a0aec0] font-medium">
                   {f.desc}
                 </p>
               </div>
