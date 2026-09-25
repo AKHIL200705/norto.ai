@@ -42,6 +42,7 @@ const FOOD_PREFERENCES = [
 export function OnboardingDialog() {
   const open = useAppStore((s) => s.onboardingOpen)
   const setOpen = useAppStore((s) => s.setOnboardingOpen)
+  const isAuth = useAppStore((s) => s.isAuthenticated)
   const user = useAppStore((s) => s.user)
   const updateUser = useAppStore((s) => s.updateUser)
 
@@ -53,6 +54,10 @@ export function OnboardingDialog() {
 
   // Sync state when dialog opens or user loads
   React.useEffect(() => {
+    if (!isAuth) {
+      setOpen(false)
+      return
+    }
     if (open && user) {
       if (user.hasCompletedOnboarding) {
         setOpen(false)
@@ -66,7 +71,7 @@ export function OnboardingDialog() {
       }, 0)
       return () => clearTimeout(timer)
     }
-  }, [open, user, setOpen])
+  }, [open, isAuth, user, setOpen])
 
   const handleClose = () => {
     if (user) {
@@ -101,8 +106,10 @@ export function OnboardingDialog() {
     setOpen(false)
   }
 
+  const isOpen = Boolean(open && isAuth && !user?.hasCompletedOnboarding)
+
   return (
-    <Dialog open={open && !user?.hasCompletedOnboarding} onOpenChange={(v) => { if (!v) handleClose(); else setOpen(v); }}>
+    <Dialog open={isOpen} onOpenChange={(v) => { if (!v) handleClose(); else setOpen(v); }}>
       <DialogContent showCloseButton={false} className="p-0 overflow-hidden max-w-[480px] gap-0 border-[#D9D9D9] rounded-3xl">
         <DialogTitle className="sr-only">Complete Your Profile</DialogTitle>
         <DialogDescription className="sr-only">
