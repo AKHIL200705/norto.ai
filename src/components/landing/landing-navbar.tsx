@@ -17,8 +17,8 @@ import { cn } from '@/lib/utils'
 import { GoogleIcon } from '@/components/auth/google-icon'
 
 const NAV_LINKS = [
-  { label: 'FEATURES', href: '#features' },
-  { label: 'WORKFLOW', href: '#how-it-works' },
+  { label: 'Features', href: '#features' },
+  { label: 'How it works', href: '#how-it-works' },
 ]
 
 function UserBadge() {
@@ -30,15 +30,15 @@ function UserBadge() {
   return (
     <button
       onClick={() => setView('dashboard')}
-      className="flex items-center gap-2.5 h-11 pl-2 pr-4 rounded-lg bg-[#e0e5ec] dark:bg-[#1e2227] neu-card hover:neu-floating active:translate-y-[2px] transition-all cursor-pointer border-0 font-mono"
+      className="flex items-center gap-2.5 h-11 pl-2 pr-4 rounded-2xl bg-[#E0E5EC] dark:bg-[#181C24] neu-extruded hover:neu-extruded-hover active:neu-inset-sm transition-all cursor-pointer border-0"
       aria-label={`Signed in as ${user.name}`}
     >
-      <Avatar className="size-8 neu-recessed">
-        <AvatarFallback className="bg-[#ff4757] text-white text-xs font-bold">
+      <Avatar className="size-8 neu-inset-deep">
+        <AvatarFallback className="bg-[#6C63FF] text-white text-xs font-bold">
           {initials}
         </AvatarFallback>
       </Avatar>
-      <span className="hidden sm:inline text-xs font-bold text-[#2d3436] dark:text-[#f0f2f5] max-w-[120px] truncate">{user.name.split(' ')[0]}</span>
+      <span className="hidden sm:inline text-sm font-bold text-[#3D4852] dark:text-[#E2E8F0] max-w-[120px] truncate">{user.name.split(' ')[0]}</span>
     </button>
   )
 }
@@ -71,33 +71,33 @@ export function LandingNavbar() {
   return (
     <header
       className={cn(
-        'sticky top-0 z-50 w-full transition-all duration-300 font-mono',
-        scrolled ? 'bg-[#e0e5ec] dark:bg-[#1e2227] neu-card border-0' : 'bg-[#e0e5ec] dark:bg-[#1e2227]'
+        'sticky top-0 z-50 w-full transition-all duration-300',
+        scrolled ? 'bg-[#E0E5EC] dark:bg-[#181C24] neu-extruded-sm border-0' : 'bg-[#E0E5EC] dark:bg-[#181C24]'
       )}
     >
       <nav className="mx-auto flex h-20 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="group flex items-center gap-3 outline-none rounded-lg cursor-pointer border-0"
+          className="group flex items-center gap-3 outline-none rounded-2xl cursor-pointer border-0"
           aria-label="Norto home"
         >
-          <span className="relative grid size-11 place-items-center rounded-xl bg-[#e0e5ec] dark:bg-[#1e2227] neu-recessed transition-transform group-hover:scale-105">
-            <Compass className="size-6 text-[#ff4757]" />
-            <span className="absolute top-1 right-1 size-2 rounded-full bg-[#22c55e] animate-led-pulse neu-glow-green" />
+          <span className="relative grid size-11 place-items-center rounded-2xl bg-[#E0E5EC] dark:bg-[#181C24] neu-inset-deep transition-transform group-hover:scale-105">
+            <Compass className="size-6 text-[#6C63FF]" />
+            <span className="absolute right-1 top-1 size-2.5 rounded-full bg-[#38B2AC]" />
           </span>
-          <span className="text-2xl font-extrabold tracking-tight text-[#2d3436] dark:text-[#f0f2f5]">
-            Nor<span className="text-[#ff4757]">to</span>
+          <span className="text-2xl font-extrabold tracking-tight text-[#000000] dark:text-[#FFFFFF] font-display">
+            Nor<span className="text-[#6C63FF]">to</span>
           </span>
         </button>
 
         {/* Desktop links */}
-        <div className="hidden items-center gap-3 md:flex">
+        <div className="hidden items-center gap-2 md:flex">
           {NAV_LINKS.map((l) => (
             <button
               key={l.href}
               onClick={() => handleNav(l.href)}
-              className="rounded-md px-4 py-2 text-xs font-bold text-[#4a5568] transition-all hover:text-[#ff4757] hover:neu-card active:translate-y-[2px] cursor-pointer border-0"
+              className="rounded-2xl px-4 py-2.5 text-sm font-bold text-[#1A1A1A] transition-all hover:text-[#000000] dark:hover:text-[#FFFFFF] hover:neu-extruded-sm active:neu-inset-sm cursor-pointer border-0"
             >
               {l.label}
             </button>
@@ -111,12 +111,12 @@ export function LandingNavbar() {
             size="icon"
             aria-label="Toggle theme"
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className="neu-button-secondary rounded-lg"
+            className="neu-button"
           >
             {theme === 'dark' ? (
-              <Sun className="size-5 text-[#ff4757]" />
+              <Sun className="size-5 text-[#6C63FF]" />
             ) : (
-              <Moon className="size-5 text-[#ff4757]" />
+              <Moon className="size-5 text-[#6C63FF]" />
             )}
           </Button>
 
@@ -125,11 +125,11 @@ export function LandingNavbar() {
           ) : (
             <Button
               onClick={openSignIn}
-              className="neu-button-primary rounded-lg h-11 px-6 text-xs font-bold cursor-pointer"
+              className="neu-button-primary rounded-2xl h-11 px-6 text-sm font-extrabold cursor-pointer"
             >
               <GoogleIcon className="size-4" />
-              <span className="hidden sm:inline">SIGN IN</span>
-              <span className="sm:hidden">SIGN IN</span>
+              <span className="hidden sm:inline">Sign in with Google</span>
+              <span className="sm:hidden">Sign in</span>
             </Button>
           )}
 
@@ -140,26 +140,26 @@ export function LandingNavbar() {
                 variant="ghost"
                 size="icon"
                 aria-label="Open menu"
-                className="md:hidden neu-button-secondary rounded-lg"
+                className="md:hidden rounded-full"
               >
-                <Menu className="size-5 text-[#2d3436]" />
+                <Menu className="size-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[280px] sm:w-[320px] bg-[#e0e5ec] dark:bg-[#1e2227] border-0 neu-floating text-[#2d3436] font-mono">
+            <SheetContent side="right" className="w-[280px] sm:w-[320px] bg-[#E0E5EC] dark:bg-[#181C24] border-0 neu-extruded text-[#3D4852] dark:text-[#E2E8F0]">
               <div className="flex h-full flex-col gap-3 pt-6">
                 <div className="mb-4 flex items-center gap-3 px-2">
-                  <span className="grid size-11 place-items-center rounded-xl bg-[#e0e5ec] dark:bg-[#1e2227] neu-recessed">
-                    <Compass className="size-6 text-[#ff4757]" />
+                  <span className="grid size-11 place-items-center rounded-2xl bg-[#E0E5EC] dark:bg-[#181C24] neu-inset-deep">
+                    <Compass className="size-6 text-[#6C63FF]" />
                   </span>
-                  <span className="text-xl font-extrabold tracking-tight text-[#2d3436] dark:text-[#f0f2f5]">
-                    Nor<span className="text-[#ff4757]">to</span>
+                  <span className="text-xl font-extrabold tracking-tight font-display text-[#3D4852] dark:text-[#E2E8F0]">
+                    Nor<span className="text-[#6C63FF]">to</span>
                   </span>
                 </div>
                 {NAV_LINKS.map((l) => (
                   <SheetClose asChild key={l.href}>
                     <button
                       onClick={() => handleNav(l.href)}
-                      className="rounded-lg px-4 py-3 text-left text-xs font-bold text-[#4a5568] transition-colors hover:text-[#ff4757] hover:neu-card cursor-pointer border-0"
+                      className="rounded-2xl px-4 py-3 text-left text-base font-bold text-[#6B7280] transition-colors hover:text-[#3D4852] dark:hover:text-[#E2E8F0] hover:neu-extruded-sm active:neu-inset-sm cursor-pointer border-0"
                     >
                       {l.label}
                     </button>
@@ -167,22 +167,22 @@ export function LandingNavbar() {
                 ))}
                 <div className="mt-auto px-2 pb-4 space-y-3">
                   {isAuth ? (
-                    <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#e0e5ec] dark:bg-[#1e2227] neu-card">
-                      <Avatar className="size-8 neu-recessed">
-                        <AvatarFallback className="bg-[#ff4757] text-white text-xs font-bold">
+                    <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-[#E0E5EC] dark:bg-[#181C24] neu-extruded">
+                      <Avatar className="size-8 neu-inset-deep">
+                        <AvatarFallback className="bg-[#6C63FF] text-white text-xs font-bold">
                           {userInitials}
                         </AvatarFallback>
                       </Avatar>
-                      <span className="text-xs font-bold truncate text-[#2d3436] dark:text-[#f0f2f5]">{user?.name}</span>
+                      <span className="text-sm font-bold truncate text-[#3D4852] dark:text-[#E2E8F0]">{user?.name}</span>
                     </div>
                   ) : (
                     <SheetClose asChild>
                       <Button
                         onClick={openSignIn}
-                        className="w-full neu-button-primary rounded-lg h-12 text-xs font-bold cursor-pointer"
+                        className="w-full neu-button-primary rounded-2xl h-12 text-sm font-extrabold cursor-pointer"
                       >
                         <GoogleIcon className="size-4" />
-                        SIGN IN WITH GOOGLE
+                        Sign in with Google
                       </Button>
                     </SheetClose>
                   )}

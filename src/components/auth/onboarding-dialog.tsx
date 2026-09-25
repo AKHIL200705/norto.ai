@@ -4,7 +4,7 @@ import * as React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
 import {
-  Compass, Briefcase, Wallet, Languages, Utensils, Sparkles, ArrowRight, X,
+  Compass, Briefcase, Wallet, Languages, Utensils, Check, Sparkles, ArrowRight, X,
 } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
 import { LANGUAGES } from '@/lib/types'
@@ -52,6 +52,7 @@ export function OnboardingDialog() {
   const [foodPref, setFoodPref] = React.useState('Vegetarian')
   const [isSubmitting, setIsSubmitting] = React.useState(false)
 
+  // Sync state when dialog opens or user loads
   React.useEffect(() => {
     if (!isAuth) {
       setOpen(false)
@@ -109,7 +110,7 @@ export function OnboardingDialog() {
 
   return (
     <Dialog open={isOpen} onOpenChange={(v) => { if (!v) handleClose(); else setOpen(v); }}>
-      <DialogContent showCloseButton={false} className="p-0 overflow-hidden max-w-[500px] gap-0 border-0 bg-[#e0e5ec] dark:bg-[#1e2227] neu-floating rounded-2xl">
+      <DialogContent showCloseButton={false} className="p-0 overflow-hidden max-w-[480px] gap-0 border-0 bg-[#E0E5EC] dark:bg-[#181C24] neu-extruded rounded-[32px]">
         <DialogTitle className="sr-only">Complete Your Profile</DialogTitle>
         <DialogDescription className="sr-only">
           Set up your occupation, monthly budget, preferred language, and food preference for Norto.
@@ -123,47 +124,47 @@ export function OnboardingDialog() {
             exit={{ opacity: 0, scale: 0.96 }}
             transition={{ duration: 0.2 }}
           >
-            {/* Dark industrial header band */}
-            <div className="relative bg-[#2d3436] px-6 pt-6 pb-8 text-white neu-sharp">
+            {/* Header band */}
+            <div className="relative bg-[#6C63FF] px-6 pt-6 pb-8 text-white overflow-hidden neu-extruded">
               <button
                 onClick={handleClose}
-                className="absolute right-4 top-4 grid size-8 place-items-center rounded-md bg-[#ff4757]/20 hover:bg-[#ff4757] text-white transition-all cursor-pointer border-0"
+                className="absolute right-4 top-4 grid size-9 place-items-center rounded-2xl bg-white/20 hover:bg-white/30 text-white transition-all cursor-pointer neu-extruded-sm"
                 aria-label="Close"
               >
                 <X className="size-4" />
               </button>
               <div className="relative flex items-center gap-3">
-                <div className="size-12 rounded-xl bg-[#15181c] neu-recessed grid place-items-center">
-                  <Compass className="size-6 text-[#ff4757]" />
+                <div className="size-12 rounded-2xl bg-[#E0E5EC] neu-inset-deep grid place-items-center shadow-lg">
+                  <Compass className="size-6 text-[#6C63FF]" />
                 </div>
                 <div>
-                  <div className="flex items-center gap-2">
-                    <p className="text-lg font-extrabold leading-tight font-mono">USER_PROFILE_SETUP</p>
-                    <Sparkles className="size-4 text-[#ff4757] animate-pulse" />
+                  <div className="flex items-center gap-1.5">
+                    <p className="text-xl font-extrabold leading-tight font-display">Complete Your Profile</p>
+                    <Sparkles className="size-4 text-amber-300 animate-pulse" />
                   </div>
-                  <p className="text-xs text-[#a0aec0] font-mono mt-0.5">
-                    // CONFIG_PARAMETRIC_PREFERENCES
+                  <p className="text-xs text-violet-100 font-medium mt-0.5">
+                    Help Norto personalize recommendations for you
                   </p>
                 </div>
               </div>
             </div>
 
             {/* Form Body */}
-            <form onSubmit={handleSave} className="p-6 space-y-5 font-mono">
-              <div className="rounded-xl bg-[#e0e5ec] dark:bg-[#1e2227] neu-recessed p-5 space-y-4">
+            <form onSubmit={handleSave} className="p-6 space-y-5">
+              <div className="rounded-2xl bg-[#E0E5EC] dark:bg-[#181C24] neu-inset p-5 space-y-4">
                 
                 {/* 1. Occupation */}
                 <div className="space-y-2">
-                  <Label htmlFor="ob-occ" className="text-xs text-[#4a5568] font-bold uppercase flex items-center gap-1.5">
-                    <Briefcase className="size-3.5 text-[#ff4757]" />
-                    <span>1. OCCUPATION / PROFESSION *</span>
+                  <Label htmlFor="ob-occ" className="text-xs text-[#6B7280] font-bold flex items-center gap-1.5">
+                    <Briefcase className="size-3.5 text-[#6C63FF]" />
+                    <span>Occupation / Profession *</span>
                   </Label>
                   <Input
                     id="ob-occ"
                     required
                     value={occupation}
                     onChange={(e) => setOccupation(e.target.value)}
-                    placeholder="Software Engineer"
+                    placeholder="e.g. Software Engineer, Student, Designer..."
                   />
                   <div className="flex flex-wrap gap-1.5 pt-1">
                     {OCCUPATION_SUGGESTIONS.map((occ) => (
@@ -172,10 +173,10 @@ export function OnboardingDialog() {
                         type="button"
                         onClick={() => setOccupation(occ)}
                         className={cn(
-                          'text-[11px] px-3 py-1.5 rounded-md font-bold transition-all cursor-pointer border-0',
+                          'text-[11px] px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer border-0',
                           occupation === occ
-                            ? 'neu-button-primary text-white'
-                            : 'bg-[#e0e5ec] dark:bg-[#1e2227] neu-card text-[#2d3436] dark:text-[#f0f2f5] hover:text-[#ff4757]',
+                            ? 'bg-[#6C63FF] text-white neu-extruded'
+                            : 'bg-[#E0E5EC] dark:bg-[#181C24] neu-extruded-sm text-[#3D4852] dark:text-[#E2E8F0] hover:text-[#6C63FF]',
                         )}
                       >
                         {occ}
@@ -186,12 +187,12 @@ export function OnboardingDialog() {
 
                 {/* 2. Monthly Budget */}
                 <div className="space-y-2">
-                  <Label htmlFor="ob-budget" className="text-xs text-[#4a5568] font-bold uppercase flex items-center gap-1.5">
-                    <Wallet className="size-3.5 text-[#ff4757]" />
-                    <span>2. MONTHLY LIVING BUDGET (₹) *</span>
+                  <Label htmlFor="ob-budget" className="text-xs text-[#6B7280] font-bold flex items-center gap-1.5">
+                    <Wallet className="size-3.5 text-[#6C63FF]" />
+                    <span>Monthly Living Budget (₹) *</span>
                   </Label>
                   <div className="relative">
-                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 font-extrabold text-[#4a5568]">
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 font-extrabold text-[#6B7280]">
                       ₹
                     </span>
                     <Input
@@ -212,10 +213,10 @@ export function OnboardingDialog() {
                         type="button"
                         onClick={() => setBudget(b)}
                         className={cn(
-                          'text-[11px] px-3 py-1.5 rounded-md font-bold transition-all cursor-pointer border-0',
+                          'text-[11px] px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer border-0',
                           budget === b
-                            ? 'neu-button-primary text-white'
-                            : 'bg-[#e0e5ec] dark:bg-[#1e2227] neu-card text-[#2d3436] dark:text-[#f0f2f5] hover:text-[#ff4757]',
+                            ? 'bg-[#6C63FF] text-white neu-extruded'
+                            : 'bg-[#E0E5EC] dark:bg-[#181C24] neu-extruded-sm text-[#3D4852] dark:text-[#E2E8F0] hover:text-[#6C63FF]',
                         )}
                       >
                         ₹{b.toLocaleString('en-IN')}
@@ -229,15 +230,15 @@ export function OnboardingDialog() {
                   
                   {/* Preferred Language */}
                   <div className="space-y-2">
-                    <Label htmlFor="ob-lang" className="text-xs text-[#4a5568] font-bold uppercase flex items-center gap-1.5">
-                      <Languages className="size-3.5 text-[#ff4757]" />
-                      <span>3. LANGUAGE</span>
+                    <Label htmlFor="ob-lang" className="text-xs text-[#6B7280] font-bold flex items-center gap-1.5">
+                      <Languages className="size-3.5 text-[#6C63FF]" />
+                      <span>Preferred Language</span>
                     </Label>
                     <Select value={language} onValueChange={setLanguage}>
-                      <SelectTrigger id="ob-lang" className="w-full h-11 rounded-md bg-[#e0e5ec] dark:bg-[#15181c] neu-recessed border-0 font-bold text-[#2d3436] dark:text-[#f0f2f5]">
+                      <SelectTrigger id="ob-lang" className="w-full h-11 rounded-2xl bg-[#E0E5EC] dark:bg-[#181C24] neu-inset border-0 font-bold text-[#3D4852] dark:text-[#E2E8F0]">
                         <SelectValue placeholder="Select language" />
                       </SelectTrigger>
-                      <SelectContent className="bg-[#e0e5ec] dark:bg-[#1e2227] neu-floating rounded-lg border-0 font-mono">
+                      <SelectContent className="bg-[#E0E5EC] dark:bg-[#181C24] neu-extruded rounded-2xl border-0">
                         {LANGUAGES.map((lang) => (
                           <SelectItem key={lang} value={lang}>
                             {lang}
@@ -249,15 +250,15 @@ export function OnboardingDialog() {
 
                   {/* Food Preference */}
                   <div className="space-y-2">
-                    <Label className="text-xs text-[#4a5568] font-bold uppercase flex items-center gap-1.5">
-                      <Utensils className="size-3.5 text-[#ff4757]" />
-                      <span>4. DIETARY</span>
+                    <Label className="text-xs text-[#6B7280] font-bold flex items-center gap-1.5">
+                      <Utensils className="size-3.5 text-[#6C63FF]" />
+                      <span>Food Preference</span>
                     </Label>
                     <Select value={foodPref} onValueChange={setFoodPref}>
-                      <SelectTrigger className="w-full h-11 rounded-md bg-[#e0e5ec] dark:bg-[#15181c] neu-recessed border-0 font-bold text-[#2d3436] dark:text-[#f0f2f5]">
+                      <SelectTrigger className="w-full h-11 rounded-2xl bg-[#E0E5EC] dark:bg-[#181C24] neu-inset border-0 font-bold text-[#3D4852] dark:text-[#E2E8F0]">
                         <SelectValue placeholder="Food pref" />
                       </SelectTrigger>
-                      <SelectContent className="bg-[#e0e5ec] dark:bg-[#1e2227] neu-floating rounded-lg border-0 font-mono">
+                      <SelectContent className="bg-[#E0E5EC] dark:bg-[#181C24] neu-extruded rounded-2xl border-0">
                         {FOOD_PREFERENCES.map((f) => (
                           <SelectItem key={f.id} value={f.id}>
                             <span className="mr-1.5">{f.icon}</span>
@@ -274,9 +275,9 @@ export function OnboardingDialog() {
                   <Button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full h-12 rounded-lg neu-button-primary text-white font-mono font-bold text-xs flex items-center justify-center gap-2 cursor-pointer border-0"
+                    className="w-full h-12 rounded-2xl bg-[#6C63FF] hover:bg-[#8B84FF] text-white font-extrabold text-sm neu-extruded hover:-translate-y-0.5 active:neu-inset-sm transition-all flex items-center justify-center gap-2 cursor-pointer border-0"
                   >
-                    <span>SAVE_CONFIGURATION</span>
+                    <span>Save &amp; Continue to Norto</span>
                     <ArrowRight className="size-4" />
                   </Button>
                 </div>

@@ -122,11 +122,11 @@ export function DashboardHome() {
                   {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}
                 </span>
               </div>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight font-display text-[#3D4852]">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight font-display text-[#000000]">
                 Welcome back, {firstName} 👋
               </h1>
-              <p className="text-[#6B7280] text-sm sm:text-base leading-relaxed">
-                You&apos;re all set in <span className="font-bold text-[#3D4852] underline decoration-[#6C63FF] underline-offset-4">{city}</span>. Let&apos;s make your move smoother — explore essentials, plan your budget, and discover the city with AI by your side.
+              <p className="text-[#222222] text-sm sm:text-base leading-relaxed">
+                You&apos;re all set in <span className="font-bold text-[#000000] underline decoration-[#6C63FF] underline-offset-4">{city}</span>. Let&apos;s make your move smoother — explore essentials, plan your budget, and discover the city with AI by your side.
               </p>
               <div className="flex flex-wrap gap-3 pt-2">
                 <Button
