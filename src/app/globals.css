@@ -47,8 +47,8 @@
   --radius: 1rem;
   /* Neumorphism (Soft UI) Token System:
      - Base Clay Surface: #E0E5EC
-     - Primary Text: #000000 (Crisp Solid Black)
-     - Muted Text: #333333 (Dark Charcoal Black)
+     - Primary Text: #000000 (Pure Jet Black)
+     - Muted Text: #0A0A0A (Dark Deep Black)
      - Accent Soft Violet: #6C63FF
      - Accent Light Violet: #8B84FF
      - Secondary Accent Teal: #38B2AC
@@ -64,7 +64,7 @@
   --secondary: #E0E5EC;
   --secondary-foreground: #000000;
   --muted: #E0E5EC;
-  --muted-foreground: #333333;
+  --muted-foreground: #0A0A0A;
   --accent: #6C63FF;
   --accent-foreground: #ffffff;
   --destructive: #E53E3E;
@@ -88,17 +88,17 @@
 
 .dark {
   --background: #181C24;
-  --foreground: #E2E8F0;
+  --foreground: #FFFFFF;
   --card: #181C24;
-  --card-foreground: #E2E8F0;
+  --card-foreground: #FFFFFF;
   --popover: #181C24;
-  --popover-foreground: #E2E8F0;
+  --popover-foreground: #FFFFFF;
   --primary: #6C63FF;
   --primary-foreground: #ffffff;
   --secondary: #181C24;
-  --secondary-foreground: #E2E8F0;
+  --secondary-foreground: #FFFFFF;
   --muted: #181C24;
-  --muted-foreground: #94A3B8;
+  --muted-foreground: #E2E8F0;
   --accent: #6C63FF;
   --accent-foreground: #ffffff;
   --destructive: #F56565;
@@ -106,7 +106,7 @@
   --input: #181C24;
   --ring: #6C63FF;
   --sidebar: #181C24;
-  --sidebar-foreground: #E2E8F0;
+  --sidebar-foreground: #FFFFFF;
   --sidebar-primary: #6C63FF;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #181C24;
@@ -128,6 +128,7 @@
     background-color: var(--background);
     color: var(--foreground);
     font-family: var(--font-plus-jakarta), 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-weight: 600;
     font-feature-settings: "dtls" 1, "calt" 1;
     overflow-x: hidden;
     max-width: 100vw;
@@ -136,12 +137,16 @@
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-plus-jakarta), 'Plus Jakarta Sans', system-ui, sans-serif;
-    font-weight: 700;
+    font-weight: 800;
     color: var(--foreground);
-    letter-spacing: -0.02em;
+    letter-spacing: -0.025em;
   }
   button, input, select, textarea {
     touch-action: manipulation;
+    font-weight: 700;
+  }
+  p {
+    font-weight: 600;
   }
   .text-xs {
     font-size: 0.8125rem;
