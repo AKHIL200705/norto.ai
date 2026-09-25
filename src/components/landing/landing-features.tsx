@@ -77,25 +77,25 @@ const FEATURES: Feature[] = [
 
 export function LandingFeatures() {
   return (
-    <section id="features" className="relative py-20 sm:py-28">
+    <section id="features" className="relative py-24 sm:py-32 bg-[#E0E5EC] dark:bg-[#181C24]">
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.4 }}
           transition={{ duration: 0.5 }}
-          className="mx-auto mb-12 max-w-2xl text-center sm:mb-16"
+          className="mx-auto mb-16 max-w-2xl text-center"
         >
-          <span className="inline-flex items-center gap-2 rounded-full border border-[#DD0200]/30 bg-[#DD0200]/10 px-4 py-1.5 text-sm font-bold text-[#DD0200]">
+          <span className="inline-flex items-center gap-2 rounded-full bg-[#E0E5EC] dark:bg-[#181C24] neu-inset px-5 py-2 text-xs font-bold text-[#6C63FF]">
             Features
           </span>
-          <h2 className="mt-4 text-balance text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">
+          <h2 className="mt-5 text-balance text-3xl font-extrabold tracking-tight text-[#3D4852] dark:text-[#E2E8F0] sm:text-4xl lg:text-5xl font-display">
             Everything you need to{' '}
-            <span className="bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-rose-500 bg-clip-text text-transparent">
+            <span className="text-[#6C63FF]">
               settle in
             </span>
           </h2>
-          <p className="mt-4 text-pretty text-base text-muted-foreground font-medium sm:text-lg">
+          <p className="mt-4 text-pretty text-base text-[#6B7280] dark:text-[#94A3B8] font-medium sm:text-lg">
             Seven powerful tools, one intelligent companion. Built for relocators,
             students, and digital nomads across India.
           </p>
@@ -109,7 +109,7 @@ export function LandingFeatures() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.15 }}
-          className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
+          className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
         >
           {FEATURES.map((f) => (
             <motion.article
@@ -119,20 +119,16 @@ export function LandingFeatures() {
                 visible: { opacity: 1, y: 0 },
               }}
               transition={{ duration: 0.45, ease: 'easeOut' }}
-              className={`group glass relative flex flex-col gap-4 overflow-hidden rounded-2xl p-6 border border-[#D9D9D9] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-[#DD0200]/10 hover:border-[#DD0200]/40 ${f.span ?? ''}`}
+              className={`group relative flex flex-col gap-5 overflow-hidden rounded-[32px] bg-[#E0E5EC] dark:bg-[#181C24] neu-extruded p-8 transition-all duration-300 hover:-translate-y-1 hover:neu-extruded-hover border-0 ${f.span ?? ''}`}
             >
               <span
-                aria-hidden
-                className={`pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-gradient-to-br ${f.gradient} opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-20`}
-              />
-              <span
-                className={`grid size-12 place-items-center rounded-xl bg-gradient-to-br ${f.gradient} shadow-md ${f.iconColor} transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3`}
+                className="grid size-14 place-items-center rounded-2xl bg-[#E0E5EC] dark:bg-[#181C24] neu-inset-deep text-[#6C63FF] transition-all duration-300 group-hover:scale-105"
               >
-                <f.icon className="size-6" />
+                <f.icon className="size-6 text-[#6C63FF]" />
               </span>
               <div>
-                <h3 className="text-lg font-bold text-foreground">{f.title}</h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground font-medium">
+                <h3 className="text-xl font-bold text-[#3D4852] dark:text-[#E2E8F0] font-display">{f.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-[#6B7280] dark:text-[#94A3B8] font-medium">
                   {f.desc}
                 </p>
               </div>

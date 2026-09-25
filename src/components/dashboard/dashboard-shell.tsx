@@ -49,15 +49,15 @@ function SidebarLogo() {
   return (
     <button
       onClick={() => setView('landing')}
-      className="flex items-center gap-2.5 w-full px-2 group"
+      className="flex items-center gap-3 w-full px-2 group cursor-pointer"
       aria-label="Norto home"
     >
-      <div className="size-9 rounded-xl bg-gradient-to-br from-[#DD0200] to-[#55100D] flex items-center justify-center shadow-lg shadow-[#DD0200]/25 group-hover:scale-105 transition-transform">
-        <Compass className="size-5 text-white" />
+      <div className="size-10 rounded-2xl bg-[#E0E5EC] dark:bg-[#181C24] neu-inset-deep flex items-center justify-center group-hover:scale-105 transition-transform">
+        <Compass className="size-5 text-[#6C63FF]" />
       </div>
       <div className="flex flex-col items-start leading-none">
-        <span className="font-extrabold text-base tracking-tight text-[#1A0706] dark:text-white">Norto</span>
-        <span className="text-[10px] text-muted-foreground font-medium">Your City Companion</span>
+        <span className="font-extrabold text-base tracking-tight text-[#3D4852] dark:text-[#E2E8F0] font-display">Norto</span>
+        <span className="text-[10px] text-[#6B7280] font-medium mt-0.5">Your City Companion</span>
       </div>
     </button>
   )
@@ -83,13 +83,13 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
         key={item.id}
         onClick={() => handleClick(item.id)}
         className={cn(
-          'w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all group relative',
+          'w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm transition-all duration-300 group relative cursor-pointer border-0',
           active
-            ? 'bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] text-white shadow-lg shadow-[#DD0200]/30 font-bold scale-[1.01]'
-            : 'font-semibold text-muted-foreground hover:text-foreground hover:bg-[#D9D9D9]/30 hover:scale-[1.01]'
+            ? 'bg-[#6C63FF] text-white neu-extruded font-bold -translate-y-0.5'
+            : 'font-bold text-[#6B7280] hover:text-[#3D4852] dark:hover:text-[#E2E8F0] hover:neu-extruded-sm active:neu-inset-sm'
         )}
       >
-        <Icon className={cn('size-[18px] shrink-0 transition-transform group-hover:scale-110', active ? 'text-white' : 'group-hover:text-[#DD0200]')} />
+        <Icon className={cn('size-[18px] shrink-0 transition-transform group-hover:scale-110', active ? 'text-white' : 'group-hover:text-[#6C63FF]')} />
         <span className="flex-1 text-left">{item.label}</span>
         {active && <ChevronRight className="size-4 text-white/90 animate-pulse" />}
       </button>
@@ -97,21 +97,21 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
   }
 
   return (
-    <nav className="flex flex-col gap-1 px-3 py-2">
+    <nav className="flex flex-col gap-1.5 px-3 py-2">
       {mainItems.map(renderItem)}
       <div className="px-3 pt-5 pb-1.5">
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70">
+        <span className="text-[10px] font-bold uppercase tracking-wider text-[#6B7280]">
           City Tools
         </span>
       </div>
       {toolItems.map(renderItem)}
-      <div className="mt-4 mx-1 rounded-xl bg-gradient-to-br from-[#DD0200]/10 to-[#55100D]/10 border border-[#DD0200]/20 p-3">
+      <div className="mt-5 mx-1 rounded-2xl bg-[#E0E5EC] dark:bg-[#181C24] neu-inset-deep p-4">
         <div className="flex items-center gap-2 mb-1.5">
-          <Map className="size-3.5 text-[#DD0200]" />
-          <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">Current City</span>
+          <Map className="size-4 text-[#38B2AC]" />
+          <span className="text-xs font-bold text-[#38B2AC]">Current City</span>
         </div>
-        <p className="text-sm font-bold">{city}</p>
-        <p className="text-[11px] text-muted-foreground mt-0.5">Explore local intel below</p>
+        <p className="text-sm font-extrabold text-[#3D4852] dark:text-[#E2E8F0]">{city}</p>
+        <p className="text-[11px] text-[#6B7280] mt-0.5 font-medium">Explore local intel below</p>
       </div>
     </nav>
   )
@@ -119,8 +119,8 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
 
 export function DashboardSidebar() {
   return (
-    <aside className="hidden lg:flex w-64 shrink-0 flex-col border-r bg-sidebar/60 backdrop-blur-xl">
-      <div className="h-16 flex items-center px-4 border-b">
+    <aside className="hidden lg:flex w-64 shrink-0 flex-col bg-[#E0E5EC] dark:bg-[#181C24] neu-inset-sm border-r-0">
+      <div className="h-20 flex items-center px-5">
         <SidebarLogo />
       </div>
       <div className="flex-1 overflow-y-auto py-2">
@@ -175,8 +175,8 @@ function LocationChip({
 
   if (status === 'loading') {
     return (
-      <span className="inline-flex items-center gap-1.5 h-9 px-2.5 sm:px-3 rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-xs font-medium">
-        <Loader2 className="size-3.5 animate-spin" />
+      <span className="inline-flex items-center gap-1.5 h-11 px-3 sm:px-4 rounded-2xl bg-[#E0E5EC] dark:bg-[#181C24] neu-inset text-[#6C63FF] text-xs font-bold">
+        <Loader2 className="size-3.5 animate-spin text-[#6C63FF]" />
         <span className="hidden sm:inline">Locating…</span>
       </span>
     )
@@ -184,11 +184,11 @@ function LocationChip({
 
   if (status === 'error') {
     return (
-      <div className="inline-flex items-center gap-1">
+      <div className="inline-flex items-center gap-2">
         <button
           onClick={() => setExactLocation('Singarayakonda')}
           title="Set location to Singarayakonda"
-          className="inline-flex items-center gap-1.5 h-9 px-2.5 rounded-lg bg-emerald-600 text-white text-xs font-semibold hover:bg-emerald-700 transition-colors shadow-sm"
+          className="inline-flex items-center gap-1.5 h-11 px-3.5 rounded-2xl bg-[#6C63FF] text-white text-xs font-bold neu-extruded hover:-translate-y-0.5 active:neu-inset-sm transition-all cursor-pointer"
         >
           <LocateFixed className="size-3.5" />
           <span>Set Singarayakonda</span>
@@ -196,9 +196,9 @@ function LocationChip({
         <button
           onClick={onDetect}
           title={error || 'Retry auto-detect'}
-          className="inline-flex items-center justify-center size-9 rounded-lg bg-muted text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+          className="inline-flex items-center justify-center size-11 rounded-2xl bg-[#E0E5EC] dark:bg-[#181C24] neu-inset text-[#E53E3E] hover:neu-inset-deep transition-all cursor-pointer"
         >
-          <AlertTriangle className="size-3.5 text-rose-500" />
+          <AlertTriangle className="size-3.5 text-[#E53E3E]" />
         </button>
       </div>
     )
@@ -211,74 +211,70 @@ function LocationChip({
         <button
           onClick={() => setOpen((v) => !v)}
           title={title}
-          className="inline-flex items-center gap-1.5 h-9 px-2.5 sm:px-3 rounded-xl bg-[#DD0200]/15 text-[#DD0200] text-xs font-bold hover:bg-[#DD0200]/25 transition-colors border border-[#DD0200]/30 backdrop-blur-md"
+          className="inline-flex items-center gap-2 h-11 px-3.5 sm:px-4 rounded-2xl bg-[#E0E5EC] dark:bg-[#181C24] neu-extruded hover:neu-extruded-hover active:neu-inset-sm text-[#38B2AC] text-xs font-bold transition-all cursor-pointer border-0"
         >
-          <Crosshair className="size-3.5" />
-          <span className="max-w-[90px] sm:max-w-[140px] truncate">{live.city}</span>
-          <span className="hidden sm:inline-flex items-center gap-0.5 text-[10px] text-[#DD0200] font-bold">
+          <Crosshair className="size-3.5 text-[#38B2AC]" />
+          <span className="max-w-[90px] sm:max-w-[140px] truncate text-[#3D4852] dark:text-[#E2E8F0]">{live.city}</span>
+          <span className="hidden sm:inline-flex items-center gap-0.5 text-[10px] text-[#38B2AC] font-extrabold">
             ±{accuracyM}m
           </span>
         </button>
         {open && (
           <>
             <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-            <div className="absolute right-0 top-11 z-50 w-72 sm:w-80 rounded-xl border border-[#D9D9D9] glass-card bg-popover shadow-xl overflow-hidden">
-              <div className="px-3 py-2.5 bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] text-white">
-                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-white/90 font-extrabold">
+            <div className="absolute right-0 top-14 z-50 w-72 sm:w-80 rounded-[32px] bg-[#E0E5EC] dark:bg-[#181C24] neu-extruded p-2 overflow-hidden border-0">
+              <div className="px-4 py-3.5 rounded-2xl bg-[#38B2AC] text-white neu-extruded">
+                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-white font-extrabold">
                   <Crosshair className="size-3" />
                   Live GPS Location
                 </div>
                 <p className="text-sm font-extrabold mt-0.5">{live.exactAddress || live.city}</p>
-                <p className="text-[11px] text-white/80">
+                <p className="text-[11px] text-teal-100">
                   {[live.region, live.country].filter(Boolean).join(', ')}
                 </p>
               </div>
               <div className="p-3 space-y-2 text-xs">
-                <div className="p-2.5 rounded-xl bg-[#DD0200]/10 border border-[#DD0200]/30 text-foreground text-[11px] leading-tight space-y-1.5 backdrop-blur-md">
+                <div className="p-3 rounded-2xl bg-[#E0E5EC] dark:bg-[#181C24] neu-inset text-[#3D4852] dark:text-[#E2E8F0] text-[11px] leading-tight space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <p className="font-extrabold flex items-center gap-1.5 text-[#DD0200]">
-                      <Crosshair className="size-3.5" /> Google Maps High-Precision Location
+                    <p className="font-extrabold flex items-center gap-1.5 text-[#38B2AC]">
+                      <Crosshair className="size-3.5" /> High-Precision GPS
                     </p>
                   </div>
-                  <p className="text-muted-foreground text-[10px]">
-                    Exact GPS &amp; Google Maps reverse-geocoded coordinates active.
+                  <p className="text-[#6B7280] text-[10px] font-medium">
+                    Exact coordinates active for smart map and weather recommendations.
                   </p>
                   <a
                     href={`https://www.google.com/maps/search/?api=1&query=${live.lat},${live.lng}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 font-bold text-[#DD0200] hover:underline"
+                    className="inline-flex items-center gap-1 font-bold text-[#6C63FF] hover:underline"
                   >
-                    View exact pin on Google Maps ↗
+                    View pin on Google Maps ↗
                   </a>
                 </div>
                 {live.displayName && (
-                  <div className="flex flex-col gap-0.5 pb-1 border-b border-[#D9D9D9]">
-                    <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">Exact Address</span>
-                    <span className="text-xs font-semibold leading-tight text-foreground/90">{live.displayName}</span>
+                  <div className="flex flex-col gap-0.5 p-2.5 rounded-2xl neu-inset-sm">
+                    <span className="text-[10px] text-[#6B7280] font-bold uppercase tracking-wider">Exact Address</span>
+                    <span className="text-xs font-semibold leading-tight text-[#3D4852] dark:text-[#E2E8F0]">{live.displayName}</span>
                   </div>
                 )}
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground font-semibold">Latitude</span>
-                  <span className="font-mono font-bold text-[#DD0200]">{live.lat.toFixed(5)}</span>
+                <div className="flex justify-between px-1">
+                  <span className="text-[#6B7280] font-semibold">Latitude</span>
+                  <span className="font-mono font-bold text-[#6C63FF]">{live.lat.toFixed(5)}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground font-semibold">Longitude</span>
-                  <span className="font-mono font-bold text-[#DD0200]">{live.lng.toFixed(5)}</span>
+                <div className="flex justify-between px-1">
+                  <span className="text-[#6B7280] font-semibold">Longitude</span>
+                  <span className="font-mono font-bold text-[#6C63FF]">{live.lng.toFixed(5)}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground font-semibold">Accuracy</span>
-                  <span className="font-extrabold text-[#DD0200]">
+                <div className="flex justify-between px-1">
+                  <span className="text-[#6B7280] font-semibold">Accuracy</span>
+                  <span className="font-extrabold text-[#38B2AC]">
                     ±{accuracyM}m · {accuracyLabel}
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground font-semibold">Detected</span>
-                  <span className="font-bold">{new Date(live.detectedAt).toLocaleTimeString()}</span>
-                </div>
 
-                <div className="pt-2 border-t border-[#D9D9D9] space-y-2">
-                  <p className="text-[10px] text-muted-foreground uppercase font-extrabold tracking-wider">Set Exact Location</p>
+                <div className="pt-2.5 border-t border-[#6B7280]/20 space-y-2">
+                  <p className="text-[10px] text-[#6B7280] uppercase font-extrabold tracking-wider">Set Exact Location</p>
                   <form
                     onSubmit={(e) => {
                       e.preventDefault()
@@ -288,22 +284,22 @@ function LocationChip({
                         setOpen(false)
                       }
                     }}
-                    className="flex gap-1.5"
+                    className="flex gap-2"
                   >
                     <input
                       name="town"
                       type="text"
                       placeholder="e.g. Singarayakonda"
-                      className="flex-1 h-8 px-2 rounded-md border border-[#D9D9D9] text-xs bg-background focus:outline-none focus:ring-1 focus:ring-[#DD0200]"
+                      className="flex-1 h-9 px-3 rounded-xl bg-[#E0E5EC] dark:bg-[#181C24] neu-inset text-xs font-medium text-[#3D4852] dark:text-[#E2E8F0] focus:neu-inset-deep outline-none border-0"
                     />
                     <button
                       type="submit"
-                      className="h-8 px-2.5 rounded-md bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] hover:scale-[1.02] text-white text-xs font-bold transition-all shadow-xs"
+                      className="h-9 px-3 rounded-xl bg-[#6C63FF] text-white text-xs font-bold neu-extruded hover:-translate-y-0.5 active:neu-inset-sm transition-all cursor-pointer"
                     >
                       Set
                     </button>
                   </form>
-                  <div className="flex flex-wrap gap-1 pt-1">
+                  <div className="flex flex-wrap gap-1.5 pt-1">
                     {['Singarayakonda', 'Ongole', 'Kavali', 'Hyderabad'].map((loc) => (
                       <button
                         key={loc}
@@ -312,7 +308,7 @@ function LocationChip({
                           setExactLocation(loc)
                           setOpen(false)
                         }}
-                        className="px-2 py-0.5 rounded-lg bg-[#D9D9D9]/40 hover:bg-[#DD0200]/15 hover:text-[#DD0200] text-[11px] font-bold transition-colors cursor-pointer"
+                        className="px-2.5 py-1 rounded-xl bg-[#E0E5EC] dark:bg-[#181C24] neu-extruded-sm hover:neu-extruded text-[11px] font-bold text-[#3D4852] dark:text-[#E2E8F0] hover:text-[#6C63FF] transition-all cursor-pointer"
                       >
                         {loc}
                       </button>
@@ -320,10 +316,10 @@ function LocationChip({
                   </div>
                 </div>
               </div>
-              <div className="p-2 border-t border-[#D9D9D9]">
+              <div className="p-2 pt-0">
                 <button
                   onClick={() => { onDetect(); setOpen(false) }}
-                  className="w-full flex items-center justify-center gap-1.5 h-8 rounded-lg text-xs font-bold hover:bg-[#DD0200]/10 text-[#DD0200] transition-colors"
+                  className="w-full flex items-center justify-center gap-1.5 h-10 rounded-2xl bg-[#E0E5EC] dark:bg-[#181C24] neu-inset hover:neu-inset-deep text-xs font-bold text-[#6C63FF] transition-all cursor-pointer"
                 >
                   <LocateFixed className="size-3.5" />
                   Auto-detect location
@@ -340,9 +336,9 @@ function LocationChip({
   return (
     <button
       onClick={onDetect}
-      className="inline-flex items-center gap-1.5 h-9 px-2.5 sm:px-3 rounded-xl border border-[#DD0200]/30 text-[#DD0200] text-xs font-bold hover:bg-[#DD0200]/15 backdrop-blur-md transition-all shadow-xs"
+      className="inline-flex items-center gap-1.5 h-11 px-3.5 sm:px-4 rounded-2xl bg-[#E0E5EC] dark:bg-[#181C24] neu-extruded hover:neu-extruded-hover active:neu-inset-sm text-[#6C63FF] text-xs font-bold transition-all cursor-pointer border-0"
     >
-      <LocateFixed className="size-3.5" />
+      <LocateFixed className="size-3.5 text-[#6C63FF]" />
       <span className="hidden sm:inline">Detect location</span>
     </button>
   )
@@ -396,33 +392,26 @@ export function DashboardTopbar() {
   ).split(' ').map((p) => p[0]).slice(0, 2).join('').toUpperCase()
 
   const [menuOpen, setMenuOpen] = React.useState(false)
-  const [notifOpen, setNotifOpen] = React.useState(false)
-  const isMobile = useIsMobile()
-  const notifications = [
-    { type: 'weather', title: 'Rain alert', message: `Light rain expected in ${city} this evening.`, time: '2m' },
-    { type: 'budget', title: 'Budget tip', message: 'You spent 12% less on food this week. Nice!', time: '1h' },
-    { type: 'festival', title: 'Local festival', message: 'Bathukamma celebrations start tomorrow.', time: '3h' },
-  ]
 
   return (
-    <header className="sticky top-0 z-30 h-16 border-b bg-background/80 backdrop-blur-xl flex items-center gap-3 px-4 lg:px-6">
+    <header className="sticky top-0 z-30 h-20 bg-[#E0E5EC] dark:bg-[#181C24] neu-extruded-sm flex items-center gap-4 px-4 lg:px-6">
       <Button
         variant="ghost"
         size="icon"
-        className="lg:hidden"
+        className="lg:hidden neu-button"
         onClick={() => setSidebarOpen(true)}
         aria-label="Open menu"
       >
-        <Menu className="size-5" />
+        <Menu className="size-5 text-[#3D4852] dark:text-[#E2E8F0]" />
       </Button>
 
       <div className="flex items-center gap-2 flex-1 max-w-md">
         <div className="relative flex-1 hidden sm:block">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-[#6B7280]" />
           <input
             type="text"
             placeholder={`Search in ${city}...`}
-            className="w-full h-9 pl-9 pr-3 rounded-lg bg-muted/60 border border-transparent focus:border-emerald-500/40 focus:bg-background text-sm outline-none transition-colors"
+            className="w-full h-11 pl-10 pr-4 rounded-2xl bg-[#E0E5EC] dark:bg-[#181C24] text-[#3D4852] dark:text-[#E2E8F0] neu-inset focus:neu-inset-deep text-sm outline-none transition-all duration-300 placeholder:text-[#6B7280]"
           />
         </div>
       </div>
@@ -435,82 +424,80 @@ export function DashboardTopbar() {
         onDetect={detectLocation}
       />
 
-      <div className="flex items-center gap-1.5">
-
-
-
+      <div className="flex items-center gap-2">
         <Button
           variant="ghost"
           size="icon"
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
           aria-label="Toggle theme"
+          className="neu-button"
         >
-          {mounted && theme === 'dark' ? <Sun className="size-5" /> : <Moon className="size-5" />}
+          {mounted && theme === 'dark' ? <Sun className="size-5 text-[#6C63FF]" /> : <Moon className="size-5 text-[#6C63FF]" />}
         </Button>
 
         <div className="relative">
           <button
             onClick={() => setMenuOpen((v) => !v)}
-            className="flex items-center gap-2 h-9 pl-1 pr-2 rounded-lg hover:bg-accent transition-colors"
+            className="flex items-center gap-2.5 h-11 pl-2 pr-3 rounded-2xl bg-[#E0E5EC] dark:bg-[#181C24] neu-extruded hover:neu-extruded-hover active:neu-inset-sm transition-all duration-300 cursor-pointer border-0"
             aria-label="Account menu"
           >
-            <Avatar className="size-7 ring-2 ring-[#DD0200]/30">
-              <AvatarFallback className="bg-gradient-to-br from-[#DD0200] to-[#55100D] text-white text-xs font-bold">
+            <Avatar className="size-8 neu-inset-deep">
+              <AvatarFallback className="bg-[#6C63FF] text-white text-xs font-bold">
                 {displayInitials}
               </AvatarFallback>
             </Avatar>
-            <span className="hidden md:inline text-sm font-medium max-w-[110px] truncate">{displayName}</span>
-            <ChevronDown className="hidden md:inline size-3.5 text-muted-foreground" />
+            <span className="hidden md:inline text-sm font-bold text-[#3D4852] dark:text-[#E2E8F0] max-w-[110px] truncate">{displayName}</span>
+            <ChevronDown className="hidden md:inline size-3.5 text-[#6B7280]" />
           </button>
           {menuOpen && (
             <>
               <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
-              <div className="absolute right-0 top-12 z-50 w-72 rounded-xl border bg-popover shadow-xl overflow-hidden">
+              <div className="absolute right-0 top-14 z-50 w-72 rounded-[32px] bg-[#E0E5EC] dark:bg-[#181C24] neu-extruded p-2 overflow-hidden border-0">
                 {/* Account header */}
-                <div className="px-4 py-4 bg-gradient-to-br from-[#DD0200] to-[#55100D] text-white">
+                <div className="px-5 py-4 rounded-2xl bg-[#6C63FF] text-white neu-extruded">
                   <div className="flex items-center gap-3">
-                    <Avatar className="size-10 ring-2 ring-white/30">
-                      <AvatarFallback className="bg-white/15 text-white text-sm font-bold backdrop-blur-sm">
+                    <Avatar className="size-10 neu-inset-deep">
+                      <AvatarFallback className="bg-white/20 text-white text-sm font-bold backdrop-blur-sm">
                         {displayInitials}
                       </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0">
-                      <p className="text-sm font-semibold truncate">{displayName}</p>
-                      <p className="text-[11px] text-red-50/85 truncate">
+                      <p className="text-sm font-extrabold truncate">{displayName}</p>
+                      <p className="text-[11px] text-violet-100 truncate">
                         {isAuth && user ? user.email : 'Guest mode'}
                       </p>
                     </div>
                   </div>
                   {isAuth && authProvider && (
-                    <div className="mt-2 inline-flex items-center gap-1 text-[10px] bg-white/15 rounded-full px-2 py-0.5 backdrop-blur-sm">
+                    <div className="mt-2 inline-flex items-center gap-1 text-[10px] bg-white/20 rounded-full px-2.5 py-0.5 font-bold">
                       {authProvider === 'google' && <GoogleIcon className="size-3" />}
                       {authProvider === 'google' ? 'Google account' : 'Email account'}
                     </div>
                   )}
                 </div>
                 {/* Menu items */}
-                <div className="p-1.5">
+                <div className="p-2 space-y-1">
                   <button
                     onClick={() => { setSection('profile'); setMenuOpen(false) }}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm hover:bg-accent transition-colors text-left"
+                    className="w-full flex items-center gap-2.5 px-4 py-3 rounded-2xl text-sm font-bold text-[#3D4852] dark:text-[#E2E8F0] hover:neu-extruded-sm active:neu-inset-sm transition-all text-left cursor-pointer"
                   >
-                    <User className="size-4 text-muted-foreground" />
+                    <User className="size-4 text-[#6C63FF]" />
                     Profile & settings
                   </button>
                   {isAuth ? (
                     <button
                       onClick={() => { setMenuOpen(false); signOut() }}
-                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 transition-colors text-left"
+                      className="w-full flex items-center gap-2.5 px-4 py-3 rounded-2xl text-sm font-bold text-[#E53E3E] hover:neu-extruded-sm active:neu-inset-sm transition-all text-left cursor-pointer"
                     >
-                      <LogOut className="size-4" />
+                      <LogOut className="size-4 text-[#E53E3E]" />
                       Sign out
                     </button>
                   ) : (
                     <button
                       onClick={() => { setMenuOpen(false); setSignInOpen(true) }}
-                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/10 transition-colors text-left"
+                      className="w-full flex items-center gap-2.5 px-4 py-3 rounded-2xl text-sm font-bold text-[#38B2AC] hover:neu-extruded-sm active:neu-inset-sm transition-all text-left cursor-pointer"
                     >
-                      <LogIn className="size-4" />
+                      <LogIn className="size-4 text-[#38B2AC]" />
                       Sign in
                     </button>
                   )}

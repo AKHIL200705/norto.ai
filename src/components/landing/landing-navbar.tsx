@@ -30,15 +30,15 @@ function UserBadge() {
   return (
     <button
       onClick={() => setView('dashboard')}
-      className="flex items-center gap-2 h-9 pl-1 pr-3 rounded-full border border-[#D9D9D9] bg-background/80 hover:bg-[#DD0200]/10 transition-colors"
+      className="flex items-center gap-2.5 h-11 pl-2 pr-4 rounded-2xl bg-[#E0E5EC] dark:bg-[#181C24] neu-extruded hover:neu-extruded-hover active:neu-inset-sm transition-all cursor-pointer border-0"
       aria-label={`Signed in as ${user.name}`}
     >
-      <Avatar className="size-7 ring-2 ring-[#DD0200]/30">
-        <AvatarFallback className="bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] text-white text-xs font-bold">
+      <Avatar className="size-8 neu-inset-deep">
+        <AvatarFallback className="bg-[#6C63FF] text-white text-xs font-bold">
           {initials}
         </AvatarFallback>
       </Avatar>
-      <span className="hidden sm:inline text-sm font-bold max-w-[120px] truncate">{user.name.split(' ')[0]}</span>
+      <span className="hidden sm:inline text-sm font-bold text-[#3D4852] dark:text-[#E2E8F0] max-w-[120px] truncate">{user.name.split(' ')[0]}</span>
     </button>
   )
 }
@@ -72,32 +72,32 @@ export function LandingNavbar() {
     <header
       className={cn(
         'sticky top-0 z-50 w-full transition-all duration-300',
-        scrolled ? 'glass shadow-sm backdrop-blur-xl bg-background/85 border-b border-[#D9D9D9]' : 'bg-transparent'
+        scrolled ? 'bg-[#E0E5EC] dark:bg-[#181C24] neu-extruded-sm border-0' : 'bg-[#E0E5EC] dark:bg-[#181C24]'
       )}
     >
-      <nav className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <nav className="mx-auto flex h-20 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="group flex items-center gap-2.5 outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg cursor-pointer"
+          className="group flex items-center gap-3 outline-none rounded-2xl cursor-pointer border-0"
           aria-label="Norto home"
         >
-          <span className="relative grid size-9 place-items-center rounded-xl bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] text-white shadow-md shadow-[#DD0200]/30 transition-transform group-hover:scale-105">
-            <Compass className="size-5" />
-            <span className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-white ring-2 ring-background" />
+          <span className="relative grid size-11 place-items-center rounded-2xl bg-[#E0E5EC] dark:bg-[#181C24] neu-inset-deep transition-transform group-hover:scale-105">
+            <Compass className="size-6 text-[#6C63FF]" />
+            <span className="absolute right-1 top-1 size-2.5 rounded-full bg-[#38B2AC]" />
           </span>
-          <span className="text-xl font-extrabold tracking-tight text-foreground">
-            Nor<span className="text-[#DD0200]">to</span>
+          <span className="text-2xl font-extrabold tracking-tight text-[#3D4852] dark:text-[#E2E8F0] font-display">
+            Nor<span className="text-[#6C63FF]">to</span>
           </span>
         </button>
 
         {/* Desktop links */}
-        <div className="hidden items-center gap-1 md:flex">
+        <div className="hidden items-center gap-2 md:flex">
           {NAV_LINKS.map((l) => (
             <button
               key={l.href}
               onClick={() => handleNav(l.href)}
-              className="rounded-md px-3.5 py-2 text-sm font-bold text-muted-foreground transition-colors hover:text-[#DD0200] hover:bg-[#DD0200]/10 cursor-pointer"
+              className="rounded-2xl px-4 py-2.5 text-sm font-bold text-[#6B7280] transition-all hover:text-[#3D4852] dark:hover:text-[#E2E8F0] hover:neu-extruded-sm active:neu-inset-sm cursor-pointer border-0"
             >
               {l.label}
             </button>
@@ -105,18 +105,18 @@ export function LandingNavbar() {
         </div>
 
         {/* Right actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <Button
             variant="ghost"
             size="icon"
             aria-label="Toggle theme"
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className="rounded-full hover:bg-[#DD0200]/10"
+            className="neu-button"
           >
             {theme === 'dark' ? (
-              <Sun className="size-5 text-[#DD0200]" />
+              <Sun className="size-5 text-[#6C63FF]" />
             ) : (
-              <Moon className="size-5 text-[#DD0200]" />
+              <Moon className="size-5 text-[#6C63FF]" />
             )}
           </Button>
 
@@ -125,7 +125,7 @@ export function LandingNavbar() {
           ) : (
             <Button
               onClick={openSignIn}
-              className="rounded-xl bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] px-5 text-white shadow-lg shadow-[#DD0200]/25 hover:opacity-95 backdrop-blur-md font-extrabold cursor-pointer"
+              className="neu-button-primary rounded-2xl h-11 px-6 text-sm font-extrabold cursor-pointer"
             >
               <GoogleIcon className="size-4" />
               <span className="hidden sm:inline">Sign in with Google</span>

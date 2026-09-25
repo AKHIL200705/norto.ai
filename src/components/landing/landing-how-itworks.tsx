@@ -29,7 +29,7 @@ export function LandingHowItWorks() {
   return (
     <section
       id="how-it-works"
-      className="relative bg-gradient-to-b from-transparent via-emerald-500/5 to-transparent py-20 sm:py-28"
+      className="relative bg-[#E0E5EC] dark:bg-[#181C24] py-24 sm:py-32"
     >
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
@@ -37,31 +37,25 @@ export function LandingHowItWorks() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.4 }}
           transition={{ duration: 0.5 }}
-          className="mx-auto mb-14 max-w-2xl text-center sm:mb-20"
+          className="mx-auto mb-16 max-w-2xl text-center"
         >
-          <span className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1.5 text-sm font-medium text-amber-700 dark:text-amber-300">
+          <span className="inline-flex items-center gap-2 rounded-full bg-[#E0E5EC] dark:bg-[#181C24] neu-inset px-5 py-2 text-xs font-bold text-[#6C63FF]">
             How it works
           </span>
-          <h2 className="mt-4 text-balance text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
+          <h2 className="mt-5 text-balance text-3xl font-extrabold tracking-tight text-[#3D4852] dark:text-[#E2E8F0] sm:text-4xl lg:text-5xl font-display">
             From overwhelmed to{' '}
-            <span className="bg-gradient-to-r from-amber-500 to-emerald-600 bg-clip-text text-transparent">
+            <span className="text-[#6C63FF]">
               settled in 3 steps
             </span>
           </h2>
-          <p className="mt-4 text-pretty text-base text-muted-foreground sm:text-lg">
+          <p className="mt-4 text-pretty text-base text-[#6B7280] dark:text-[#94A3B8] font-medium sm:text-lg">
             No spreadsheets, no scattered tabs. Just one assistant that gets you
             from arrival to feeling at home.
           </p>
         </motion.div>
 
         <div className="relative">
-          {/* Desktop horizontal connector */}
-          <div
-            aria-hidden
-            className="absolute left-0 right-0 top-10 hidden h-0.5 bg-gradient-to-r from-emerald-500/10 via-emerald-500/40 to-amber-500/10 lg:block"
-          />
-
-          <div className="grid grid-cols-1 gap-10 sm:gap-12 lg:grid-cols-3 lg:gap-8">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
             {STEPS.map((s, i) => (
               <motion.div
                 key={s.step}
@@ -69,31 +63,20 @@ export function LandingHowItWorks() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.5, delay: i * 0.12 }}
-                className="relative flex flex-col items-center text-center lg:items-start lg:text-left"
+                className="relative flex flex-col items-start text-left rounded-[32px] bg-[#E0E5EC] dark:bg-[#181C24] neu-extruded p-8 transition-all duration-300 hover:-translate-y-1 hover:neu-extruded-hover"
               >
                 {/* Numbered circle */}
-                <div className="relative z-10 mb-6 flex flex-col items-center lg:items-start">
-                  <span className="relative grid size-20 place-items-center">
-                    <span className="absolute inset-0 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 opacity-20 blur-md" />
-                    <span className="relative grid size-16 place-items-center rounded-full bg-gradient-to-br from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/30 ring-4 ring-background">
-                      <s.icon className="size-7" />
-                    </span>
-                    <span className="absolute -right-1 -top-1 grid size-7 place-items-center rounded-full bg-amber-400 text-[11px] font-bold text-amber-950 shadow ring-2 ring-background">
+                <div className="relative z-10 mb-6 flex items-center gap-4">
+                  <span className="relative grid size-16 place-items-center rounded-2xl bg-[#E0E5EC] dark:bg-[#181C24] neu-inset-deep text-[#6C63FF]">
+                    <s.icon className="size-7 text-[#6C63FF]" />
+                    <span className="absolute -right-2 -top-2 grid size-8 place-items-center rounded-xl bg-[#6C63FF] text-xs font-extrabold text-white neu-extruded">
                       {s.step}
                     </span>
                   </span>
                 </div>
 
-                {/* Mobile vertical connector */}
-                {i < STEPS.length - 1 && (
-                  <div
-                    aria-hidden
-                    className="absolute left-1/2 top-16 h-full w-0.5 -translate-x-1/2 bg-gradient-to-b from-emerald-500/40 to-transparent lg:hidden"
-                  />
-                )}
-
-                <h3 className="text-xl font-semibold text-foreground">{s.title}</h3>
-                <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
+                <h3 className="text-xl font-bold text-[#3D4852] dark:text-[#E2E8F0] font-display">{s.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-[#6B7280] dark:text-[#94A3B8] font-medium">
                   {s.desc}
                 </p>
               </motion.div>

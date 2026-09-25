@@ -97,7 +97,7 @@ export function SignInDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent showCloseButton={false} className="p-0 overflow-hidden max-w-[380px] gap-0 border-[#D9D9D9] rounded-3xl">
+      <DialogContent showCloseButton={false} className="p-0 overflow-hidden max-w-[380px] gap-0 border-0 bg-[#E0E5EC] dark:bg-[#181C24] neu-extruded rounded-[32px]">
         <DialogTitle className="sr-only">Sign in to Norto</DialogTitle>
         <DialogDescription className="sr-only">
           Sign in to Norto with Google or Magic Email Link.
@@ -112,43 +112,44 @@ export function SignInDialog() {
             transition={{ duration: 0.2 }}
           >
             {/* Header band */}
-            <div className="relative bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] px-6 pt-6 pb-9 text-white overflow-hidden">
-              <div className="absolute inset-0 mesh-bg opacity-25" />
+            <div className="relative bg-[#6C63FF] px-6 pt-6 pb-9 text-white overflow-hidden neu-extruded">
               <button
                 onClick={() => setOpen(false)}
-                className="absolute right-4 top-4 grid size-8 place-items-center rounded-lg text-white/80 hover:text-white hover:bg-white/15 transition-colors cursor-pointer"
+                className="absolute right-4 top-4 grid size-8 place-items-center rounded-xl bg-white/20 hover:bg-white/30 text-white transition-all cursor-pointer neu-extruded-sm"
                 aria-label="Close"
               >
                 <X className="size-4" />
               </button>
-              <div className="relative flex items-center gap-2.5">
-                <div className="size-10 rounded-xl bg-white/15 backdrop-blur-md border border-white/25 grid place-items-center shadow-md">
-                  <Compass className="size-5 text-white" />
+              <div className="relative flex items-center gap-3">
+                <div className="size-11 rounded-2xl bg-[#E0E5EC] neu-inset-deep grid place-items-center shadow-md">
+                  <Compass className="size-5 text-[#6C63FF]" />
                 </div>
                 <div>
-                  <p className="text-lg font-extrabold leading-tight">Norto</p>
-                  <p className="text-xs text-rose-100/80 font-medium">Your AI City Companion</p>
+                  <p className="text-lg font-extrabold leading-tight font-display">Norto</p>
+                  <p className="text-xs text-violet-100 font-medium mt-0.5">Your AI City Companion</p>
                 </div>
               </div>
             </div>
 
             {/* Form Body */}
-            <div className="px-5 pb-6 -mt-4">
-              <div className="rounded-2xl bg-card border border-[#D9D9D9] shadow-xl p-5 backdrop-blur-xl text-center">
-                <h2 className="text-base font-extrabold text-foreground mb-1">
+            <div className="p-6">
+              <div className="rounded-2xl bg-[#E0E5EC] dark:bg-[#181C24] neu-inset p-5 text-center">
+                <h2 className="text-base font-extrabold text-[#3D4852] dark:text-[#E2E8F0] mb-1 font-display">
                   Welcome to Norto
                 </h2>
-                <p className="text-xs text-muted-foreground font-medium mb-4">
+                <p className="text-xs text-[#6B7280] font-medium mb-5">
                   Sign in to access your personalized city companion.
                 </p>
 
                 {/* Mode toggle */}
-                <div className="grid grid-cols-2 p-1 bg-muted/60 rounded-xl mb-4 gap-1">
+                <div className="grid grid-cols-2 p-1 bg-[#E0E5EC] dark:bg-[#181C24] neu-inset-sm rounded-2xl mb-5 gap-1">
                   <button
                     type="button"
                     onClick={() => setAuthMode('google')}
-                    className={`text-xs font-bold py-1.5 rounded-lg transition-all cursor-pointer ${
-                      authMode === 'google' ? 'bg-background shadow-xs text-foreground' : 'text-muted-foreground hover:text-foreground'
+                    className={`text-xs font-bold py-2 rounded-xl transition-all cursor-pointer border-0 ${
+                      authMode === 'google'
+                        ? 'bg-[#6C63FF] text-white neu-extruded'
+                        : 'text-[#6B7280] hover:text-[#3D4852] dark:hover:text-[#E2E8F0]'
                     }`}
                   >
                     Google OAuth
@@ -156,8 +157,10 @@ export function SignInDialog() {
                   <button
                     type="button"
                     onClick={() => setAuthMode('magic')}
-                    className={`text-xs font-bold py-1.5 rounded-lg transition-all cursor-pointer ${
-                      authMode === 'magic' ? 'bg-background shadow-xs text-foreground' : 'text-muted-foreground hover:text-foreground'
+                    className={`text-xs font-bold py-2 rounded-xl transition-all cursor-pointer border-0 ${
+                      authMode === 'magic'
+                        ? 'bg-[#6C63FF] text-white neu-extruded'
+                        : 'text-[#6B7280] hover:text-[#3D4852] dark:hover:text-[#E2E8F0]'
                     }`}
                   >
                     Magic Link
@@ -169,11 +172,11 @@ export function SignInDialog() {
                   <button
                     onClick={handleGoogleOAuth}
                     disabled={isLoading}
-                    className="w-full h-12 rounded-xl bg-white border border-[#D9D9D9] hover:bg-slate-50 hover:border-[#DD0200]/40 active:scale-[0.99] transition-all flex items-center justify-center gap-3 text-sm font-extrabold text-slate-800 disabled:opacity-50 cursor-pointer shadow-sm"
+                    className="w-full h-12 rounded-2xl bg-[#E0E5EC] dark:bg-[#181C24] text-[#3D4852] dark:text-[#E2E8F0] neu-extruded hover:-translate-y-0.5 active:neu-inset-sm transition-all flex items-center justify-center gap-3 text-sm font-extrabold disabled:opacity-50 cursor-pointer border-0"
                   >
                     {isLoading ? (
                       <>
-                        <Loader2 className="size-5 animate-spin text-[#DD0200]" />
+                        <Loader2 className="size-5 animate-spin text-[#6C63FF]" />
                         <span>Connecting…</span>
                       </>
                     ) : (
@@ -184,29 +187,29 @@ export function SignInDialog() {
                     )}
                   </button>
                 ) : magicSent ? (
-                  <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-medium space-y-1">
-                    <p className="font-bold text-sm">Check your inbox!</p>
+                  <div className="p-3.5 rounded-2xl bg-[#E0E5EC] dark:bg-[#181C24] neu-inset text-[#38B2AC] text-xs font-medium space-y-1">
+                    <p className="font-extrabold text-sm">Check your inbox!</p>
                     <p>We sent a magic sign-in link to <strong>{email}</strong>.</p>
                   </div>
                 ) : (
                   /* Magic Link form */
-                  <form onSubmit={handleMagicLink} className="space-y-3">
+                  <form onSubmit={handleMagicLink} className="space-y-3.5">
                     <input
                       type="email"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="Enter your email address..."
-                      className="w-full h-11 px-3.5 rounded-xl border border-[#D9D9D9] bg-background text-sm font-medium outline-none focus:border-[#DD0200] transition-colors"
+                      className="w-full h-11 px-4 rounded-2xl bg-[#E0E5EC] dark:bg-[#181C24] text-[#3D4852] dark:text-[#E2E8F0] neu-inset focus:neu-inset-deep text-sm font-medium outline-none transition-all border-0 placeholder:text-[#6B7280]"
                     />
                     <button
                       type="submit"
                       disabled={isLoading || !email.trim()}
-                      className="w-full h-11 rounded-xl bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] hover:opacity-95 active:scale-[0.99] transition-all flex items-center justify-center gap-2 text-sm font-extrabold text-white disabled:opacity-50 cursor-pointer shadow-sm"
+                      className="w-full h-12 rounded-2xl bg-[#6C63FF] hover:bg-[#8B84FF] text-white font-extrabold text-sm neu-extruded hover:-translate-y-0.5 active:neu-inset-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer border-0"
                     >
                       {isLoading ? (
                         <>
-                          <Loader2 className="size-4 animate-spin" />
+                          <Loader2 className="size-4 animate-spin text-white" />
                           <span>Sending Link…</span>
                         </>
                       ) : (
