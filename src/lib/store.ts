@@ -121,27 +121,35 @@ export const useAppStore = create<AppState>()(
       setSignInOpen: (v) => set({ signInOpen: v }),
       setOnboardingOpen: (v) => set({ onboardingOpen: v }),
       signIn: (u, provider) =>
-        set((state) => ({
-          isAuthenticated: true,
-          view: 'dashboard',
-          section: 'home',
-          authProvider: provider,
-          signInOpen: false,
-          onboardingOpen: true,
-          user: {
-            ...GUEST_DEFAULTS,
-            city: state.city,
-            name: u.name,
-            email: u.email,
-            avatar: u.avatar ?? null,
-            occupation: u.occupation ?? state.user?.occupation ?? null,
-            language: state.user?.language ?? GUEST_DEFAULTS.language,
-            budget: state.user?.budget ?? GUEST_DEFAULTS.budget,
-            foodPref: state.user?.foodPref ?? GUEST_DEFAULTS.foodPref,
-            transport: state.user?.transport ?? GUEST_DEFAULTS.transport,
-            createdAt: state.user?.createdAt || new Date().toISOString(),
-          },
-        })),
+        set((state) => {
+          const alreadyOnboarded = Boolean(
+            state.user?.hasCompletedOnboarding ||
+            u.occupation ||
+            (state.user?.occupation && state.user.occupation !== 'Software Engineer')
+          )
+          return {
+            isAuthenticated: true,
+            view: 'dashboard',
+            section: 'home',
+            authProvider: provider,
+            signInOpen: false,
+            onboardingOpen: !alreadyOnboarded,
+            user: {
+              ...GUEST_DEFAULTS,
+              city: state.city,
+              name: u.name,
+              email: u.email,
+              avatar: u.avatar ?? null,
+              occupation: u.occupation ?? state.user?.occupation ?? null,
+              language: state.user?.language ?? GUEST_DEFAULTS.language,
+              budget: state.user?.budget ?? GUEST_DEFAULTS.budget,
+              foodPref: state.user?.foodPref ?? GUEST_DEFAULTS.foodPref,
+              transport: state.user?.transport ?? GUEST_DEFAULTS.transport,
+              hasCompletedOnboarding: alreadyOnboarded,
+              createdAt: state.user?.createdAt || new Date().toISOString(),
+            },
+          }
+        }),
       signOut: () =>
         set({
           isAuthenticated: false,

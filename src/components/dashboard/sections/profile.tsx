@@ -144,6 +144,7 @@ export function Profile() {
       foodPref: form.foodPref,
       transport: form.transport,
       city: form.city || city,
+      hasCompletedOnboarding: true,
     })
     if (form.city && form.city !== city) {
       addTravelCity(form.city)

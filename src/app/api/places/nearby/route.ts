@@ -60,6 +60,7 @@ export async function GET(req: NextRequest) {
   const lngParam = searchParams.get('lng')
   const cityParam = searchParams.get('city')
   const catsParam = searchParams.get('categories') || ''
+  const qParam = searchParams.get('q')?.trim() || ''
   const radius = Math.min(parseInt(searchParams.get('radius') || '3500'), 8000) // meters, capped
 
   let lat: number | null = latParam ? parseFloat(latParam) : null
@@ -151,7 +152,7 @@ export async function GET(req: NextRequest) {
           )
         }
         const mirrorData = await mirrorRes.json()
-        return processOverpass(mirrorData, lat, lng, requestedCats)
+        return processOverpass(mirrorData, lat, lng, requestedCats, qParam)
       } finally {
         clearTimeout(mirrorTimeout)
       }
@@ -166,7 +167,7 @@ export async function GET(req: NextRequest) {
     }
 
     const data = await overpassRes.json()
-    return processOverpass(data, lat, lng, requestedCats)
+    return processOverpass(data, lat, lng, requestedCats, qParam)
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown Overpass error'
     return Response.json({ error: message }, { status: 500 })
@@ -177,7 +178,8 @@ function processOverpass(
   data: { elements?: any[] },
   userLat: number,
   userLng: number,
-  requestedCats: string[]
+  requestedCats: string[],
+  qQuery?: string
 ): Response {
   const elements = data.elements || []
   const catLookup: Record<string, string> = {} // osmId → category
@@ -245,13 +247,24 @@ function processOverpass(
     })
   }
 
+  let resultPlaces = places
+  if (qQuery) {
+    const qLower = qQuery.toLowerCase()
+    resultPlaces = places.filter(
+      (p) =>
+        p.name.toLowerCase().includes(qLower) ||
+        p.category.toLowerCase().includes(qLower) ||
+        p.address.toLowerCase().includes(qLower)
+    )
+  }
+
   // Sort by distance (nearest first)
-  places.sort((a, b) => a.distanceKm - b.distanceKm)
+  resultPlaces.sort((a, b) => a.distanceKm - b.distanceKm)
 
   // Limit to 40 places for performance
   return Response.json({
-    places: places.slice(0, 40),
-    total: places.length,
+    places: resultPlaces.slice(0, 40),
+    total: resultPlaces.length,
     lat: userLat,
     lng: userLng,
     radius: '3500',

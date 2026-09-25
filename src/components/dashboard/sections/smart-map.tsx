@@ -8,7 +8,7 @@ import {
   Landmark, CreditCard, Briefcase, ShoppingBag, Pill, Fuel, Camera,
   Star, MapPin, X, BookmarkPlus, Bookmark, Clock, Filter, Heart,
   Navigation, ChevronRight, Loader2, LocateFixed, AlertTriangle,
-  RefreshCw, Crosshair, ArrowUpDown, Grid, SlidersHorizontal,
+  RefreshCw, Crosshair, ArrowUpDown, Grid, SlidersHorizontal, Search,
 } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
 import { PLACE_CATEGORIES } from '@/lib/types'
@@ -264,6 +264,12 @@ export function SmartMap() {
   // Categories — multi-select. Default: restaurant + hospital.
   const [selectedCats, setSelectedCats] = React.useState<string[]>(['restaurant', 'hospital'])
 
+  // Search & custom location state
+  const [searchQuery, setSearchQuery] = React.useState('')
+  const [locationQuery, setLocationQuery] = React.useState('')
+  const [customLocation, setCustomLocation] = React.useState<{ lat: number; lng: number; label: string } | null>(null)
+  const [geocoding, setGeocoding] = React.useState(false)
+
   // Sort/filter state
   const [sortBy, setSortBy] = React.useState<SortBy>('distance')
   const [ratingFilter, setRatingFilter] = React.useState<RatingFilter>('all')
@@ -280,15 +286,56 @@ export function SmartMap() {
   const [savedIds, setSavedIds] = React.useState<Set<string>>(new Set())
   const [hoveredId, setHoveredId] = React.useState<string | null>(null)
   const [savingId, setSavingId] = React.useState<string | null>(null)
-  // View Mode: 'google-maps' (interactive Google Map embed) vs 'radar-map' (category pins)
   const [catModalOpen, setCatModalOpen] = React.useState(false)
   const [filterModalOpen, setFilterModalOpen] = React.useState(false)
 
-  // The coordinates we query around: live location if available, else city centre.
-  const queryLat = liveLocation?.lat ?? null
-  const queryLng = liveLocation?.lng ?? null
+  // Effective query coordinates: customLocation > liveLocation > default city
+  const queryLat = customLocation?.lat ?? liveLocation?.lat ?? null
+  const queryLng = customLocation?.lng ?? liveLocation?.lng ?? null
+  const activeLocationLabel = customLocation?.label ?? (liveLocation ? liveLocation.city : city)
 
-  // Fetch real places whenever categories or location change
+  // Geocode location search
+  const handleSearchLocation = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault()
+    const q = locationQuery.trim()
+    if (!q) return
+    setGeocoding(true)
+    try {
+      const geoUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1&accept-language=en`
+      const res = await fetch(geoUrl, {
+        headers: { 'User-Agent': 'Norto/1.0 (city-assistant app)' },
+      })
+      if (res.ok) {
+        const data = await res.json()
+        if (Array.isArray(data) && data.length > 0) {
+          const item = data[0]
+          const lat = parseFloat(item.lat)
+          const lng = parseFloat(item.lon)
+          const label = item.display_name.split(',')[0] || q
+          setCustomLocation({ lat, lng, label })
+          toast.success(`Location set to "${label}"`, {
+            description: 'Loaded real places near this custom location.',
+          })
+        } else {
+          toast.error(`Could not find "${q}". Try typing a city or landmark.`)
+        }
+      } else {
+        toast.error('Location service error. Please try again.')
+      }
+    } catch {
+      toast.error('Failed to search area location.')
+    } finally {
+      setGeocoding(false)
+    }
+  }
+
+  const handleResetLocation = () => {
+    setCustomLocation(null)
+    setLocationQuery('')
+    toast.info('Reset location to live/default area.')
+  }
+
+  // Fetch real places whenever categories, location, or server search change
   const fetchPlaces = React.useCallback(async () => {
     if (selectedCats.length === 0) {
       setPlaces([])
@@ -302,10 +349,13 @@ export function SmartMap() {
         params.set('lat', String(queryLat))
         params.set('lng', String(queryLng))
       } else {
-        params.set('city', city)
+        params.set('city', activeLocationLabel)
       }
       params.set('categories', selectedCats.join(','))
       params.set('radius', '3500')
+      if (searchQuery.trim()) {
+        params.set('q', searchQuery.trim())
+      }
       const res = await fetch(`/api/places/nearby?${params}`)
       if (!res.ok) {
         const j = await res.json().catch(() => ({}))
@@ -320,7 +370,7 @@ export function SmartMap() {
     } finally {
       setLoading(false)
     }
-  }, [selectedCats, queryLat, queryLng, city])
+  }, [selectedCats, queryLat, queryLng, activeLocationLabel, searchQuery])
 
   // Fetch on mount + when deps change
   React.useEffect(() => {
@@ -350,9 +400,18 @@ export function SmartMap() {
     return computePositions(places, centerLat, centerLng)
   }, [places, queryLat, queryLng])
 
-  // Apply filters + sort
+  // Apply real-time client text search + filters + sort
   const filtered: MapPlace[] = React.useMemo(() => {
     let result = mapPlaces
+    if (searchQuery.trim()) {
+      const qLower = searchQuery.trim().toLowerCase()
+      result = result.filter(
+        (p) =>
+          p.name.toLowerCase().includes(qLower) ||
+          p.category.toLowerCase().includes(qLower) ||
+          p.address.toLowerCase().includes(qLower)
+      )
+    }
     if (ratingFilter === '4+' && mapPlaces.some((p) => p.rating !== null)) {
       result = result.filter((p) => p.rating === null || p.rating >= 4)
     }
@@ -373,7 +432,7 @@ export function SmartMap() {
       return 0
     })
     return result
-  }, [mapPlaces, ratingFilter, openOnly, favoritesOnly, savedIds, sortBy])
+  }, [mapPlaces, searchQuery, ratingFilter, openOnly, favoritesOnly, savedIds, sortBy])
 
   const handleSave = async (place: MapPlace) => {
     if (savedIds.has(place.id)) return
@@ -425,9 +484,14 @@ export function SmartMap() {
             Real places around
             <span className="font-bold text-foreground inline-flex items-center gap-1">
               <MapPin className="size-3 text-[#DD0200]" />
-              {liveLocation ? liveLocation.city : city}
+              {activeLocationLabel}
             </span>
-            {liveLocation && (
+            {customLocation && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#DD0200] bg-[#DD0200]/15 rounded-full px-2 py-0.5">
+                Custom Search Area
+              </span>
+            )}
+            {liveLocation && !customLocation && (
               <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#DD0200] bg-[#DD0200]/15 rounded-full px-2 py-0.5">
                 <Crosshair className="size-2.5" />
                 Live · ±{Math.round(liveLocation.accuracy)}m
@@ -436,6 +500,17 @@ export function SmartMap() {
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
+          {customLocation && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleResetLocation}
+              className="border-[#D9D9D9] font-bold text-xs"
+            >
+              <RefreshCw className="size-3.5 text-[#DD0200]" />
+              Reset Area
+            </Button>
+          )}
           <Button
             variant="outline"
             size="sm"
@@ -459,7 +534,91 @@ export function SmartMap() {
         </div>
       </div>
 
+      {/* Dual Search & Location Controls */}
+      <Card className="glass-card border-[#D9D9D9] p-3 mb-4 shadow-xs">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {/* 1. Keyword Place Search */}
+          <div className="relative flex items-center">
+            <Search className="absolute left-3 size-4 text-muted-foreground" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Filter places by name, category, or address…"
+              className="w-full pl-9 pr-8 py-2 rounded-xl bg-background border border-[#D9D9D9] text-xs font-semibold placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#DD0200]/30 transition-all"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2.5 size-5 rounded-full hover:bg-muted grid place-items-center text-muted-foreground cursor-pointer"
+                aria-label="Clear place search"
+              >
+                <X className="size-3" />
+              </button>
+            )}
+          </div>
 
+          {/* 2. Custom Location / Area Geocode Search */}
+          <form onSubmit={handleSearchLocation} className="relative flex items-center gap-2">
+            <div className="relative flex-1 flex items-center">
+              <MapPin className="absolute left-3 size-4 text-[#DD0200]" />
+              <input
+                type="text"
+                value={locationQuery}
+                onChange={(e) => setLocationQuery(e.target.value)}
+                placeholder="Search area/city (e.g. Kondapur, Hyderabad)"
+                className="w-full pl-9 pr-8 py-2 rounded-xl bg-background border border-[#D9D9D9] text-xs font-semibold placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#DD0200]/30 transition-all"
+              />
+              {locationQuery && (
+                <button
+                  type="button"
+                  onClick={() => setLocationQuery('')}
+                  className="absolute right-2.5 size-5 rounded-full hover:bg-muted grid place-items-center text-muted-foreground cursor-pointer"
+                  aria-label="Clear location query"
+                >
+                  <X className="size-3" />
+                </button>
+              )}
+            </div>
+            <Button
+              type="submit"
+              size="sm"
+              disabled={geocoding || !locationQuery.trim()}
+              className="bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] text-white text-xs font-extrabold px-4 h-9 rounded-xl shadow-md shrink-0 cursor-pointer"
+            >
+              {geocoding ? <Loader2 className="size-3.5 animate-spin" /> : <Search className="size-3.5" />}
+              <span className="hidden sm:inline">Search Area</span>
+            </Button>
+          </form>
+        </div>
+
+        {/* Active Search & Location Badges */}
+        {(customLocation || searchQuery) && (
+          <div className="flex items-center gap-2 mt-2.5 pt-2 border-t border-[#D9D9D9] flex-wrap text-xs">
+            {customLocation && (
+              <Badge variant="secondary" className="bg-[#DD0200]/15 text-[#DD0200] border-0 font-bold gap-1 px-2.5 py-1">
+                <MapPin className="size-3 text-[#DD0200]" />
+                Area: {customLocation.label}
+                <button onClick={handleResetLocation} className="ml-1 hover:opacity-75 cursor-pointer">
+                  <X className="size-3" />
+                </button>
+              </Badge>
+            )}
+            {searchQuery && (
+              <Badge variant="secondary" className="bg-amber-500/15 text-amber-700 dark:text-amber-300 border-0 font-bold gap-1 px-2.5 py-1">
+                <Search className="size-3" />
+                Filter: "{searchQuery}"
+                <button onClick={() => setSearchQuery('')} className="ml-1 hover:opacity-75 cursor-pointer">
+                  <X className="size-3" />
+                </button>
+              </Badge>
+            )}
+            <span className="text-[11px] text-muted-foreground font-semibold ml-auto">
+              Found {filtered.length} matching places
+            </span>
+          </div>
+        )}
+      </Card>
 
       <div className="grid lg:grid-cols-[1fr_340px] gap-4">
         {/* Map area */}
@@ -474,11 +633,11 @@ export function SmartMap() {
                 style={{ border: 0 }}
                 loading="lazy"
                 allowFullScreen
-                src={`https://maps.google.com/maps?q=${queryLat && queryLng ? `${queryLat},${queryLng}` : encodeURIComponent((liveLocation?.city || city) + ', India')}&z=15&output=embed`}
+                src={`https://maps.google.com/maps?q=${queryLat && queryLng ? `${queryLat},${queryLng}` : encodeURIComponent(activeLocationLabel + ', India')}&z=15&output=embed`}
               />
               <div className="absolute top-3 right-3 z-10">
                 <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${queryLat && queryLng ? `${queryLat},${queryLng}` : encodeURIComponent((liveLocation?.city || city) + ', India')}`}
+                  href={`https://www.google.com/maps/search/?api=1&query=${queryLat && queryLng ? `${queryLat},${queryLng}` : encodeURIComponent(activeLocationLabel + ', India')}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-background/90 backdrop-blur-md border border-[#D9D9D9] text-xs font-bold text-foreground shadow-lg hover:bg-[#DD0200]/10 hover:text-[#DD0200] transition-all"
@@ -490,7 +649,7 @@ export function SmartMap() {
               <div className="absolute bottom-3 left-3 z-10">
                 <span className="text-[11px] font-bold bg-background/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-[#D9D9D9] shadow-md flex items-center gap-2">
                   <span className="size-2 rounded-full bg-[#DD0200] animate-ping" />
-                  Google Maps Live · {liveLocation ? liveLocation.city : city}
+                  Google Maps Live · {activeLocationLabel}
                 </span>
               </div>
             </div>

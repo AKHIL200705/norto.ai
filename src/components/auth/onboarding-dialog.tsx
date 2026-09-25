@@ -54,6 +54,10 @@ export function OnboardingDialog() {
   // Sync state when dialog opens or user loads
   React.useEffect(() => {
     if (open && user) {
+      if (user.hasCompletedOnboarding) {
+        setOpen(false)
+        return
+      }
       const timer = setTimeout(() => {
         setOccupation(user.occupation || 'Software Engineer')
         setBudget(user.budget || 25000)
@@ -62,7 +66,14 @@ export function OnboardingDialog() {
       }, 0)
       return () => clearTimeout(timer)
     }
-  }, [open, user])
+  }, [open, user, setOpen])
+
+  const handleClose = () => {
+    if (user) {
+      updateUser({ hasCompletedOnboarding: true })
+    }
+    setOpen(false)
+  }
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault()
@@ -82,6 +93,7 @@ export function OnboardingDialog() {
       budget: Number(budget) || 25000,
       language,
       foodPref,
+      hasCompletedOnboarding: true,
     })
 
     toast.success(`Welcome ${user?.name || 'Explorer'}! Your profile preferences have been saved. 🌿`)
@@ -90,7 +102,7 @@ export function OnboardingDialog() {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open && !user?.hasCompletedOnboarding} onOpenChange={(v) => { if (!v) handleClose(); else setOpen(v); }}>
       <DialogContent showCloseButton={false} className="p-0 overflow-hidden max-w-[480px] gap-0 border-[#D9D9D9] rounded-3xl">
         <DialogTitle className="sr-only">Complete Your Profile</DialogTitle>
         <DialogDescription className="sr-only">
@@ -109,7 +121,7 @@ export function OnboardingDialog() {
             <div className="relative bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] px-6 pt-6 pb-8 text-white overflow-hidden">
               <div className="absolute inset-0 mesh-bg opacity-25" />
               <button
-                onClick={() => setOpen(false)}
+                onClick={handleClose}
                 className="absolute right-4 top-4 grid size-8 place-items-center rounded-lg text-white/80 hover:text-white hover:bg-white/15 transition-colors cursor-pointer"
                 aria-label="Close"
               >

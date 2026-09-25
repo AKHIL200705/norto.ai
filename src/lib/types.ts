@@ -54,6 +54,7 @@ export interface UserProfile {
   foodPref: string
   transport: string
   city?: string | null
+  hasCompletedOnboarding?: boolean
   createdAt?: string
 }
 
