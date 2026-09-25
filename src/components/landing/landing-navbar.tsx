@@ -145,39 +145,41 @@ export function LandingNavbar() {
                 <Menu className="size-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[280px] sm:w-[320px]">
-              <div className="flex h-full flex-col gap-2 pt-6">
-                <div className="mb-4 flex items-center gap-2.5 px-2">
-                  <span className="grid size-9 place-items-center rounded-xl bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] text-white">
-                    <Compass className="size-5" />
+            <SheetContent side="right" className="w-[280px] sm:w-[320px] bg-[#E0E5EC] dark:bg-[#181C24] border-0 neu-extruded text-[#3D4852] dark:text-[#E2E8F0]">
+              <div className="flex h-full flex-col gap-3 pt-6">
+                <div className="mb-4 flex items-center gap-3 px-2">
+                  <span className="grid size-11 place-items-center rounded-2xl bg-[#E0E5EC] dark:bg-[#181C24] neu-inset-deep">
+                    <Compass className="size-6 text-[#6C63FF]" />
                   </span>
-                  <span className="text-xl font-extrabold">Norto</span>
+                  <span className="text-xl font-extrabold tracking-tight font-display text-[#3D4852] dark:text-[#E2E8F0]">
+                    Nor<span className="text-[#6C63FF]">to</span>
+                  </span>
                 </div>
                 {NAV_LINKS.map((l) => (
                   <SheetClose asChild key={l.href}>
                     <button
                       onClick={() => handleNav(l.href)}
-                      className="rounded-lg px-3 py-3 text-left text-base font-bold text-foreground transition-colors hover:bg-[#DD0200]/10 hover:text-[#DD0200]"
+                      className="rounded-2xl px-4 py-3 text-left text-base font-bold text-[#6B7280] transition-colors hover:text-[#3D4852] dark:hover:text-[#E2E8F0] hover:neu-extruded-sm active:neu-inset-sm cursor-pointer border-0"
                     >
                       {l.label}
                     </button>
                   </SheetClose>
                 ))}
-                <div className="mt-auto px-2 pb-4 space-y-2">
+                <div className="mt-auto px-2 pb-4 space-y-3">
                   {isAuth ? (
-                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#DD0200]/10 border border-[#DD0200]/20">
-                      <Avatar className="size-7 ring-2 ring-[#DD0200]/30">
-                        <AvatarFallback className="bg-gradient-to-br from-[#DD0200] via-[#8B0000] to-[#55100D] text-white text-xs font-bold">
+                    <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-[#E0E5EC] dark:bg-[#181C24] neu-extruded">
+                      <Avatar className="size-8 neu-inset-deep">
+                        <AvatarFallback className="bg-[#6C63FF] text-white text-xs font-bold">
                           {userInitials}
                         </AvatarFallback>
                       </Avatar>
-                      <span className="text-sm font-bold truncate">{user?.name}</span>
+                      <span className="text-sm font-bold truncate text-[#3D4852] dark:text-[#E2E8F0]">{user?.name}</span>
                     </div>
                   ) : (
                     <SheetClose asChild>
                       <Button
                         onClick={openSignIn}
-                        className="w-full rounded-full bg-gradient-to-r from-[#DD0200] via-[#8B0000] to-[#55100D] text-white font-bold"
+                        className="w-full neu-button-primary rounded-2xl h-12 text-sm font-extrabold cursor-pointer"
                       >
                         <GoogleIcon className="size-4" />
                         Sign in with Google
